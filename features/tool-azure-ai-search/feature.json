@@ -5,9 +5,9 @@
   "summary": "AzureAISearchTool against a customer-owned search index, attached to a BYOM-routed agent.",
   "description": "Index-side embeddings are configured at index-build time outside this matrix. Skips if AZURE_AI_SEARCH_CONNECTION_ID or AZURE_AI_SEARCH_INDEX_NAME is unset.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Not in the official supported-tools list."
+  "notes": "Needs to be re-verified end-to-end against a BYOM-routed agent. Not in the official supported-tools list."
 }

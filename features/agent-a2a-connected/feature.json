@@ -5,9 +5,9 @@
   "summary": "Caller agent that delegates to a remote agent via RemoteA2A connection.",
   "description": "Creates a caller agent with a RemoteA2A tool / connection pointing at another agent's endpoint. The caller's orchestrator model can be BYOM-routed; the callee is configured independently. Validates that the cross-agent protocol does not strip the BYOM prefix.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips with ::warning:: if A2A_REMOTE_AGENT_ENDPOINT is unset. Not in the official supported-tools list."
+  "notes": "Needs to be re-verified end-to-end. Not in the official supported-tools list, but BYOM routing of the caller-side orchestrator has not been validated."
 }

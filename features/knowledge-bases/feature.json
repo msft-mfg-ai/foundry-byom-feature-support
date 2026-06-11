@@ -1,0 +1,12 @@
+{
+  "slug": "knowledge-bases",
+  "category": "tools",
+  "name": "Knowledge bases",
+  "summary": "Foundry Knowledge Bases attached to an agent, backed by a BYOM-routed embedding/chat model.",
+  "description": "Knowledge bases require a deployed model (typically an embedding model for ingestion and a chat model at query time). Initial observation is that the Knowledge Base configuration only accepts a Foundry-native model deployment and does not honor an AI-Gateway / APIM-routed BYOM connection — needs to be re-verified end-to-end before we mark it as not_supported.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Status-only card. Suspected unsupported (knowledge-base config doesn't appear to accept an AI-Gateway connection), but needs hands-on confirmation."
+}
