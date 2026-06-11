@@ -6,7 +6,7 @@
   "description": "These endpoints take a model name that maps to an Azure OpenAI deployment on the Foundry account itself. There is no documented way to BYOM-route them. Rollup card so each one doesn't need its own status-only entry.",
   "pm": "TBD",
   "support_status": "not_supported",
-  "implementation_status": "ga",
+  "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. If any of these gain BYOM support in the future, split into individual cards."
 }

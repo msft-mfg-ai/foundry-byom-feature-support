@@ -48,7 +48,7 @@ Status-only features (no `test_file` in `feature.json`) render as cards on the s
 | Field | Values |
 | --- | --- |
 | `support_status` | `supported`, `partial`, `not_supported`, `not_confirmed` |
-| `implementation_status` | `ga`, `preview`, `in_progress`, `not_confirmed` |
+| `implementation_status` | `ga`, `preview`, `in_progress`, `not_confirmed`, `tbd` (use `tbd` whenever `support_status` is `not_supported` — claiming a maturity for an integration that doesn't work is misleading) |
 
 ## GitHub environment
 

@@ -6,7 +6,7 @@
   "description": "Probes whether the images endpoint parses the '{conn}/{model}' prefix as a route hint. Research suggests the model param is required and treated literally, so BYOM is likely inapplicable here. Test documents the actual behavior.",
   "pm": "TBD",
   "support_status": "not_supported",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Likely fails because the images endpoint does not parse the BYOM prefix. Captured as a gap. Confirmed broken: direct images endpoint does not parse the BYOM prefix."

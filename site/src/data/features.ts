@@ -20,8 +20,8 @@ export interface Feature {
   pm: string;
   /** supported | not_supported | partial | not_confirmed */
   support_status: 'supported' | 'not_supported' | 'partial' | 'not_confirmed';
-  /** ga | preview | in_progress | not_confirmed */
-  implementation_status: 'ga' | 'preview' | 'in_progress' | 'not_confirmed';
+  /** ga | preview | in_progress | not_confirmed | tbd */
+  implementation_status: 'ga' | 'preview' | 'in_progress' | 'not_confirmed' | 'tbd';
   /** Optional. Status-only features (e.g. infra prerequisites) omit this. */
   test_file?: string;
   azure_docs?: string;

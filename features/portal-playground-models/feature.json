@@ -6,7 +6,7 @@
   "description": "Connections of type ApiManagement or ModelGateway register fine and their '{conn}/{deployment}' prefix works from code, but the deployments do not surface in the portal UI's model selection dropdowns. You cannot 'point and click' a BYOM model from the playground; you must invoke it through the SDK / Responses API.",
   "pm": "TBD",
   "support_status": "not_supported",
-  "implementation_status": "ga",
+  "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. Adjacent to portal-ui-parity-providers but specifically about the runtime playground/picker surface, not connection creation."
 }
