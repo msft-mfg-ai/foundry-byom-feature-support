@@ -1,12 +1,13 @@
 {
   "slug": "routing-apim-anthropic",
   "category": "routing",
-  "name": "Routing \u2014 APIM fronting Anthropic",
-  "summary": "ApiManagement connection where the upstream is Anthropic's Messages API translated by an APIM policy.",
-  "description": "Confirmed working via local notebook + foundry-samples APIM test script. Uses '{anthropic-apim-conn}/claude-opus-4-6' as the model prefix in a PromptAgentDefinition. Skips if AI_GATEWAY_CONNECTION_ANTHROPIC is unset.",
+  "name": "Routing — APIM fronting non-OpenAI (Anthropic, DeepSeek, …)",
+  "summary": "ApiManagement (AI Gateway v2) connection routing directly to non-OpenAI providers — no custom translation policy required.",
+  "description": "APIM AI Gateway v2 natively supports multiple model providers. Verified end-to-end against Anthropic Claude and DeepSeek using '{apim-conn}/{deployment}' as the model prefix in a PromptAgentDefinition. The same connection pattern works for other providers exposed through APIM. Skips if AI_GATEWAY_CONNECTION_ANTHROPIC is unset.",
   "pm": "TBD",
   "support_status": "supported",
-  "implementation_status": "preview",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "notes": "Requires APIM with a policy that translates OpenAI chat-completions \u2192 Anthropic Messages. See options-infra/ai-gateway-anthropic/ for a Bicep template."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal",
+  "notes": "Distinct from the ModelGateway connection category (see routing-modelgateway-non-openai). No OpenAI-to-Anthropic translation policy is needed — APIM AI Gateway speaks the provider's API natively."
 }
