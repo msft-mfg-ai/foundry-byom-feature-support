@@ -7,6 +7,7 @@ export type Category =
   | 'routing'
   | 'tools'
   | 'quality'
+  | 'ui'
   | 'infrastructure';
 
 export interface Feature {
@@ -29,7 +30,7 @@ export interface Feature {
   test_source: string | null;
 }
 
-export const CATEGORY_ORDER: Category[] = ['agents', 'endpoints', 'routing', 'tools', 'quality', 'infrastructure'];
+export const CATEGORY_ORDER: Category[] = ['agents', 'endpoints', 'routing', 'tools', 'quality', 'ui', 'infrastructure'];
 
 export const CATEGORY_LABEL: Record<Category, string> = {
   agents: 'Agents',
@@ -37,6 +38,7 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   routing: 'Routing & providers',
   tools: 'Agent tools',
   quality: 'Quality & safety',
+  ui: 'Foundry UI',
   infrastructure: 'Infrastructure & publishing',
 };
 
@@ -46,7 +48,8 @@ export const CATEGORY_DESCRIPTION: Record<Category, string> = {
   routing: 'Different connection shapes and upstream providers the gateway can front: APIM vs ModelGateway, OpenAI vs Anthropic vs catalog, static vs dynamic model discovery.',
   tools: 'Tools that run inside a Prompt Agent. The tool itself has no model parameter — BYOM applies to the host agent\'s orchestrator model.',
   quality: 'Evaluations and red-teaming pipelines. Some of these take their own judge/target model parameters.',
-  infrastructure: 'Infrastructure prerequisites, portal-UI parity gaps, and publishing surfaces. Mostly status-only cards.',
+  ui: 'Foundry portal experience for BYOM \u2014 connection creation surfaces, playground/model-picker visibility, dynamic deployment listing.',
+  infrastructure: 'Infrastructure prerequisites, publishing surfaces, and rollup status cards.',
 };
 
 const featuresDir = path.resolve(process.cwd(), '../features');

@@ -1,6 +1,6 @@
 {
   "slug": "portal-ui-parity-providers",
-  "category": "infrastructure",
+  "category": "ui",
   "name": "Portal UI \u2014 connection creation",
   "summary": "Foundry portal supports creating BYOM connections, but only for v2 APIM resources fronting OpenAI-compatible chat completions APIs.",
   "description": "Per Operate \u2192 Admin console \u2192 Admin-connected models \u2192 Add: 'Azure API Management' connection type requires a v2 APIM resource and a model implementing the OpenAI-compatible chat completions API. ModelGateway connections and non-OpenAI providers (Anthropic, OpenRouter, LiteLLM, DeepSeek) are not creatable through the portal \u2014 use the Bicep templates in microsoft-foundry/foundry-samples for those.",

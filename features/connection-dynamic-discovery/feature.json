@@ -1,0 +1,12 @@
+{
+  "slug": "connection-dynamic-discovery",
+  "category": "ui",
+  "name": "Connection \u2014 dynamic deployment listing",
+  "summary": "Connections that declare a `modelDiscovery` endpoint and rely on runtime GET /models calls to enumerate deployments are not honored \u2014 only the static `models[]` array works today.",
+  "description": "Per the official docs, ModelGateway connections support both static and dynamic discovery. In practice only the static path (models pre-listed in connection metadata) is wired up; the dynamic path that calls the gateway's list-deployments endpoint at runtime to enumerate available models is not currently honored. Agents created against a model that exists only via dynamic discovery fail validation.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "preview",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Status-only. Static discovery (`routing-static-vs-dynamic-discovery`) is the working configuration today."
+}
