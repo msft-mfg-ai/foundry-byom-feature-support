@@ -5,8 +5,8 @@
   "summary": "Microsoft 1P MCP server: Foundry IQ. Attached via MCPTool with AgenticIdentity auth.",
   "description": "1P MCP endpoint surfacing Foundry knowledge. Skips if FOUNDRY_IQ_MCP_URL is unset.",
   "pm": "TBD",
-  "support_status": "supported",
-  "implementation_status": "ga",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."

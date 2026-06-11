@@ -5,8 +5,8 @@
   "summary": "Microsoft 1P MCP server: Web IQ (web search/grounding via MCP).",
   "description": "Skips if WEB_IQ_MCP_URL is unset.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Not in the official supported-tools list (only Foundry IQ is listed among the 1P MCP servers)."

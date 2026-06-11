@@ -5,8 +5,8 @@
   "summary": "Foundry Memory Stores (MemoryStores=V1Preview opt-in key).",
   "description": "No public SDK / docs at the time of writing. Tracked here so the matrix surface stays complete.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only \u2014 no test.py. Not in the official supported-tools list."
 }

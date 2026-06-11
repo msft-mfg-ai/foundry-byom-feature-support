@@ -5,8 +5,8 @@
   "summary": "MCPTool with authType='UserEntraToken' \u2014 the end user's bearer token is passed through to the MCP server.",
   "description": "OBO-style identity for MCP. Skips if MCP_SERVER_URL_OAUTH is unset.",
   "pm": "TBD",
-  "support_status": "supported",
-  "implementation_status": "ga",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
 }
