@@ -7,6 +7,5 @@
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only roll-up card; the prompt-agents tests are the actual functional probes for this routing shape."
 }

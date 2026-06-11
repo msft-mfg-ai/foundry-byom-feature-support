@@ -7,6 +7,5 @@
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. Adjacent to portal-ui-parity-providers but specifically about the runtime playground/picker surface, not connection creation."
 }

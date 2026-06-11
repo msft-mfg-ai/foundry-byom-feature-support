@@ -25,6 +25,8 @@ export interface Feature {
   /** Optional. Status-only features (e.g. infra prerequisites) omit this. */
   test_file?: string;
   azure_docs?: string;
+  /** Optional direct link to a specific sample (notebook / SDK example), NOT a repo home page. */
+  sample_url?: string;
   notes?: string;
   /** null when the feature has no test_file (status-only card). */
   test_source: string | null;

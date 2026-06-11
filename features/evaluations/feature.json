@@ -8,6 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips if EVAL_JUDGE_MODEL is unset. Captures the actual error if any."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation",
+  "notes": "Skips if EVAL_JUDGE_MODEL is unset. Captures the actual error if any.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/evaluations"
 }

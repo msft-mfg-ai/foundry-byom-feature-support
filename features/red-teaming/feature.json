@@ -8,5 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/run-scans-ai-red-teaming-agent",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/red_team/sample_red_team.py"
 }

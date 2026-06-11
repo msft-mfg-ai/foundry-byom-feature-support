@@ -8,6 +8,7 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Requires AI_GATEWAY_CONNECTION_STATIC to point at an ApiManagement connection on the Foundry project."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/prompt-agent",
+  "notes": "Requires AI_GATEWAY_CONNECTION_STATIC to point at an ApiManagement connection on the Foundry project.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_agent_basic.py"
 }

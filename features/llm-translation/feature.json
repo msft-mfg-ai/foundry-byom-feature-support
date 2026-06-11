@@ -8,6 +8,6 @@
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/translator/text-translation/2026-06-06/translate-api",
   "notes": "Calls FOUNDRY_ACCOUNT_ENDPOINT (account-level, not project). Requires Ocp-Apim-Subscription-Region header. Confirmed broken: translator targets[].deploymentName does not accept the BYOM prefix."
 }

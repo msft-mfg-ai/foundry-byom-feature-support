@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
   "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."
 }

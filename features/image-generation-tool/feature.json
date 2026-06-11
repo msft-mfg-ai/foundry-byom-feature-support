@@ -8,6 +8,7 @@
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips with ::warning:: if IMAGE_DEPLOYMENT_NAME is unset. Confirmed broken: image tool not in supported-tools list and does not honor the BYOM prefix on its image deployment slot."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/image-generation",
+  "notes": "Skips with ::warning:: if IMAGE_DEPLOYMENT_NAME is unset. Confirmed broken: image tool not in supported-tools list and does not honor the BYOM prefix on its image deployment slot.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_image_generation.py"
 }

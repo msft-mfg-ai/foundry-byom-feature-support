@@ -8,6 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Needs to be re-verified end-to-end. Not in the official supported-tools list, but BYOM routing of the caller-side orchestrator has not been validated."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/register-external-agent",
+  "notes": "Needs to be re-verified end-to-end. Not in the official supported-tools list, but BYOM routing of the caller-side orchestrator has not been validated.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_external_agents_crud.py"
 }

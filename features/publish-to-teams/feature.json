@@ -7,6 +7,6 @@
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot",
   "notes": "Status-only \u2014 manual verification; no scripted test."
 }

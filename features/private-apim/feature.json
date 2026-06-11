@@ -7,6 +7,6 @@
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/api-management/private-endpoint",
   "notes": "Status-only. Confirmed working end-to-end."
 }

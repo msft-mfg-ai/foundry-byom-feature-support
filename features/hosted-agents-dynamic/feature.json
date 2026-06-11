@@ -8,6 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_DYNAMIC is unset."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agents",
+  "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_DYNAMIC is unset.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/hosted_agents/sample_create_hosted_agent.py"
 }

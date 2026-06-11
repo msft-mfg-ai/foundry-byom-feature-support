@@ -7,6 +7,5 @@
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. Static discovery (`routing-static-vs-dynamic-discovery`) is the working configuration today."
 }

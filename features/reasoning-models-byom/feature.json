@@ -8,6 +8,6 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning",
   "notes": "Skips if REASONING_MODEL env var is not set."
 }

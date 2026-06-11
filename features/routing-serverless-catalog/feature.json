@@ -8,6 +8,5 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Skips if AI_GATEWAY_CONNECTION_SERVERLESS or SERVERLESS_MODEL is unset."
 }

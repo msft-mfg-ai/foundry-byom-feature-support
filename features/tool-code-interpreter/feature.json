@@ -8,5 +8,6 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/code-interpreter",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_code_interpreter.py"
 }

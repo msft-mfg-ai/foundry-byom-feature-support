@@ -8,6 +8,7 @@
   "support_status": "partial",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Known bug: first invocation succeeds, every subsequent web-search call in the same agent fails. See test.py for the repro."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/bing-tools",
+  "notes": "Known bug: first invocation succeeds, every subsequent web-search call in the same agent fails. See test.py for the repro.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_bing_grounding.py"
 }

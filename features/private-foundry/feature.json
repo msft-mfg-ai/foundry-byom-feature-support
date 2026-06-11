@@ -7,6 +7,6 @@
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link",
   "notes": "Status-only \u2014 validated implicitly by every other feature when CI runs inside the private VNet. Confirmed working end-to-end."
 }

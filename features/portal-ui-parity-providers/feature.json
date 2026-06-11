@@ -7,6 +7,5 @@
   "pm": "TBD",
   "support_status": "partial",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. The 'Other source' option in the wizard covers self-hosted/non-Azure OpenAI-compatible gateways but still requires an OpenAI-compatible chat completions surface."
 }

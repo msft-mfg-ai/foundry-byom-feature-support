@@ -8,6 +8,7 @@
   "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips if COMPUTER_USE_ENVIRONMENT is unset. Called 'Browser Automation' in the official supported-tools list."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/computer-use",
+  "notes": "Skips if COMPUTER_USE_ENVIRONMENT is unset. Called 'Browser Automation' in the official supported-tools list.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_computer_use.py"
 }

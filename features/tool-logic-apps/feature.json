@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/connectors",
   "notes": "Not in the official supported-tools list."
 }

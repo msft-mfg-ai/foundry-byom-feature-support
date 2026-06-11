@@ -8,6 +8,5 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Not in the official supported-tools list (only Foundry IQ is listed among the 1P MCP servers)."
 }

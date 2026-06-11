@@ -7,6 +7,7 @@
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Status-only \u2014 no test.py. Not in the official supported-tools list."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/memory-usage",
+  "notes": "Status-only \u2014 no test.py. Not in the official supported-tools list.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_memory_search.py"
 }

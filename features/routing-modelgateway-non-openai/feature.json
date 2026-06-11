@@ -8,6 +8,5 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "ModelGateway supports OAuth2 client_credentials; ApiManagement supports AAD/MI. They are NOT interchangeable connection categories."
 }

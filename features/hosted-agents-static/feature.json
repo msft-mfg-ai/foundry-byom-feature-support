@@ -8,6 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_STATIC is unset. Deployment of the hosted agent itself is outside the scope of this matrix."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-hosted-agent",
+  "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_STATIC is unset. Deployment of the hosted agent itself is outside the scope of this matrix.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/hosted_agents/sample_create_hosted_agent.py"
 }
