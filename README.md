@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: prompt-agents-static
-      runs-on: self-hosted   # or your own label
+      runner: self-hosted   # or your own label
     secrets: inherit
 ```
 
