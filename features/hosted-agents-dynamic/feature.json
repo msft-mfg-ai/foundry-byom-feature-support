@@ -6,7 +6,7 @@
   "description": "Smoke test for a hosted agent that was deployed pointing at the dynamic-discovery gateway connection. Skips if HOSTED_AGENT_NAME_DYNAMIC is unset.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_DYNAMIC is unset."

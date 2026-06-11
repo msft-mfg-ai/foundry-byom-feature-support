@@ -6,7 +6,7 @@
   "description": "ModelGateway is a separate ConnectionCategory (string 'ModelGateway'). It requires an explicit modelDiscovery block and supports model.format values OpenAI | Anthropic | NonOpenAI | Deepseek. Skips if AI_GATEWAY_CONNECTION_MODELGATEWAY is unset.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "ModelGateway supports OAuth2 client_credentials; ApiManagement supports AAD/MI. They are NOT interchangeable connection categories."

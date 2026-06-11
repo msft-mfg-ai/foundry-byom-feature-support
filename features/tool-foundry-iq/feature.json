@@ -6,7 +6,7 @@
   "description": "1P MCP endpoint surfacing Foundry knowledge. Skips if FOUNDRY_IQ_MCP_URL is unset.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "not_confirmed",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."

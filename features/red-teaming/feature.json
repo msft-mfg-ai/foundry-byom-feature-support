@@ -6,7 +6,7 @@
   "description": "Smoke test that pointing the target at a BYOM-prefixed deployment routes adversarial probes through the gateway. Skips if RED_TEAM_TARGET_MODEL is unset.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
 }

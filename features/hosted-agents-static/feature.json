@@ -6,7 +6,7 @@
   "description": "Hosted Agents are deployed out-of-band via `azd ai agent init` + container image. This test looks up an existing hosted agent by name and invokes it through the Responses API. BYOM at the manifest level is unconfirmed; the container code can BYOM-route its own Responses calls.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_STATIC is unset. Deployment of the hosted agent itself is outside the scope of this matrix."

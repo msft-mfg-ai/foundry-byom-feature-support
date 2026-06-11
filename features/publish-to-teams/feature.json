@@ -6,7 +6,7 @@
   "description": "Validates that the publish flow accepts an agent whose model is BYOM-routed. Known hard limitation: SharePoint OBO tool does NOT work when the agent is published to Teams.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only \u2014 manual verification; no scripted test."
 }

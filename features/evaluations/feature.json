@@ -6,7 +6,7 @@
   "description": "Tests whether the eval framework accepts a BYOM-prefixed deployment_name for the judge model. Research suggests it likely does NOT parse the prefix (same posture as image-generation-direct).",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "ga",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Skips if EVAL_JUDGE_MODEL is unset. Captures the actual error if any."

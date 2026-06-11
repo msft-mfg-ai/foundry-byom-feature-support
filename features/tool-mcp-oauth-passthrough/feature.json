@@ -6,7 +6,7 @@
   "description": "OBO-style identity for MCP. Skips if MCP_SERVER_URL_OAUTH is unset.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "not_confirmed",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
 }

@@ -6,7 +6,7 @@
   "description": "Creates a caller agent with a RemoteA2A tool / connection pointing at another agent's endpoint. The caller's orchestrator model can be BYOM-routed; the callee is configured independently. Validates that the cross-agent protocol does not strip the BYOM prefix.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "not_confirmed",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Needs to be re-verified end-to-end. Not in the official supported-tools list, but BYOM routing of the caller-side orchestrator has not been validated."
