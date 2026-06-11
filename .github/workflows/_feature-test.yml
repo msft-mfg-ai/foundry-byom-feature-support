@@ -1,0 +1,55 @@
+name: Feature test (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      feature:
+        description: Feature slug (folder under features/)
+        required: true
+        type: string
+      environment:
+        description: GitHub environment to pull variables/secrets from
+        required: false
+        type: string
+        default: byom
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen || uv sync
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run feature test - ${{ inputs.feature }}
+        env:
+          PROJECT_ENDPOINT: ${{ vars.PROJECT_ENDPOINT }}
+          AI_GATEWAY_CONNECTION_STATIC: ${{ vars.AI_GATEWAY_CONNECTION_STATIC }}
+          AI_GATEWAY_CONNECTION_DYNAMIC: ${{ vars.AI_GATEWAY_CONNECTION_DYNAMIC }}
+          CHAT_MODEL: ${{ vars.CHAT_MODEL }}
+          RESPONSES_MODEL: ${{ vars.RESPONSES_MODEL }}
+          EMBEDDINGS_MODEL: ${{ vars.EMBEDDINGS_MODEL }}
+          IMAGE_MODEL: ${{ vars.IMAGE_MODEL }}
+          SPEECH_MODEL: ${{ vars.SPEECH_MODEL }}
+          TRANSCRIPTION_MODEL: ${{ vars.TRANSCRIPTION_MODEL }}
+        run: uv run python features/${{ inputs.feature }}/test.py

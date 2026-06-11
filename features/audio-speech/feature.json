@@ -1,0 +1,11 @@
+{
+  "slug": "audio-speech",
+  "name": "Audio: Text-to-Speech",
+  "summary": "POST /openai/v1/audio/speech via APIM gateway.",
+  "description": "Tests text-to-speech (e.g. gpt-4o-mini-tts) via the project endpoint with model prefixed by the AI Gateway connection name.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/how-to/text-to-speech"
+}

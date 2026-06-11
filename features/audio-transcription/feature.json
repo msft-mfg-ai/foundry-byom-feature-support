@@ -1,0 +1,11 @@
+{
+  "slug": "audio-transcription",
+  "name": "Audio: Speech-to-Text",
+  "summary": "POST /openai/v1/audio/transcriptions via APIM gateway.",
+  "description": "Tests speech-to-text (whisper / gpt-4o-transcribe) via the project endpoint with model prefixed by the AI Gateway connection name.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "not_confirmed",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/how-to/speech-to-text"
+}

@@ -1,0 +1,61 @@
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'features/**/feature.json'
+      - 'features/**/test.py'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install
+        working-directory: site
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - name: Compute base path
+        id: base
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          echo "base=/$repo/" >> "$GITHUB_OUTPUT"
+          echo "site=https://${GITHUB_REPOSITORY_OWNER}.github.io" >> "$GITHUB_OUTPUT"
+      - name: Build
+        working-directory: site
+        env:
+          BASE_PATH: ${{ steps.base.outputs.base }}
+          SITE_URL: ${{ steps.base.outputs.site }}
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

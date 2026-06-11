@@ -1,0 +1,11 @@
+{
+  "slug": "chat-completions",
+  "name": "Chat Completions",
+  "summary": "Legacy chat/completions endpoint via APIM gateway.",
+  "description": "Tests POST /openai/deployments/{model}/chat/completions through the project endpoint with the model prefixed by the AI Gateway connection name. This is the most widely supported inference path.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/reference"
+}
