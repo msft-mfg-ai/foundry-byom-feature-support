@@ -1,0 +1,13 @@
+{
+  "slug": "evaluations",
+  "category": "quality",
+  "name": "Evaluations",
+  "summary": "azure-ai-evaluation: judge LLM specified via initialization_parameters.deployment_name.",
+  "description": "Tests whether the eval framework accepts a BYOM-prefixed deployment_name for the judge model. Research suggests it likely does NOT parse the prefix (same posture as image-generation-direct).",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/concepts/evaluation",
+  "notes": "Skips if EVAL_JUDGE_MODEL is unset. Captures the actual error if any."
+}

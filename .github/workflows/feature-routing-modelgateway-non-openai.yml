@@ -1,0 +1,21 @@
+name: Feature - routing-modelgateway-non-openai
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'  # weekly Monday 07:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'features/routing-modelgateway-non-openai/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-routing-modelgateway-non-openai.yml'
+      - '.github/workflows/_feature-test.yml'
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: routing-modelgateway-non-openai
+    secrets: inherit

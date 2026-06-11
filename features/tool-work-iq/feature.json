@@ -1,0 +1,12 @@
+{
+  "slug": "tool-work-iq",
+  "category": "tools",
+  "name": "Tool \u2014 Work IQ (1P MCP)",
+  "summary": "Microsoft 1P MCP server: Work IQ (Microsoft Graph / work context).",
+  "description": "Skips if WORK_IQ_MCP_URL is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/microsoft-365"
+}

@@ -1,0 +1,21 @@
+name: Feature - tool-fabric-iq
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'  # weekly Monday 07:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'features/tool-fabric-iq/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-tool-fabric-iq.yml'
+      - '.github/workflows/_feature-test.yml'
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: tool-fabric-iq
+    secrets: inherit

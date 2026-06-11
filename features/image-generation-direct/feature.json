@@ -1,0 +1,13 @@
+{
+  "slug": "image-generation-direct",
+  "category": "endpoints",
+  "name": "Image generation \u2014 direct endpoint",
+  "summary": "Direct call to POST /openai/v1/images/generations with a BYOM-prefixed model name.",
+  "description": "Probes whether the images endpoint parses the '{conn}/{model}' prefix as a route hint. Research suggests the model param is required and treated literally, so BYOM is likely inapplicable here. Test documents the actual behavior.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/reference-preview#image-generation",
+  "notes": "Likely fails because the images endpoint does not parse the BYOM prefix. Captured as a gap."
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "responses-direct",
+  "category": "endpoints",
+  "name": "Responses API \u2014 direct (no agent)",
+  "summary": "POST /openai/v1/responses with model='{conn}/{deployment}' and no agent_reference.",
+  "description": "Smoke test that the Responses API surface itself accepts the BYOM prefix when called outside of any agent abstraction. Same gateway routing as Chat Completions.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/how-to/responses",
+  "notes": "Useful as a control for the prompt-agents tests \u2014 isolates whether failures live in the agent layer or the underlying responses endpoint."
+}

@@ -1,0 +1,12 @@
+{
+  "slug": "portal-ui-parity-providers",
+  "category": "infrastructure",
+  "name": "Portal UI parity \u2014 providers",
+  "summary": "Foundry portal's '+ New connection' only creates AzureOpenAI/OpenAI/CognitiveSearch/AzureBlob/AppInsights/ApiKey/CustomKeys/GroundingWithBingSearch.",
+  "description": "ApiManagement and ModelGateway connection categories are code-only (Bicep/CLI). Anthropic, OpenRouter, LiteLLM, and DeepSeek are reachable only through one of those two code-only categories. BYOM connections also do not appear in the Models+endpoints page or the Chat/Agents Playground dropdowns.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "ga",
+  "azure_docs": "https://github.com/microsoft-foundry/foundry-samples",
+  "notes": "Status-only \u2014 documents the UI surface gap."
+}

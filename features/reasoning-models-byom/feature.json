@@ -1,0 +1,13 @@
+{
+  "slug": "reasoning-models-byom",
+  "category": "endpoints",
+  "name": "Reasoning models via BYOM",
+  "summary": "BYOM-routed o3 / o4-mini call with reasoning_effort and max_completion_tokens forwarded.",
+  "description": "Validates that APIM policies forward the reasoning-model-specific parameters (`reasoning_effort`, `max_completion_tokens`). Some APIM policies strip unknown query/body fields, breaking reasoning models silently.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/how-to/reasoning",
+  "notes": "Skips if REASONING_MODEL env var is not set."
+}

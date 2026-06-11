@@ -1,0 +1,13 @@
+{
+  "slug": "routing-modelgateway-non-openai",
+  "category": "routing",
+  "name": "Routing \u2014 ModelGateway, NonOpenAI provider",
+  "summary": "ModelGateway connection (distinct from ApiManagement) fronting an OpenRouter / LiteLLM / DeepSeek backend.",
+  "description": "ModelGateway is a separate ConnectionCategory (string 'ModelGateway'). It requires an explicit modelDiscovery block and supports model.format values OpenAI | Anthropic | NonOpenAI | Deepseek. Skips if AI_GATEWAY_CONNECTION_MODELGATEWAY is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://github.com/microsoft-foundry/foundry-samples/blob/main/infrastructure/.../ModelGateway-Connection-Objects.md",
+  "notes": "ModelGateway supports OAuth2 client_credentials; ApiManagement supports AAD/MI. They are NOT interchangeable connection categories."
+}

@@ -1,0 +1,21 @@
+name: Feature - red-teaming
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'  # weekly Monday 07:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'features/red-teaming/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-red-teaming.yml'
+      - '.github/workflows/_feature-test.yml'
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: red-teaming
+    secrets: inherit

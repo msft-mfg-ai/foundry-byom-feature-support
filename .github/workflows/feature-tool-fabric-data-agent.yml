@@ -1,0 +1,21 @@
+name: Feature - tool-fabric-data-agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'  # weekly Monday 07:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'features/tool-fabric-data-agent/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-tool-fabric-data-agent.yml'
+      - '.github/workflows/_feature-test.yml'
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: tool-fabric-data-agent
+    secrets: inherit

@@ -1,0 +1,13 @@
+{
+  "slug": "tool-computer-use",
+  "category": "tools",
+  "name": "Tool \u2014 Computer use",
+  "summary": "ComputerUseTool with ComputerEnvironment.BROWSER, attached to a BYOM-routed agent.",
+  "description": "Tool drives a sandboxed browser. Model lives on the host agent; BYOM applies normally there.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/computer-use",
+  "notes": "Skips if COMPUTER_USE_ENVIRONMENT is unset."
+}

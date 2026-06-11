@@ -1,0 +1,12 @@
+{
+  "slug": "tool-file-search",
+  "category": "tools",
+  "name": "Tool \u2014 File search",
+  "summary": "FileSearchTool with a pre-uploaded vector store, attached to a BYOM-routed agent.",
+  "description": "Embeddings used by File Search are platform-managed (no BYOM at the embedding layer). Only the agent's orchestrator model is BYOM-routed. Skips if FILE_SEARCH_VECTOR_STORE_ID is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/file-search"
+}

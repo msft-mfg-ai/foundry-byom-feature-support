@@ -1,0 +1,12 @@
+{
+  "slug": "tool-azure-ai-search",
+  "category": "tools",
+  "name": "Tool \u2014 Azure AI Search",
+  "summary": "AzureAISearchTool against a customer-owned search index, attached to a BYOM-routed agent.",
+  "description": "Index-side embeddings are configured at index-build time outside this matrix. Skips if AZURE_AI_SEARCH_CONNECTION_ID or AZURE_AI_SEARCH_INDEX_NAME is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/azure-ai-search"
+}

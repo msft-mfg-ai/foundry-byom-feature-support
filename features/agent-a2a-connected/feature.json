@@ -1,0 +1,13 @@
+{
+  "slug": "agent-a2a-connected",
+  "category": "agents",
+  "name": "Connected agent (A2A)",
+  "summary": "Caller agent that delegates to a remote agent via RemoteA2A connection.",
+  "description": "Creates a caller agent with a RemoteA2A tool / connection pointing at another agent's endpoint. The caller's orchestrator model can be BYOM-routed; the callee is configured independently. Validates that the cross-agent protocol does not strip the BYOM prefix.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/connected-agents",
+  "notes": "Skips with ::warning:: if A2A_REMOTE_AGENT_ENDPOINT is unset."
+}

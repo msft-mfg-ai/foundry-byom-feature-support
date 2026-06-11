@@ -1,0 +1,21 @@
+name: Feature - tool-file-search
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'  # weekly Monday 07:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - 'features/tool-file-search/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-tool-file-search.yml'
+      - '.github/workflows/_feature-test.yml'
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: tool-file-search
+    secrets: inherit

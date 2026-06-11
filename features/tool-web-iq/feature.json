@@ -1,0 +1,12 @@
+{
+  "slug": "tool-web-iq",
+  "category": "tools",
+  "name": "Tool \u2014 Web IQ (1P MCP)",
+  "summary": "Microsoft 1P MCP server: Web IQ (web search/grounding via MCP).",
+  "description": "Skips if WEB_IQ_MCP_URL is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry"
+}

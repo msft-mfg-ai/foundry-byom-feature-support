@@ -1,0 +1,12 @@
+{
+  "slug": "tool-memory",
+  "category": "tools",
+  "name": "Tool \u2014 Memory (status-only)",
+  "summary": "Foundry Memory Stores (MemoryStores=V1Preview opt-in key).",
+  "description": "No public SDK / docs at the time of writing. Tracked here so the matrix surface stays complete.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry",
+  "notes": "Status-only \u2014 no test.py."
+}

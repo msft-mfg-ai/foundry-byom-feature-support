@@ -1,0 +1,12 @@
+{
+  "slug": "private-foundry",
+  "category": "infrastructure",
+  "name": "Private Foundry endpoint",
+  "summary": "Foundry account/project exposed via Private Endpoint (no public network access).",
+  "description": "BYOM features in this matrix are validated against a Foundry project whose data-plane endpoint resolves to a private IP inside the test VNet. Public network access is disabled on the Foundry account.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "ga",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/cognitive-services-virtual-networks",
+  "notes": "Status-only \u2014 validated implicitly by every other feature when CI runs inside the private VNet."
+}

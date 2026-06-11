@@ -1,0 +1,13 @@
+{
+  "slug": "tool-foundry-iq",
+  "category": "tools",
+  "name": "Tool \u2014 Foundry IQ (1P MCP)",
+  "summary": "Microsoft 1P MCP server: Foundry IQ. Attached via MCPTool with AgenticIdentity auth.",
+  "description": "1P MCP endpoint surfacing Foundry knowledge. Skips if FOUNDRY_IQ_MCP_URL is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry",
+  "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."
+}

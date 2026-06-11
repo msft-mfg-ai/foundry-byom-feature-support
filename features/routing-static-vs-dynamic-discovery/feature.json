@@ -1,0 +1,12 @@
+{
+  "slug": "routing-static-vs-dynamic-discovery",
+  "category": "routing",
+  "name": "Routing \u2014 static vs dynamic model discovery",
+  "summary": "Documentation card: the difference between a connection with a static models[] array vs one with a modelDiscovery endpoint.",
+  "description": "Both forms produce identical on-wire behavior \u2014 you still call '{conn}/{model}'. The difference is whether Foundry validates the model name at agent-creation time by inspecting connection metadata (static) or by calling GET {target}{listModelsEndpoint} (dynamic). The functional probes are prompt-agents-{static,dynamic}.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "azure_docs": "https://github.com/microsoft-foundry/foundry-samples",
+  "notes": "Status-only explanatory card."
+}

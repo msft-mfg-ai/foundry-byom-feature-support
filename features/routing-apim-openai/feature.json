@@ -1,0 +1,12 @@
+{
+  "slug": "routing-apim-openai",
+  "category": "routing",
+  "name": "Routing \u2014 APIM fronting Azure OpenAI",
+  "summary": "Baseline: ApiManagement connection where the upstream is an Azure OpenAI deployment.",
+  "description": "The 'happy path' for BYOM \u2014 APIM connection with the standard /deployments discovery, fronting one or more AOAI accounts. This is the shape every other agents/tools test in this matrix implicitly depends on.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/concepts/connections",
+  "notes": "Status-only roll-up card; the prompt-agents tests are the actual functional probes for this routing shape."
+}

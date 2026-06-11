@@ -1,10 +1,26 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import FeatureCard from '../components/FeatureCard.astro';
-import { loadFeatures } from '../data/features.ts';
+import { execSync } from 'node:child_process';
+import { loadFeatures, CATEGORY_ORDER, CATEGORY_LABEL, CATEGORY_DESCRIPTION, type Category } from '../data/features.ts';
+
+function detectRepoUrl(): string {
+  if (process.env.REPO_URL) return process.env.REPO_URL;
+  if (process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY) {
+    return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
+  }
+  try {
+    const url = execSync('git remote get-url origin', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
+    const m = url.match(/github\.com[:/](.+?)(?:\.git)?$/);
+    if (m) return `https://github.com/${m[1]}`;
+  } catch {}
+  return 'https://github.com/YOUR-ORG/byom-feature-support';
+}
 
 const features = loadFeatures();
-const repo = process.env.REPO_URL || 'https://github.com/YOUR-ORG/byom-feature-support';
+const repo = detectRepoUrl();
 
 const counts = features.reduce(
   (acc, f) => ({ ...acc, [f.support_status]: (acc[f.support_status] || 0) + 1 }),
@@ -15,12 +31,22 @@ const supported = counts['supported'] || 0;
 const partial = counts['partial'] || 0;
 const notSupported = counts['not_supported'] || 0;
 const notConfirmed = counts['not_confirmed'] || 0;
+
+const byCategory: Record<Category, typeof features> = {
+  agents: [],
+  endpoints: [],
+  routing: [],
+  tools: [],
+  quality: [],
+  infrastructure: [],
+};
+for (const f of features) byCategory[f.category].push(f);
 ---
 <Layout>
   <main class="min-h-screen">
     <header class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-brand-900 to-brand-700 text-white">
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 24px 24px;"></div>
-      <div class="relative mx-auto max-w-6xl px-6 py-16 sm:py-24">
+      <div class="relative mx-auto max-w-6xl px-6 pt-16 pb-12 sm:pt-24 sm:pb-16">
         <p class="text-sm font-semibold uppercase tracking-widest text-brand-200">Azure AI Foundry · APIM Gateway</p>
         <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">BYOM Feature Support</h1>
         <p class="mt-4 max-w-2xl text-lg text-brand-100">
@@ -35,7 +61,7 @@ const notConfirmed = counts['not_confirmed'] || 0;
       </div>
     </header>
 
-    <section class="mx-auto -mt-10 max-w-6xl px-6">
+    <section class="mx-auto max-w-6xl px-6 pt-8">
       <div class="grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-lg ring-1 ring-slate-200 sm:grid-cols-5">
         <div class="rounded-xl bg-slate-50 p-4 text-center">
           <div class="text-2xl font-bold text-slate-900">{total}</div>
@@ -65,8 +91,18 @@ const notConfirmed = counts['not_confirmed'] || 0;
         <h2 class="text-2xl font-bold tracking-tight text-slate-900">Features</h2>
         <p class="text-sm text-slate-500">Click a card to expand the description, code sample and workflow links.</p>
       </div>
-      <div class="space-y-4">
-        {features.map((f) => <FeatureCard feature={f} repo={repo} />)}
+      <div class="space-y-12">
+        {CATEGORY_ORDER.filter((c) => byCategory[c].length > 0).map((cat) => (
+          <div>
+            <div class="mb-4 border-b border-slate-200 pb-2">
+              <h3 class="text-lg font-semibold text-slate-900">{CATEGORY_LABEL[cat]}</h3>
+              <p class="mt-1 text-sm text-slate-500">{CATEGORY_DESCRIPTION[cat]}</p>
+            </div>
+            <div class="space-y-4">
+              {byCategory[cat].map((f) => <FeatureCard feature={f} repo={repo} />)}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
 

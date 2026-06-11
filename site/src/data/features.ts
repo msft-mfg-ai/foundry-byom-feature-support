@@ -1,9 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+
+export type Category =
+  | 'agents'
+  | 'endpoints'
+  | 'routing'
+  | 'tools'
+  | 'quality'
+  | 'infrastructure';
 
 export interface Feature {
   slug: string;
+  /** Visual grouping on the matrix page. */
+  category: Category;
   name: string;
   summary: string;
   description: string;
@@ -12,14 +21,35 @@ export interface Feature {
   support_status: 'supported' | 'not_supported' | 'partial' | 'not_confirmed';
   /** ga | preview | in_progress | not_confirmed */
   implementation_status: 'ga' | 'preview' | 'in_progress' | 'not_confirmed';
-  test_file: string;
+  /** Optional. Status-only features (e.g. infra prerequisites) omit this. */
+  test_file?: string;
   azure_docs?: string;
   notes?: string;
-  test_source: string;
+  /** null when the feature has no test_file (status-only card). */
+  test_source: string | null;
 }
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const featuresDir = path.resolve(__dirname, '../../../features');
+export const CATEGORY_ORDER: Category[] = ['agents', 'endpoints', 'routing', 'tools', 'quality', 'infrastructure'];
+
+export const CATEGORY_LABEL: Record<Category, string> = {
+  agents: 'Agents',
+  endpoints: 'Direct API endpoints',
+  routing: 'Routing & providers',
+  tools: 'Agent tools',
+  quality: 'Quality & safety',
+  infrastructure: 'Infrastructure & publishing',
+};
+
+export const CATEGORY_DESCRIPTION: Record<Category, string> = {
+  agents: 'Features where the BYOM `{connection}/{deployment}` prefix is passed directly as the model parameter.',
+  endpoints: 'Raw OpenAI-compatible (and adjacent) endpoints exposed by the Foundry account. Some accept the BYOM prefix; many are platform-native and do not.',
+  routing: 'Different connection shapes and upstream providers the gateway can front: APIM vs ModelGateway, OpenAI vs Anthropic vs catalog, static vs dynamic model discovery.',
+  tools: 'Tools that run inside a Prompt Agent. The tool itself has no model parameter — BYOM applies to the host agent\'s orchestrator model.',
+  quality: 'Evaluations and red-teaming pipelines. Some of these take their own judge/target model parameters.',
+  infrastructure: 'Infrastructure prerequisites, portal-UI parity gaps, and publishing surfaces. Mostly status-only cards.',
+};
+
+const featuresDir = path.resolve(process.cwd(), '../features');
 
 export function loadFeatures(): Feature[] {
   const slugs = fs
@@ -31,8 +61,10 @@ export function loadFeatures(): Feature[] {
   return slugs.map((slug) => {
     const dir = path.join(featuresDir, slug);
     const meta = JSON.parse(fs.readFileSync(path.join(dir, 'feature.json'), 'utf8')) as Omit<Feature, 'test_source'>;
-    const testPath = path.join(dir, meta.test_file);
-    const test_source = fs.readFileSync(testPath, 'utf8');
+    let test_source: string | null = null;
+    if (meta.test_file) {
+      test_source = fs.readFileSync(path.join(dir, meta.test_file), 'utf8');
+    }
     return { ...meta, test_source };
   });
 }

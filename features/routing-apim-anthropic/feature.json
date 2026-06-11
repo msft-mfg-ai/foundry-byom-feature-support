@@ -1,0 +1,13 @@
+{
+  "slug": "routing-apim-anthropic",
+  "category": "routing",
+  "name": "Routing \u2014 APIM fronting Anthropic",
+  "summary": "ApiManagement connection where the upstream is Anthropic's Messages API translated by an APIM policy.",
+  "description": "Confirmed working via local notebook + foundry-samples APIM test script. Uses '{anthropic-apim-conn}/claude-opus-4-6' as the model prefix in a PromptAgentDefinition. Skips if AI_GATEWAY_CONNECTION_ANTHROPIC is unset.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://github.com/microsoft-foundry/foundry-samples",
+  "notes": "Requires APIM with a policy that translates OpenAI chat-completions \u2192 Anthropic Messages. See options-infra/ai-gateway-anthropic/ for a Bicep template."
+}

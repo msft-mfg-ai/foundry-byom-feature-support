@@ -16,9 +16,9 @@ const implBadge: Record<Feature['implementation_status'], { label: string; cls: 
 };
 const s = supportBadge[feature.support_status];
 const i = implBadge[feature.implementation_status];
-const workflowUrl = `${repo}/actions/workflows/feature-${feature.slug}.yml`;
-const sourceUrl = `${repo}/blob/main/features/${feature.slug}/${feature.test_file}`;
-const badgeUrl = `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.svg`;
+const workflowUrl = feature.test_file ? `${repo}/actions/workflows/feature-${feature.slug}.yml` : null;
+const sourceUrl = feature.test_file ? `${repo}/blob/main/features/${feature.slug}/${feature.test_file}` : null;
+const badgeUrl = feature.test_file ? `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.svg` : null;
 ---
 <details id={feature.slug} class="group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md open:shadow-md">
   <summary class="cursor-pointer list-none p-6">
@@ -35,9 +35,11 @@ const badgeUrl = `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.sv
       </div>
       <div class="flex shrink-0 items-center gap-3 text-xs text-slate-500">
         <span class="hidden sm:inline">PM: <span class="font-medium text-slate-700">{feature.pm}</span></span>
-        <a href={workflowUrl} class="inline-block" target="_blank" rel="noopener">
-          <img src={badgeUrl} alt={`${feature.name} workflow status`} class="h-5" />
-        </a>
+        {badgeUrl && workflowUrl && (
+          <a href={workflowUrl} class="inline-block" target="_blank" rel="noopener">
+            <img src={badgeUrl} alt="" width="90" height="20" class="h-5 w-[90px]" loading="lazy" onerror="this.style.display='none'" />
+          </a>
+        )}
         <svg class="h-5 w-5 transition-transform group-open:rotate-180 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
       </div>
     </div>
@@ -62,8 +64,8 @@ const badgeUrl = `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.sv
         <div>
           <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">Links</div>
           <ul class="mt-1 space-y-1">
-            <li><a class="text-brand-700 hover:underline" href={sourceUrl} target="_blank" rel="noopener">Test source ↗</a></li>
-            <li><a class="text-brand-700 hover:underline" href={workflowUrl} target="_blank" rel="noopener">GitHub Action ↗</a></li>
+            {sourceUrl && <li><a class="text-brand-700 hover:underline" href={sourceUrl} target="_blank" rel="noopener">Test source ↗</a></li>}
+            {workflowUrl && <li><a class="text-brand-700 hover:underline" href={workflowUrl} target="_blank" rel="noopener">GitHub Action ↗</a></li>}
             {feature.azure_docs && <li><a class="text-brand-700 hover:underline" href={feature.azure_docs} target="_blank" rel="noopener">Azure docs ↗</a></li>}
           </ul>
         </div>
@@ -71,11 +73,15 @@ const badgeUrl = `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.sv
     </div>
 
     <div class="mt-6">
-      <div class="mb-2 flex items-center justify-between">
-        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Code sample</h4>
-        <a href={sourceUrl} class="text-xs text-brand-700 hover:underline" target="_blank" rel="noopener">View on GitHub</a>
-      </div>
-      <pre class="overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100 ring-1 ring-slate-800"><code>{feature.test_source}</code></pre>
+      {feature.test_source && sourceUrl && (
+        <>
+          <div class="mb-2 flex items-center justify-between">
+            <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Code sample</h4>
+            <a href={sourceUrl} class="text-xs text-brand-700 hover:underline" target="_blank" rel="noopener">View on GitHub</a>
+          </div>
+          <pre class="overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100 ring-1 ring-slate-800"><code>{feature.test_source}</code></pre>
+        </>
+      )}
     </div>
   </div>
 </details>

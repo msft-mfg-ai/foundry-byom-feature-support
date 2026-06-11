@@ -1,0 +1,12 @@
+{
+  "slug": "tool-web-search",
+  "category": "tools",
+  "name": "Tool \u2014 Web search (Bing grounding)",
+  "summary": "BingGroundingTool / WebSearchTool inside a Prompt Agent whose orchestrator model is BYOM-routed.",
+  "description": "Tool has no model param of its own; BYOM applies only to the host agent's orchestrator. Skips if BING_CONNECTION_ID is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/bing-grounding"
+}

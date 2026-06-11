@@ -1,0 +1,12 @@
+{
+  "slug": "publish-to-teams",
+  "category": "infrastructure",
+  "name": "Publish to Teams",
+  "summary": "Publishing a BYOM-routed Prompt Agent as a Microsoft Teams app.",
+  "description": "Validates that the publish flow accepts an agent whose model is BYOM-routed. Known hard limitation: SharePoint OBO tool does NOT work when the agent is published to Teams.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/publish-to-teams",
+  "notes": "Status-only \u2014 manual verification; no scripted test."
+}

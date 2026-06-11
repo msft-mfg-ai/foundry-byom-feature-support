@@ -1,0 +1,12 @@
+{
+  "slug": "tool-mcp-entra-agent",
+  "category": "tools",
+  "name": "Tool \u2014 MCP with agent Entra identity",
+  "summary": "MCPTool with authType='AgenticIdentity' bound to the agent's own identity rather than the project's.",
+  "description": "Per-agent managed identity for tighter scoping. Skips if MCP_SERVER_URL_AGENT_IDENTITY is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/mcp"
+}

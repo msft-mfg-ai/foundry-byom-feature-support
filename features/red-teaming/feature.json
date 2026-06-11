@@ -1,0 +1,12 @@
+{
+  "slug": "red-teaming",
+  "category": "quality",
+  "name": "Red teaming",
+  "summary": "azure-ai-evaluation RedTeam: attacker/scorer are Microsoft-managed; only the TARGET model accepts BYOM.",
+  "description": "Smoke test that pointing the target at a BYOM-prefixed deployment routes adversarial probes through the gateway. Skips if RED_TEAM_TARGET_MODEL is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/how-to/develop/run-scans-ai-red-teaming-agent"
+}

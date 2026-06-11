@@ -1,0 +1,13 @@
+{
+  "slug": "routing-serverless-catalog",
+  "category": "routing",
+  "name": "Routing \u2014 Serverless catalog model",
+  "summary": "Serverless connection (Phi, Mistral, Llama, etc. served by Foundry's catalog). Uses '{conn}/{model}' prefix but is NOT BYOM.",
+  "description": "Important to distinguish: the prefix shape is identical to BYOM but the upstream is Foundry-hosted, not customer-hosted. This card exists so the matrix doesn't conflate the two.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/concepts/foundry-models-overview",
+  "notes": "Skips if AI_GATEWAY_CONNECTION_SERVERLESS or SERVERLESS_MODEL is unset."
+}

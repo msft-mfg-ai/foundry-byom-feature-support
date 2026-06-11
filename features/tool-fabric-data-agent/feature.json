@@ -1,0 +1,12 @@
+{
+  "slug": "tool-fabric-data-agent",
+  "category": "tools",
+  "name": "Tool \u2014 Fabric Data Agent (OBO)",
+  "summary": "MicrosoftFabricPreviewTool with OBO, attached to a BYOM-routed agent.",
+  "description": "Microsoft Fabric data exploration via OBO. Skips if FABRIC_CONNECTION_ID is unset.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/fabric"
+}

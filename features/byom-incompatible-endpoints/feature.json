@@ -1,0 +1,12 @@
+{
+  "slug": "byom-incompatible-endpoints",
+  "category": "infrastructure",
+  "name": "BYOM-incompatible endpoints (rollup)",
+  "summary": "Endpoints whose model parameter is NOT routed through gateway connections: embeddings, TTS, STT, fine-tuning, batch, realtime (WebSocket).",
+  "description": "These endpoints take a model name that maps to an Azure OpenAI deployment on the Foundry account itself. There is no documented way to BYOM-route them. Rollup card so each one doesn't need its own status-only entry.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "ga",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/reference-preview",
+  "notes": "Status-only. If any of these gain BYOM support in the future, split into individual cards."
+}
