@@ -13,6 +13,10 @@ on:
       - '.github/workflows/feature-agent-a2a-connected.yml'
       - '.github/workflows/_feature-test.yml'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   run:
     uses: ./.github/workflows/_feature-test.yml

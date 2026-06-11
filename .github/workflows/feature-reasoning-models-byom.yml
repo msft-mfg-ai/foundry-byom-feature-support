@@ -13,6 +13,10 @@ on:
       - '.github/workflows/feature-reasoning-models-byom.yml'
       - '.github/workflows/_feature-test.yml'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   run:
     uses: ./.github/workflows/_feature-test.yml
