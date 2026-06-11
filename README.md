@@ -1,115 +1,70 @@
-# BYOM Feature Support
+<div align="center">
 
-Live support matrix for **bring-your-own-model** features when calling Azure AI Foundry projects backed by an **APIM AI Gateway** connection, run against a **private-networked** Foundry + APIM environment.
+# 🚀 BYOM Feature Support Matrix
 
-The matrix lives at: `https://<org>.github.io/byom-feature-support/` (publish via GitHub Pages).
+### Live support tracker for **Bring-Your-Own-Model** features in Azure AI Foundry behind an **APIM AI Gateway**
 
-## What the matrix covers
+<br>
 
-The matrix is grouped into 6 categories on the site:
+# 👉 [**Open the live matrix**](https://msft-mfg-ai.github.io/foundry-byom-feature-support/) 👈
 
-| Category | Cards | Highlights |
-| --- | --- | --- |
-| **Agents** (5) | `prompt-agents-static`, `prompt-agents-dynamic`, `hosted-agents-static`, `hosted-agents-dynamic`, `agent-a2a-connected` | `PromptAgentDefinition(model="{conn}/{deployment}")` invoked through the Responses API with `extra_body.agent_reference`. |
-| **Direct API endpoints** (5) | `image-generation-direct`, `image-generation-tool`, `llm-translation`, `reasoning-models-byom`, `responses-direct` | Probes whether non-agent endpoints (image gen, translator with `deploymentName`, reasoning param forwarding, raw Responses) parse the BYOM prefix. |
-| **Routing & providers** (5) | `routing-apim-openai`, `routing-apim-anthropic`, `routing-modelgateway-non-openai`, `routing-serverless-catalog`, `routing-static-vs-dynamic-discovery` | The different connection categories: `ApiManagement` vs `ModelGateway` vs `Serverless`, and providers fronted by each (AOAI, Anthropic, OpenRouter/LiteLLM/DeepSeek, Foundry catalog). |
-| **Agent tools** (17) | web search, code interpreter, file search, Azure AI Search, SharePoint OBO, Fabric, A2A, MCP (Entra project / Entra agent / OAuth passthrough), 1P MCP (Foundry IQ / Work IQ / Web IQ / Fabric IQ), Logic Apps, computer use, memory | Each tool is attached to a Prompt Agent whose orchestrator model is BYOM-routed. The tool itself has no model param. |
-| **Quality & safety** (2) | `evaluations`, `red-teaming` | Tests whether judge / target models accept the BYOM prefix. |
-| **Infrastructure & publishing** (6) | `private-foundry`, `private-apim`, `publish-to-teams`, `portal-ui-parity-providers`, `sdk-enum-coverage`, `byom-incompatible-endpoints` | Mostly status-only cards documenting infra prerequisites and known gaps. |
+### https://msft-mfg-ai.github.io/foundry-byom-feature-support/
 
-Total: 40 cards (31 with an automated test, 9 status-only).
+<br>
 
-## Officially supported agent tools
+[![Deploy site](https://github.com/msft-mfg-ai/foundry-byom-feature-support/actions/workflows/deploy-site.yml/badge.svg)](https://github.com/msft-mfg-ai/foundry-byom-feature-support/actions/workflows/deploy-site.yml)
+[![BYOM AI Gateway docs](https://img.shields.io/badge/docs-AI%20Gateway-blue?logo=microsoftazure)](https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal)
+[![Azure AI Foundry](https://img.shields.io/badge/Azure-AI%20Foundry-0078d4?logo=microsoft)](https://learn.microsoft.com/azure/ai-foundry/)
+[![Built with Astro](https://img.shields.io/badge/Built%20with-Astro-bc52ee?logo=astro&logoColor=white)](https://astro.build)
 
-Per the [official BYOM docs](https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations), the supported agent tools for BYOM are:
+</div>
 
-> **Code Interpreter, Functions, File Search, OpenAPI, Foundry IQ, SharePoint Grounding, Fabric Data Agent, MCP, and Browser Automation.**
+> [!IMPORTANT]
+> The live site is the source of truth. Every card has its current support status, a runnable test, a link to the Microsoft Learn doc for that exact feature, and a direct link to a Microsoft sample.
 
-Tools in the matrix outside that list (Bing Web Search, Azure AI Search, A2A, Logic Apps, Work IQ, Web IQ, Fabric IQ, Memory) are tracked as `not_supported` until they appear on the official list. Web Search is `partial` with a documented 2nd-call regression.
+---
 
-## How it works
+## 🤔 What is this repo for?
 
-```
-site/                     Astro + Tailwind static site (GitHub Pages)
-features/<slug>/          One folder per feature
-  feature.json            Metadata: name, description, PM, support status, impl status
-  test.py                 (Optional) self-contained, runnable test script
-features/_shared.py       Shared client builder + `gateway_model(model, kind=...)` helper
-.github/workflows/
-  feature-<slug>.yml      One workflow per feature with a test.py
-  _feature-test.yml       Reusable workflow (auth + uv setup)
-  deploy-site.yml         Builds the Astro site and deploys to GitHub Pages
-```
+This is the **source** for the matrix site — the per-feature tests, GitHub Actions workflows, and the Astro site itself. You only need to clone it if you want to:
 
-Status-only features (no `test_file` in `feature.json`) render as cards on the site but have no workflow. The site reads `features/*/feature.json` + `features/*/test.py` at build time, so the code samples are always in sync with what the workflows actually run.
+- 🧪 **Run a feature test locally** against your own Foundry + APIM environment
+- ➕ **Add a new feature card** to the matrix
+- 🐛 **Fix a bug** in a test or the site
 
-## Status taxonomy
+For everything else: just [**open the live matrix**](https://msft-mfg-ai.github.io/foundry-byom-feature-support/).
 
-| Field | Values |
-| --- | --- |
-| `support_status` | `supported`, `partial`, `not_supported`, `not_confirmed` |
-| `implementation_status` | `ga`, `preview`, `in_progress`, `not_confirmed`, `tbd` (use `tbd` whenever `support_status` is `not_supported` **or** `not_confirmed` — if we haven't verified the BYOM behavior, we don't actually know how engineering is tracking the underlying feature either) |
-
-## GitHub environment
-
-Each feature workflow consumes a GitHub Environment (`byom` by default) containing:
-
-**Secrets** (used by `azure/login@v2` OIDC):
-- `AZURE_CLIENT_ID`
-- `AZURE_TENANT_ID`
-- `AZURE_SUBSCRIPTION_ID`
-
-**Variables** (each test skips cleanly with `::warning::` if its specific vars are unset):
-
-- **Always needed:** `PROJECT_ENDPOINT`, `CHAT_MODEL`
-- **Gateway connections:** `AI_GATEWAY_CONNECTION_{STATIC,DYNAMIC,ANTHROPIC,MODELGATEWAY,SERVERLESS}`
-- **Provider models:** `ANTHROPIC_MODEL`, `MODELGATEWAY_MODEL`, `SERVERLESS_MODEL`, `REASONING_MODEL`, `IMAGE_MODEL`
-- **Pre-deployed agents:** `PROMPT_AGENT_NAME_{STATIC,DYNAMIC}`, `HOSTED_AGENT_NAME_{STATIC,DYNAMIC}`
-- **Tool connections:** `BING_CONNECTION_ID`, `FILE_SEARCH_VECTOR_STORE_ID`, `AZURE_AI_SEARCH_{CONNECTION_ID,INDEX_NAME}`, `SHAREPOINT_CONNECTION_ID`, `FABRIC_CONNECTION_ID`, `A2A_REMOTE_AGENT_ENDPOINT`, `LOGIC_APP_{RESOURCE_ID,WORKFLOW_NAME}`, `COMPUTER_USE_ENVIRONMENT`, `IMAGE_DEPLOYMENT_NAME`
-- **MCP servers:** `MCP_SERVER_URL`, `MCP_SERVER_URL_AGENT_IDENTITY`, `MCP_SERVER_URL_OAUTH`, `FOUNDRY_IQ_MCP_URL`, `WORK_IQ_MCP_URL`, `WEB_IQ_MCP_URL`, `FABRIC_IQ_MCP_URL`
-- **Quality / safety:** `EVAL_JUDGE_MODEL`, `RED_TEAM_TARGET_MODEL`
-- **Translator (account-level):** `FOUNDRY_ACCOUNT_ENDPOINT`, `FOUNDRY_REGION`
-
-See `.env.example` for the full list with example values.
-
-The OIDC service principal must have the `Azure AI User` role on the Foundry project.
-
-### Private-networked runners
-
-Because the matrix runs against private endpoints, the GitHub-hosted `ubuntu-latest` runner cannot reach them. Call each feature workflow with a self-hosted runner label that has line-of-sight to the private VNet by overriding the reusable workflow input, for example:
-
-```yaml
-jobs:
-  run:
-    uses: ./.github/workflows/_feature-test.yml
-    with:
-      feature: prompt-agents-static
-      runner: self-hosted   # or your own label
-    secrets: inherit
-```
-
-## Running locally
+## 💻 Running a feature test locally
 
 ```bash
 uv sync
 cp .env.example .env   # then fill in your values
 az login
-uv run python features/prompt-agents-static/test.py
+uv run python features/<feature-slug>/test.py
 ```
 
-You need to be on a network that can resolve the private Foundry + APIM endpoints (VPN, jump host, etc.).
+You need a network path to the private Foundry + APIM endpoints (VPN, jump host, self-hosted runner, etc.). See [`.env.example`](.env.example) for the full list of variables and the `byom` GitHub Environment for how CI consumes them via OIDC.
 
-## Building the site locally
-
-```bash
-cd site
-npm install
-npm run dev
-```
-
-## Adding a new feature
+## ➕ Adding a new feature card
 
 1. `mkdir features/<slug>`
-2. Add `features/<slug>/feature.json`. Add `test.py` if the feature has an automated test; omit `test_file` from the JSON for a status-only card.
-3. If you added a `test.py`, copy `.github/workflows/feature-prompt-agents-static.yml` to `feature-<slug>.yml` and update the `paths:` filter and the `with.feature:` input.
-4. Push — the site rebuilds automatically and the new card appears.
+2. Add `features/<slug>/feature.json` — include `azure_docs` + `sample_url` whenever possible. Add `test.py` if the feature has an automated test; omit `test_file` for a status-only card.
+3. If you added a `test.py`, copy `.github/workflows/feature-prompt-agents-static.yml` to `feature-<slug>.yml`, update `paths:` and `with.feature:`.
+4. Push — the site rebuilds and the new card appears automatically.
+
+### Status taxonomy
+
+| Field | Meaning |
+| --- | --- |
+| `support_status` ∈ `supported · partial · not_supported · not_confirmed` | Did **we** verify the BYOM behavior end-to-end? |
+| `implementation_status` ∈ `ga · preview · in_progress · not_confirmed · tbd` | How is **engineering** tracking the underlying feature? |
+
+> **Rule:** when `support_status ∈ { not_supported, not_confirmed }`, set `implementation_status = tbd`. If we haven't verified BYOM, we don't honestly know the underlying maturity either.
+
+---
+
+<div align="center">
+
+**👉 [Open the live matrix](https://msft-mfg-ai.github.io/foundry-byom-feature-support/) 👈**
+
+</div>
