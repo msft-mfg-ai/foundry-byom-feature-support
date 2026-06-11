@@ -5,8 +5,8 @@
   "summary": "MCPTool with authType='AgenticIdentity' (project identity) on a BYOM-routed agent.",
   "description": "Project's managed identity is used to authenticate to the MCP server. Skips if MCP_SERVER_URL is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/mcp"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
 }

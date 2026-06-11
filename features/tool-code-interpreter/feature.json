@@ -5,8 +5,8 @@
   "summary": "CodeInterpreterTool inside a Prompt Agent whose orchestrator is BYOM-routed.",
   "description": "Sandboxed Python execution. No model param on the tool itself.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/code-interpreter"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway"
 }

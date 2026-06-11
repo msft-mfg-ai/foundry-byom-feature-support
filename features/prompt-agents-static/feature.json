@@ -5,9 +5,9 @@
   "summary": "Foundry Prompt Agent (PromptAgentDefinition) created with model routed through the static APIM AI Gateway connection.",
   "description": "Creates an agent version with PromptAgentDefinition(model='{static-gateway-connection}/{deployment}') and invokes it via the Responses API using extra_body.agent_reference. Verifies that BYOM models routed through a static (single backend) APIM connection work end-to-end as a v2 agent.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/concepts/agents",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Requires AI_GATEWAY_CONNECTION_STATIC to point at an ApiManagement connection on the Foundry project."
 }

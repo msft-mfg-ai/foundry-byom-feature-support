@@ -1,0 +1,13 @@
+{
+  "slug": "tool-openapi",
+  "category": "tools",
+  "name": "Tool \u2014 OpenAPI",
+  "summary": "OpenApiTool: pass an OpenAPI 3.x spec so the agent can call any HTTP API as a tool.",
+  "description": "On the official supported-tools list. Skips if OPENAPI_SPEC_PATH is unset; loads the spec from disk (a simple petstore.json works) and attaches it via OpenApiTool. Orchestrator model is BYOM-routed.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": ""
+}

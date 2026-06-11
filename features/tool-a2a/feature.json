@@ -5,8 +5,9 @@
   "summary": "A2APreviewTool: invoke another Foundry agent as a tool from a BYOM-routed caller.",
   "description": "Different surface from connected-agents; A2A is the tool-shaped wrapper around another agent endpoint. Skips if A2A_REMOTE_AGENT_ENDPOINT is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/connected-agents"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Not in the official supported-tools list."
 }

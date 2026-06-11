@@ -5,8 +5,9 @@
   "summary": "Microsoft 1P MCP server: Fabric IQ.",
   "description": "Skips if FABRIC_IQ_MCP_URL is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Not in the official supported-tools list (only Foundry IQ is listed among the 1P MCP servers)."
 }

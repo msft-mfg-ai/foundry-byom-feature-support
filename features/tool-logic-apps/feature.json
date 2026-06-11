@@ -5,8 +5,9 @@
   "summary": "AzureStandardLogicAppTool: invoke an Azure Logic App workflow from a BYOM-routed agent.",
   "description": "Skips if LOGIC_APP_RESOURCE_ID or LOGIC_APP_WORKFLOW_NAME is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/logic-apps"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Not in the official supported-tools list."
 }

@@ -5,8 +5,9 @@
   "summary": "BingGroundingTool / WebSearchTool inside a Prompt Agent whose orchestrator model is BYOM-routed.",
   "description": "Tool has no model param of its own; BYOM applies only to the host agent's orchestrator. Skips if BING_CONNECTION_ID is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "partial",
   "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/bing-grounding"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Known bug: first invocation succeeds, every subsequent web-search call in the same agent fails. See test.py for the repro."
 }

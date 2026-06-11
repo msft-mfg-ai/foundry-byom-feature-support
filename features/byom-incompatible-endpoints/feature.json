@@ -7,6 +7,6 @@
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/reference-preview",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Status-only. If any of these gain BYOM support in the future, split into individual cards."
 }

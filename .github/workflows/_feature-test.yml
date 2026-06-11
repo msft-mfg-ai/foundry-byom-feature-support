@@ -80,6 +80,7 @@ jobs:
           LOGIC_APP_WORKFLOW_NAME: ${{ vars.LOGIC_APP_WORKFLOW_NAME }}
           COMPUTER_USE_ENVIRONMENT: ${{ vars.COMPUTER_USE_ENVIRONMENT }}
           IMAGE_DEPLOYMENT_NAME: ${{ vars.IMAGE_DEPLOYMENT_NAME }}
+          OPENAPI_SPEC_PATH: ${{ vars.OPENAPI_SPEC_PATH }}
           # ---- MCP servers ----
           MCP_SERVER_URL: ${{ vars.MCP_SERVER_URL }}
           MCP_SERVER_URL_AGENT_IDENTITY: ${{ vars.MCP_SERVER_URL_AGENT_IDENTITY }}

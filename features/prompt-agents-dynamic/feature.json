@@ -5,9 +5,9 @@
   "summary": "Foundry Prompt Agent routed through an APIM connection that resolves models via runtime discovery.",
   "description": "Same call path as the static variant but the APIM connection is configured with a modelDiscovery block, so Foundry calls GET {target}{listModelsEndpoint} at agent-creation time to validate the model. The on-wire call still uses the '{conn}/{model}' prefix.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/concepts/connections",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Requires AI_GATEWAY_CONNECTION_DYNAMIC to point at an ApiManagement connection with dynamic model discovery enabled."
 }

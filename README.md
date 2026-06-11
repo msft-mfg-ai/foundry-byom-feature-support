@@ -19,6 +19,14 @@ The matrix is grouped into 6 categories on the site:
 
 Total: 40 cards (31 with an automated test, 9 status-only).
 
+## Officially supported agent tools
+
+Per the [official BYOM docs](https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations), the supported agent tools for BYOM are:
+
+> **Code Interpreter, Functions, File Search, OpenAPI, Foundry IQ, SharePoint Grounding, Fabric Data Agent, MCP, and Browser Automation.**
+
+Tools in the matrix outside that list (Bing Web Search, Azure AI Search, A2A, Logic Apps, Work IQ, Web IQ, Fabric IQ, Memory) are tracked as `not_supported` until they appear on the official list. Web Search is `partial` with a documented 2nd-call regression.
+
 ## How it works
 
 ```

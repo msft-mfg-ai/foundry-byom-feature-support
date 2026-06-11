@@ -5,8 +5,8 @@
   "summary": "APIM (AI Gateway) instance exposed via Private Endpoint.",
   "description": "BYOM call paths terminate on a private APIM endpoint. Validates that DNS resolution and TLS still work when both Foundry and APIM are private.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "supported",
   "implementation_status": "ga",
-  "azure_docs": "https://learn.microsoft.com/azure/api-management/api-management-howto-integrate-internal-vnet-appgateway",
-  "notes": "Status-only."
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": "Status-only. Confirmed working end-to-end."
 }

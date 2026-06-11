@@ -1,0 +1,13 @@
+{
+  "slug": "tool-functions",
+  "category": "tools",
+  "name": "Tool \u2014 Functions (custom)",
+  "summary": "FunctionTool with a client-side Python callable, attached to a BYOM-routed agent.",
+  "description": "On the official supported-tools list. The agent declares a tool function via JSON schema; the SDK matches model tool-calls to the local callable and returns the result. Orchestrator model is BYOM-routed.",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "ga",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
+  "notes": ""
+}

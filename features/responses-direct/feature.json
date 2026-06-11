@@ -5,9 +5,9 @@
   "summary": "POST /openai/v1/responses with model='{conn}/{deployment}' and no agent_reference.",
   "description": "Smoke test that the Responses API surface itself accepts the BYOM prefix when called outside of any agent abstraction. Same gateway routing as Chat Completions.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "preview",
+  "support_status": "supported",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/ai-services/openai/how-to/responses",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
   "notes": "Useful as a control for the prompt-agents tests \u2014 isolates whether failures live in the agent layer or the underlying responses endpoint."
 }
