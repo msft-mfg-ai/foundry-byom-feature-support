@@ -1,12 +1,12 @@
 """A2A tool via BYOM-routed Prompt Agent.
 
-Self-contained: spins up a small remote Prompt Agent when
-A2A_REMOTE_AGENT_ENDPOINT isn't set.
+Requires either A2A_PROJECT_CONNECTION_ID (an A2A connection registered
+in the Foundry project) or A2A_ENDPOINT (external A2A server URL).
+Skips cleanly when neither is set.
 """
 import os
 
 import pytest
-from azure.ai.projects.models import PromptAgentDefinition
 
 from _shared import invoke_agent, make_prompt_agent_with_tools
 
@@ -16,22 +16,19 @@ from _shared import invoke_agent, make_prompt_agent_with_tools
 def test_tool_a2a(project, aoai, cfg, static_model, unique_agent_name):
     from azure.ai.projects.models import A2APreviewTool
 
-    endpoint = os.environ.get("A2A_REMOTE_AGENT_ENDPOINT")
-    if not endpoint:
-        remote = project.agents.create_version(
-            agent_name=unique_agent_name("byom-a2a-remote-tool"),
-            definition=PromptAgentDefinition(
-                model=static_model(),
-                instructions="Reply with one short sentence.",
-                tools=[],
-            ),
-        )
-        endpoint = f"{cfg.project_endpoint.rstrip('/')}/agents/{remote.name}"
+    conn_id = os.environ.get("A2A_PROJECT_CONNECTION_ID")
+    endpoint = os.environ.get("A2A_ENDPOINT")
+    if not conn_id and not endpoint:
+        pytest.skip("A2A_PROJECT_CONNECTION_ID or A2A_ENDPOINT must be set")
+
+    tool = A2APreviewTool(project_connection_id=conn_id) if conn_id else A2APreviewTool()
+    if endpoint:
+        tool.base_url = endpoint
 
     agent = make_prompt_agent_with_tools(
         project,
         unique_agent_name("byom-tool-a2a"),
-        [A2APreviewTool(endpoint=endpoint)],
+        [tool],
         instructions="You are a concise assistant. Reply in one short sentence.",
         cfg=cfg,
     )
@@ -39,3 +36,4 @@ def test_tool_a2a(project, aoai, cfg, static_model, unique_agent_name):
 
     resp = invoke_agent(aoai, agent, "Delegate a one-sentence summary task to the remote agent.")
     assert resp.output_text and resp.output_text.strip()
+

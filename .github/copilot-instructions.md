@@ -63,6 +63,13 @@ There is no lint or formatter configured — do not add one unless asked.
 5. Wrap the actual call in `::group::` / `::endgroup::` log markers and exit non-zero on failure — that is how the workflow surfaces pass/fail.
 6. `_shared.py` is imported via a `sys.path.insert(0, parent)` shim from inside each `test.py`; keep that shim when adding a new feature so the script stays runnable directly (`python features/<slug>/test.py`) without packaging.
 
+## XFAIL hides test-code bugs, not just BYOM regressions
+
+Our marker convention (`not_supported` → `xfail(strict=True)`, `not_confirmed` → `xfail(strict=False)`) only inverts pass/fail — a `TypeError` from an out-of-date SDK signature still xfails silently and looks green on the site. Two consequences:
+
+- **After bumping any dep** (`azure-ai-projects`, `azure-ai-evaluation`, `openai`, `azure-ai-agentserver-*`), run `uv run pytest features/ --runxfail` locally to force xfailed tests to raise their real error, and fix any that changed shape. Real example: `azure-ai-projects>=2.2.0` dropped the `endpoint=` kwarg on `A2APreviewTool` — both A2A tests silently xfailed with `TypeError` for weeks before being surfaced by a `--runxfail` sweep.
+- **Preview-SDK tests are the highest-churn** offenders (A2A, hosted-agent, MCP variants, evaluators). Prefer `pytest.skip("... requires <specific env var / connection>")` over `xfail` when the test truly can't run without external setup, so we skip cleanly instead of masking whatever error happens to fall out.
+
 ## Adding a new feature (checklist)
 
 1. `mkdir features/<slug>` with `feature.json` and (optionally) `test.py`. Copy `features/prompt-agents-static/` as the template for an automated feature, or `features/private-foundry/` for a status-only card.

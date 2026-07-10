@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/register-external-agent",
-  "notes": "Needs to be re-verified end-to-end. Not in the official supported-tools list, but BYOM routing of the caller-side orchestrator has not been validated.",
+  "notes": "Skips unless `A2A_PROJECT_CONNECTION_ID` (an A2A connection registered in the Foundry project) or `A2A_ENDPOINT` (external A2A server URL) is set. A plain Prompt Agent is NOT an A2A server \u2014 Foundry doesn't auto-expose `/agents/<name>` in A2A protocol format, so this cannot be self-provisioned end-to-end without a real A2A backend. BYOM routing of the caller-side orchestrator has not been validated end-to-end yet.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_external_agents_crud.py"
 }

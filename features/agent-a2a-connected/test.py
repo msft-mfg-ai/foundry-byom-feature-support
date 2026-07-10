@@ -1,12 +1,14 @@
 """BYOM test: agent-a2a-connected
 
-Creates a small Prompt Agent to act as the "remote" A2A target so the test
-is self-contained. If A2A_REMOTE_AGENT_ENDPOINT is set it overrides this.
+An A2A tool needs a real A2A server \u2014 either a Foundry-registered A2A
+connection (A2A_PROJECT_CONNECTION_ID) or an external endpoint speaking
+the A2A protocol (A2A_ENDPOINT). Skips cleanly when neither is set,
+because a Prompt Agent alone is NOT an A2A server (Foundry does not
+auto-expose /agents/<name> as A2A).
 """
 import os
 
 import pytest
-from azure.ai.projects.models import PromptAgentDefinition
 
 
 @pytest.mark.not_confirmed
@@ -14,44 +16,32 @@ from azure.ai.projects.models import PromptAgentDefinition
     strict=False,
     reason="A2A connected agents with a BYOM-routed orchestrator are not yet confirmed.",
 )
-def test_agent_a2a_connected(cfg, project, aoai, static_model, unique_agent_name):
-    from azure.ai.projects.models import A2APreviewTool
+def test_agent_a2a_connected(project, aoai, static_model, unique_agent_name):
+    from azure.ai.projects.models import A2APreviewTool, PromptAgentDefinition
 
-    remote_endpoint = os.environ.get("A2A_REMOTE_AGENT_ENDPOINT")
-    if not remote_endpoint:
-        remote = project.agents.create_version(
-            agent_name=unique_agent_name("byom-a2a-remote"),
-            definition=PromptAgentDefinition(
-                model=static_model(),
-                instructions="You are a summarizer. Reply with one short sentence.",
-                tools=[],
-            ),
-        )
-        # Best-effort default endpoint format; Foundry exposes Prompt Agents
-        # at /agents/<name> when A2A discovery is enabled on the account.
-        remote_endpoint = f"{cfg.project_endpoint.rstrip('/')}/agents/{remote.name}"
+    conn_id = os.environ.get("A2A_PROJECT_CONNECTION_ID")
+    endpoint = os.environ.get("A2A_ENDPOINT")
+    if not conn_id and not endpoint:
+        pytest.skip("A2A_PROJECT_CONNECTION_ID or A2A_ENDPOINT must be set (Foundry Prompt Agents are not A2A servers)")
 
-    tools = [A2APreviewTool(endpoint=remote_endpoint)]
+    tool = A2APreviewTool(project_connection_id=conn_id) if conn_id else A2APreviewTool()
+    if endpoint:
+        tool.base_url = endpoint
+
     agent = project.agents.create_version(
         agent_name=unique_agent_name("byom-agent-a2a-connected"),
         definition=PromptAgentDefinition(
             model=static_model(),
-            instructions="You are a concise assistant. Delegate to the remote A2A agent.",
-            tools=tools,
+            instructions="You are a concise assistant. Delegate to the remote A2A agent when asked.",
+            tools=[tool],
         ),
     )
     assert agent.id
 
-    conversation = aoai.conversations.create(
-        items=[{
-            "type": "message",
-            "role": "user",
-            "content": "Delegate a one-sentence summary task to the connected agent.",
-        }],
-    )
     resp = aoai.responses.create(
-        conversation=conversation.id,
+        input="Delegate a one-sentence summary task to the connected agent.",
+        tool_choice="required",
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        input="",
     )
     assert resp.output_text and resp.output_text.strip()
+
