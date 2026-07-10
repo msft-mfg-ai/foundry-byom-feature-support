@@ -22,4 +22,5 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: evals-generative-model
+      extras: eval
     secrets: inherit

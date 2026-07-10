@@ -17,6 +17,11 @@ on:
         required: false
         type: string
         default: ubuntu-latest
+      extras:
+        description: Comma-separated optional-dependency extras to install (e.g. "eval"). See [project.optional-dependencies] in pyproject.toml.
+        required: false
+        type: string
+        default: ""
       pytest_args:
         description: Extra pytest args (e.g. "-m slow" to opt into slow tests like hosted-agent code deployments)
         required: false
@@ -42,7 +47,17 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --frozen || uv sync
+        env:
+          EXTRAS: ${{ inputs.extras }}
+        run: |
+          set -euo pipefail
+          extra_args=""
+          if [ -n "${EXTRAS}" ]; then
+            for e in $(echo "${EXTRAS}" | tr ',' ' '); do
+              extra_args+=" --extra ${e}"
+            done
+          fi
+          uv sync --frozen ${extra_args} || uv sync ${extra_args}
 
       - name: Azure login (OIDC)
         uses: azure/login@v2

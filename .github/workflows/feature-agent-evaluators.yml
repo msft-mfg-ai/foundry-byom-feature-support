@@ -23,4 +23,5 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: agent-evaluators
+      extras: eval
     secrets: inherit

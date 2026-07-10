@@ -4,11 +4,32 @@ version = "0.1.0"
 description = "Test scripts for BYOM (bring-your-own-model) features against Azure AI Foundry + APIM gateway"
 requires-python = ">=3.11"
 dependencies = [
-    "azure-ai-evaluation[redteam]>=1.18.1",
     "azure-ai-projects>=2.2.0",
     "azure-identity>=1.19.0",
     "openai>=2.0.0",
     "python-dotenv>=1.0.0",
+    "requests>=2.32",
+]
+
+# Optional extras keep bleeding-edge / heavy / preview-only SDKs out of the
+# default install so the core suite (`uv sync` \u2192 `pytest -m 'not slow'`) stays
+# fast and unambiguous. Enable per-feature in CI via:
+#
+#   uses: ./.github/workflows/_feature-test.yml
+#   with:
+#     feature: <slug>
+#     extras: eval        # \u2190 passed through to `uv sync --extra <name>`
+#
+# When adding a new preview feature that needs a bleeding-edge SDK, add its
+# deps as a new extra here and set `extras:` in that feature's workflow.
+# Rule of thumb: one extra per "family of preview features that share a SDK
+# version boundary". Never add conflicting versions of the same package to
+# two different extras \u2014 only one extra is active per run.
+[project.optional-dependencies]
+# Heavy AI-judge/red-team SDK. Pulls pyrit + big transitive tail.
+# Required by: evaluations, agent-evaluators, evals-generative-model, red-teaming.
+eval = [
+    "azure-ai-evaluation[redteam]>=1.18.1",
 ]
 
 [dependency-groups]
