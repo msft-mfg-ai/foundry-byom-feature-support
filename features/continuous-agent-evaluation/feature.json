@@ -1,0 +1,13 @@
+{
+  "slug": "continuous-agent-evaluation",
+  "category": "quality",
+  "name": "Continuous agent evaluation",
+  "summary": "Foundry Observability auto-scoring of live agent traces \u2014 does the judge model accept BYOM?",
+  "description": "Continuous evaluation samples production agent traces from Application Insights at a configured rate and scores them with the selected evaluators (task adherence, coherence, groundedness, rubric, safety). Each rule picks its own judge model. BYOM question: can the rule's judge deployment be `{conn}/{model}`, and does the sampled scoring call route through the AI Gateway?",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/observability/how-to/continuous-evaluation-agents",
+  "notes": "Configured on the project's Application Insights integration (Foundry Observability). Setup involves wiring the project to App Insights, enabling continuous eval, and picking one or more evaluators + judge models per rule. Adding a self-contained BYOM probe requires configuring the rule, generating trace traffic, and waiting for the sampler \u2014 heavier than a single API call. Tracked as follow-up. Verify: judge invocations show up in APIM logs with `{conn}/{model}` routing intact.",
+  "sample_url": "https://learn.microsoft.com/azure/foundry/observability/how-to/continuous-evaluation-agents"
+}

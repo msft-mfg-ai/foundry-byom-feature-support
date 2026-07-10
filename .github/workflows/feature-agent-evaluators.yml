@@ -1,4 +1,4 @@
-name: Feature - hosted-agents-dynamic
+name: Feature - agent-evaluators
 
 on:
   workflow_dispatch:
@@ -7,10 +7,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'features/hosted-agents-dynamic/**'
+      - 'features/agent-evaluators/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
-      - '.github/workflows/feature-hosted-agents-dynamic.yml'
+      - '.github/workflows/feature-agent-evaluators.yml'
       - '.github/workflows/_feature-test.yml'
 
 permissions:
@@ -21,6 +22,5 @@ jobs:
   run:
     uses: ./.github/workflows/_feature-test.yml
     with:
-      feature: hosted-agents-dynamic
-      pytest_args: "-m slow"
+      feature: agent-evaluators
     secrets: inherit

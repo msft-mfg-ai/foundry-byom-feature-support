@@ -2,13 +2,14 @@
   "slug": "hosted-agents-dynamic",
   "category": "agents",
   "name": "Hosted Agents \u2014 dynamic gateway",
-  "summary": "Same as hosted-agents-static but the underlying APIM connection uses runtime model discovery.",
-  "description": "Smoke test for a hosted agent that was deployed pointing at the dynamic-discovery gateway connection. Skips if HOSTED_AGENT_NAME_DYNAMIC is unset.",
+  "summary": "Same as hosted-agents-static but routes through the dynamic-discovery APIM connection.",
+  "description": "Self-provisions the same inline Invocations-protocol agent as `hosted-agents-static` but passes the dynamic-discovery gateway connection name as the container env var. See hosted-agents-static for the full flow. Marker: `slow` \u2014 opt-in via `pytest -m slow`.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agents",
-  "notes": "Skips with ::warning:: if HOSTED_AGENT_NAME_DYNAMIC is unset.",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/hosted_agents/sample_create_hosted_agent.py"
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
+  "notes": "Skips if `AI_GATEWAY_CONNECTION_DYNAMIC` is unset. Otherwise identical wiring to hosted-agents-static.",
+  "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
+

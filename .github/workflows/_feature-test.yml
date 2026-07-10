@@ -17,6 +17,11 @@ on:
         required: false
         type: string
         default: ubuntu-latest
+      pytest_args:
+        description: Extra pytest args (e.g. "-m slow" to opt into slow tests like hosted-agent code deployments)
+        required: false
+        type: string
+        default: ""
 
 permissions:
   id-token: write
@@ -101,4 +106,4 @@ jobs:
           IMAGE_VARIATION_MODEL: ${{ vars.IMAGE_VARIATION_MODEL }}
           REALTIME_TRANSCRIPTION_MODEL: ${{ vars.REALTIME_TRANSCRIPTION_MODEL }}
           REALTIME_TRANSLATION_MODEL: ${{ vars.REALTIME_TRANSLATION_MODEL }}
-        run: uv run pytest features/${{ inputs.feature }}
+        run: uv run pytest features/${{ inputs.feature }} ${{ inputs.pytest_args }}

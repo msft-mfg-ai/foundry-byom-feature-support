@@ -5,10 +5,10 @@
   "summary": "azure-ai-evaluation: judge LLM specified via initialization_parameters.deployment_name.",
   "description": "Tests whether the eval framework accepts a BYOM-prefixed deployment_name for the judge model. Research suggests it likely does NOT parse the prefix (same posture as image-generation-direct).",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation",
-  "notes": "Skips if EVAL_JUDGE_MODEL is unset. Captures the actual error if any.",
+  "notes": "Verified regression on ai-foundry-63fhh7glaqhvw with azure-ai-evaluation installed: the eval SDK constructs the request URL as `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route → returns 400 'API version not supported'. Judge-model BYOM will require either eval-SDK changes or a Foundry URL-rewrite. Skips if EVAL_JUDGE_MODEL is unset.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/evaluations"
 }

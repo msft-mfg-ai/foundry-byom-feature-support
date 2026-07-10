@@ -71,6 +71,18 @@ There is no lint or formatter configured — do not add one unless asked.
 4. If the feature needs a new env var, add it to `.env.example`, the `env:` block of `_feature-test.yml`, **and** document it in `README.md` under the GitHub environment section.
 5. Folders prefixed with `_` (e.g. `_shared.py`) are skipped by `loadFeatures()` — use that prefix for any non-feature helpers.
 
+## Keeping the site in sync with new findings
+
+The `features/*/feature.json` files **are** the site. Any time you learn something new that changes a feature's real support level, you must update the JSON in the same PR that carries the finding — otherwise the badge on the static site silently lies. Concretely:
+
+- **Test now passes** against real Foundry → flip `support_status` from `not_confirmed`/`not_supported` to `supported` (or `partial` if only sub-cases work), and set `implementation_status` to the real maturity (`ga`/`preview`).
+- **Test starts XFAILing after being `supported`** → downgrade to `partial` and add a `notes:` line describing the regression.
+- **New docs/samples/blog posts** discovered (MS Learn, azure-sdk-for-python samples, foundry-samples, Ignite/Build talks) → update `azure_docs` and `sample_url` on the affected cards.
+- **New feature discovered that BYOM doesn't cover** → add a new `features/<slug>/feature.json` (status-only card is fine) rather than leaving the finding in chat / PR description only.
+- **Env-var contracts change** (e.g. new platform-injected variable, new required custom var) → update `.env.example`, `_feature-test.yml`'s `env:` block, and the relevant `feature.json`'s `notes:` field.
+
+Rule of thumb: **if a human would want to see the new info as a badge, tooltip, or card on the site, it belongs in `feature.json` — not just in the test file or a chat reply.** After editing JSON, verify with `cd site && npm run build` (the site's TypeScript layer will reject invalid enum values).
+
 ## Auth, environment, runners
 
 - CI auth is **OIDC only** via `azure/login@v2`; the SP needs the `Azure AI User` role on the Foundry project. Do not introduce client secrets.

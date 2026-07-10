@@ -5,7 +5,7 @@ description = "Test scripts for BYOM (bring-your-own-model) features against Azu
 requires-python = ">=3.11"
 dependencies = [
     "azure-ai-evaluation[redteam]>=1.18.1",
-    "azure-ai-projects>=2.0.0",
+    "azure-ai-projects>=2.2.0",
     "azure-identity>=1.19.0",
     "openai>=2.0.0",
     "python-dotenv>=1.0.0",
@@ -23,11 +23,12 @@ package = false
 [tool.pytest.ini_options]
 testpaths = ["features"]
 python_files = ["test.py", "test_*.py"]
-addopts = "-ra --strict-markers --tb=short --import-mode=importlib"
+addopts = "-ra --strict-markers --tb=short --import-mode=importlib -m 'not slow'"
 markers = [
     "supported: BYOM confirmed working; assertion failure = red CI",
     "partial: BYOM partially working; some assertions are xfail",
     "not_confirmed: BYOM behavior unverified; xfail non-strict (XPASS is informational)",
     "not_supported: BYOM known not to work; xfail strict (XPASS = update the matrix)",
     "needs_env: test skips when optional env vars are unset",
+    "slow: opt-in only (pytest -m slow) \u2014 tests that take >60s (e.g. hosted-agent code deployments)",
 ]

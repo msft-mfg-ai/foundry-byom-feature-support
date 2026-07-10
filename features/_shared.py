@@ -99,7 +99,7 @@ def build_clients(cfg: Optional[Config] = None):
     """Returns (cfg, AIProjectClient, OpenAI client routed at the project)."""
     cfg = cfg or load_config()
     cred = DefaultAzureCredential()
-    project = AIProjectClient(endpoint=cfg.project_endpoint, credential=cred)
+    project = AIProjectClient(endpoint=cfg.project_endpoint, credential=cred, allow_preview=True)
     aoai = project.get_openai_client()
     return cfg, project, aoai
 
@@ -197,3 +197,147 @@ def make_mcp_tool(server_url: str, server_label: str, auth: str = "AgenticIdenti
 
     return MCPTool(server_url=server_url, server_label=server_label, auth_type=auth)
 
+
+# ---------------------------------------------------------------------------
+# Hosted-agent packaging (used by features/hosted-agents-*)
+# ---------------------------------------------------------------------------
+
+
+_HOSTED_AGENT_MAIN = '''\
+"""Tiny BYOM smoke agent (Invocations protocol).
+
+Reads the AI Gateway connection + model from custom env vars, calls the
+Foundry Responses API from inside the hosted container, and returns the
+answer as JSON. Used by the byom-feature-support matrix to prove that
+BYOM routing works when the caller is a hosted agent (not a script).
+"""
+import json
+import os
+
+from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
+from azure.ai.agentserver.invocations import InvocationAgentServerHost
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+_PROJECT_ENDPOINT = os.environ["FOUNDRY_PROJECT_ENDPOINT"]  # platform-injected
+_GATEWAY = os.environ["AI_GATEWAY_CONNECTION"]              # custom env var
+_MODEL   = os.environ["CHAT_MODEL"]                         # custom env var
+
+_project = AIProjectClient(endpoint=_PROJECT_ENDPOINT, credential=DefaultAzureCredential())
+_aoai = _project.get_openai_client()
+
+app = InvocationAgentServerHost()
+
+
+@app.invoke_handler
+async def handle(request: Request) -> JSONResponse:
+    body = await request.body()
+    payload = json.loads(body) if body else {}
+    prompt = payload.get("prompt", "Say hello.")
+    resp = _aoai.responses.create(model=f"{_GATEWAY}/{_MODEL}", input=prompt)
+    return JSONResponse({"output_text": resp.output_text, "model": f"{_GATEWAY}/{_MODEL}"})
+
+
+if __name__ == "__main__":
+    app.run()
+'''
+
+_HOSTED_AGENT_REQUIREMENTS = """\
+azure-ai-agentserver-invocations>=1.0.0b6
+azure-ai-projects>=2.2.0
+azure-identity>=1.19.0
+openai>=2.0.0
+"""
+
+
+def _build_hosted_agent_zip() -> bytes:
+    """Return a zip containing `main.py` + `requirements.txt` for remote_build."""
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("main.py", _HOSTED_AGENT_MAIN)
+        zf.writestr("requirements.txt", _HOSTED_AGENT_REQUIREMENTS)
+    return buf.getvalue()
+
+
+def deploy_hosted_byom_probe(project, agent_name: str, gateway_conn: str, model: str, timeout_s: int = 600):
+    """Deploy the tiny BYOM smoke agent as a Foundry hosted agent version.
+
+    Uses `remote_build` \u2192 Foundry builds the container; no ACR/Dockerfile needed.
+    Polls until the version is `active` (or `failed`). Returns the version id.
+    Raises RuntimeError on failure/timeout.
+    """
+    import hashlib
+    import time
+
+    from azure.ai.projects.models import (
+        CodeConfiguration,
+        CreateAgentVersionFromCodeContent,
+        CreateAgentVersionFromCodeMetadata,
+        HostedAgentDefinition,
+        ProtocolVersionRecord,
+    )
+
+    zip_bytes = _build_hosted_agent_zip()
+    zip_sha = hashlib.sha256(zip_bytes).hexdigest()
+
+    content = CreateAgentVersionFromCodeContent(
+        metadata=CreateAgentVersionFromCodeMetadata(
+            description="BYOM smoke probe (hosted agent, Invocations protocol)",
+            definition=HostedAgentDefinition(
+                cpu="0.5",
+                memory="1Gi",
+                code_configuration=CodeConfiguration(
+                    runtime="python_3_13",
+                    entry_point=["python", "main.py"],
+                    dependency_resolution="remote_build",
+                ),
+                protocol_versions=[
+                    ProtocolVersionRecord(protocol="invocations", version="1.0.0"),
+                ],
+                environment_variables={
+                    "AI_GATEWAY_CONNECTION": gateway_conn,
+                    "CHAT_MODEL": model,
+                },
+            ),
+        ),
+        code=("agent.zip", zip_bytes, "application/zip"),
+    )
+
+    created = project.beta.agents.create_version_from_code(
+        agent_name=agent_name,
+        content=content,
+        code_zip_sha256=zip_sha,
+    )
+
+    deadline = time.monotonic() + timeout_s
+    while True:
+        version = project.agents.get_version(agent_name=agent_name, agent_version=created.version)
+        status = version.get("status") if isinstance(version, dict) else getattr(version, "status", None)
+        if status == "active":
+            return created.version
+        if status == "failed":
+            err = version.get("error") if isinstance(version, dict) else getattr(version, "error", None)
+            raise RuntimeError(f"Hosted-agent provisioning failed: {err}")
+        if time.monotonic() > deadline:
+            raise TimeoutError(f"Hosted-agent {agent_name}/{created.version} did not reach active in {timeout_s}s (last status={status!r})")
+        time.sleep(10)
+
+
+def invoke_hosted_agent(cfg, agent_name: str, prompt: str = "Say hello."):
+    """POST to the hosted agent's Invocations endpoint with a bearer token."""
+    import requests
+
+    token = aad_token("https://ai.azure.com/.default")
+    url = f"{cfg.project_endpoint}/agents/{agent_name}/endpoint/protocols/invocations"
+    r = requests.post(
+        url,
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json={"prompt": prompt},
+        timeout=120,
+    )
+    r.raise_for_status()
+    return r.json()

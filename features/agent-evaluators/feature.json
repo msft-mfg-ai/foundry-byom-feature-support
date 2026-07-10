@@ -1,0 +1,14 @@
+{
+  "slug": "agent-evaluators",
+  "category": "quality",
+  "name": "Agent evaluators (IntentResolution / TaskAdherence / ToolCallAccuracy)",
+  "summary": "azure-ai-evaluation agent-quality evaluators with a BYOM-prefixed judge model.",
+  "description": "The agent-quality evaluators (`IntentResolutionEvaluator`, `TaskAdherenceEvaluator`, `ToolCallAccuracyEvaluator`, `ResponseCompletenessEvaluator`) all take a `model_config` with `azure_deployment`. This card probes whether passing `{conn}/{model}` as the deployment routes through the AI Gateway when the evaluator runs.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators",
+  "notes": "Same underlying URL-shape bug as the `evaluations` card: azure-ai-evaluation constructs `/openai/deployments/{apim-conn}/{model}/chat/completions` internally, which Foundry doesn't route \u2192 400 'API version not supported'. Expected XFAIL(strict). If Microsoft fixes the eval SDK URL construction, this card should XPASS and flip green in CI.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/agents_evaluations"
+}
