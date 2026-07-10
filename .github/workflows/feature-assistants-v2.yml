@@ -1,0 +1,25 @@
+name: Feature - assistants-v2
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/assistants-v2/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-assistants-v2.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: assistants-v2
+    secrets: inherit

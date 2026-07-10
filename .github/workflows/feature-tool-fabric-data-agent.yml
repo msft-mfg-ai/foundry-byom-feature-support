@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-fabric-data-agent/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-fabric-data-agent.yml'
       - '.github/workflows/_feature-test.yml'

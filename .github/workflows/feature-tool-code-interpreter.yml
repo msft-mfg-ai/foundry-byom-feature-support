@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-code-interpreter/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-code-interpreter.yml'
       - '.github/workflows/_feature-test.yml'

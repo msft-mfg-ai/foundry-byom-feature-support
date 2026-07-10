@@ -8,5 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Status-only card. Suspected unsupported (knowledge-base config doesn't appear to accept an AI-Gateway connection), but needs hands-on confirmation."
+  "notes": "Status-only card. Suspected unsupported (knowledge-base config doesn't appear to accept an AI-Gateway connection), but needs hands-on confirmation.",
+  "test_file": "test.py"
 }

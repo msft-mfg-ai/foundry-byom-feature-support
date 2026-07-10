@@ -1,0 +1,13 @@
+{
+  "slug": "video-generation",
+  "category": "endpoints",
+  "name": "Video generation (Sora)",
+  "summary": "POST /v1/videos with `model: sora-2` / `sora-2-pro` \u2014 async video generation from a text prompt.",
+  "description": "Sora video generation exposes a top-level `model` field on `POST /v1/videos`. The endpoint runs an async job whose output is polled or delivered via webhook. This is a full first-class OpenAI surface with a `model` param, so it's a candidate for BYOM routing, but has not been validated end-to-end through a Foundry gateway connection. OpenAI has also announced Sora 2 deprecation on Sept 24 2026, so even a positive result has a limited shelf life. The follow-on endpoints `POST /v1/videos/extensions` and `POST /v1/videos/edits` inherit the model from the parent video and do not take a `model` param directly.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/video-generation",
+  "notes": "Status-only. Likely will remain `not_supported` given the platform-native nature (jobs, storage, webhooks) and the pending Sora 2 sunset.",
+  "test_file": "test.py"
+}

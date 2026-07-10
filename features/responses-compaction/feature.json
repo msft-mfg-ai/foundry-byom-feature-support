@@ -1,0 +1,13 @@
+{
+  "slug": "responses-compaction",
+  "category": "endpoints",
+  "name": "Responses API \u2014 Conversation compaction",
+  "summary": "Server-side and standalone context compaction for long-running Responses conversations (POST /v1/responses/compact and context_management on POST /v1/responses).",
+  "description": "Compaction summarizes prior turns of a long-running Responses conversation into an opaque encrypted 'compaction item' so future turns stay within the model's context window. It surfaces in two shapes, each of which takes its own `model` parameter: (1) server-side, by adding `context_management: [{type: 'compaction', compact_threshold: N}]` to `POST /v1/responses` \u2014 compaction runs on the same top-level `model` as the generation; and (2) standalone, via `POST /v1/responses/compact`, which takes its own top-level `model` and returns a compacted context you feed into the next Responses call. Neither path has been validated end-to-end when the model is BYOM-prefixed (`{connection}/{deployment}`) \u2014 the standalone `/compact` endpoint in particular is a new surface that the Foundry data plane / APIM connection has not been confirmed to forward.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/compaction",
+  "notes": "Status-only. Add a test.py once we can confirm whether the BYOM prefix flows through both the nested `context_management` config and the standalone `/v1/responses/compact` endpoint. If server-side compaction reuses the top-level `model` cleanly it may end up `partial` (server-side works, standalone doesn't) rather than fully `not_supported`.",
+  "test_file": "test.py"
+}

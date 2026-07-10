@@ -5,26 +5,20 @@ via HostedAgentDefinition with a container or code configuration). This test
 only validates that BYOM routing through the dynamic APIM gateway works when
 the hosted agent is invoked through the Responses API.
 """
-import os
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients  # noqa: E402
-
-AGENT_NAME = os.environ.get("HOSTED_AGENT_NAME_DYNAMIC")
+import pytest
 
 
-def main() -> int:
-    if not AGENT_NAME:
-        print("::warning::HOSTED_AGENT_NAME_DYNAMIC not set; skipping hosted-agents-dynamic test")
-        return 0
+@pytest.mark.not_confirmed
+@pytest.mark.needs_env
+@pytest.mark.xfail(
+    strict=False,
+    reason="Hosted agents through the dynamic gateway are not yet confirmed.",
+)
+def test_hosted_agents_dynamic(project, aoai, require_env):
+    agent_name = require_env("HOSTED_AGENT_NAME_DYNAMIC")
 
-    cfg, project, aoai = build_clients()
-    print(f"::group::Hosted agent (dynamic) {AGENT_NAME}")
-
-    agent = project.agents.get(agent_name=AGENT_NAME)
-    print(f"agent: id={agent.id} kind={getattr(agent.versions.latest.definition, 'kind', '?')}")
+    agent = project.agents.get(agent_name=agent_name)
+    assert agent.id
 
     conversation = aoai.conversations.create(
         items=[{"type": "message", "role": "user", "content": "Say hello."}],
@@ -34,10 +28,4 @@ def main() -> int:
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    assert resp.output_text and resp.output_text.strip()

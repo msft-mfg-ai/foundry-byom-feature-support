@@ -81,6 +81,8 @@ jobs:
           COMPUTER_USE_ENVIRONMENT: ${{ vars.COMPUTER_USE_ENVIRONMENT }}
           IMAGE_DEPLOYMENT_NAME: ${{ vars.IMAGE_DEPLOYMENT_NAME }}
           OPENAPI_SPEC_PATH: ${{ vars.OPENAPI_SPEC_PATH }}
+          KNOWLEDGE_BASE_ID: ${{ vars.KNOWLEDGE_BASE_ID }}
+          MEMORY_STORE_ID: ${{ vars.MEMORY_STORE_ID }}
           # ---- MCP servers ----
           MCP_SERVER_URL: ${{ vars.MCP_SERVER_URL }}
           MCP_SERVER_URL_AGENT_IDENTITY: ${{ vars.MCP_SERVER_URL_AGENT_IDENTITY }}
@@ -92,4 +94,11 @@ jobs:
           # ---- Quality / safety ----
           EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL }}
           RED_TEAM_TARGET_MODEL: ${{ vars.RED_TEAM_TARGET_MODEL }}
-        run: uv run python features/${{ inputs.feature }}/test.py
+          # ---- Extra models for probe tests ----
+          MODERATION_MODEL: ${{ vars.MODERATION_MODEL }}
+          WEB_SEARCH_MODEL: ${{ vars.WEB_SEARCH_MODEL }}
+          VIDEO_MODEL: ${{ vars.VIDEO_MODEL }}
+          IMAGE_VARIATION_MODEL: ${{ vars.IMAGE_VARIATION_MODEL }}
+          REALTIME_TRANSCRIPTION_MODEL: ${{ vars.REALTIME_TRANSCRIPTION_MODEL }}
+          REALTIME_TRANSLATION_MODEL: ${{ vars.REALTIME_TRANSLATION_MODEL }}
+        run: uv run pytest features/${{ inputs.feature }}

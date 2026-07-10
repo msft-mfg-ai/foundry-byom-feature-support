@@ -1,0 +1,13 @@
+{
+  "slug": "responses-inline-moderation",
+  "category": "endpoints",
+  "name": "Responses API \u2014 Inline moderation",
+  "summary": "Nested `moderation.model` field on POST /v1/responses (and POST /v1/chat/completions) that runs a separate moderation model alongside the main generation.",
+  "description": "The Responses and Chat Completions APIs accept an inline `moderation` block whose `moderation.model` field names a dedicated moderation model (e.g. `omni-moderation-latest`) executed against the request/response in the same call as the mainline `model`. This is a **second, nested `model` slot** on the same request. Untested whether the Foundry data plane / APIM connection preserves the nested field when the mainline `model` uses the BYOM `{connection}/{deployment}` prefix \u2014 the concern is that the gateway strips or ignores the nested field on the way through.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/moderation",
+  "notes": "Status-only. If confirmed working, promote to `supported`; if the nested `moderation.model` is dropped or forced back onto the Foundry account, mark `not_supported`.",
+  "test_file": "test.py"
+}

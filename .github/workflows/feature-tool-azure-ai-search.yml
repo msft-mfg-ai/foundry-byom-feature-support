@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-azure-ai-search/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-azure-ai-search.yml'
       - '.github/workflows/_feature-test.yml'

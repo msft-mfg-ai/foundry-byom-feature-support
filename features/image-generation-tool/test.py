@@ -1,51 +1,40 @@
 """BYOM test: image-generation-tool"""
-import os
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model, require_env  # noqa: E402
-
+import pytest
 from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-image-generation-tool"
-GATEWAY_KIND = "static"
-IMAGE_DEPLOYMENT_NAME = os.environ.get("IMAGE_DEPLOYMENT_NAME")
 
-def main() -> int:
-    if not IMAGE_DEPLOYMENT_NAME:
-        print("::warning::Missing env for image-generation-tool: IMAGE_DEPLOYMENT_NAME")
-        return 0
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::image-generation-tool model={model}")
+@pytest.mark.not_supported
+@pytest.mark.needs_env
+@pytest.mark.xfail(
+    strict=True,
+    reason="Image generation tool is expected not to route through a BYOM orchestrator model.",
+)
+def test_image_generation_tool(project, aoai, static_model, unique_agent_name, require_env):
+    image_deployment_name = require_env("IMAGE_DEPLOYMENT_NAME")
+    model = static_model()
 
     from azure.ai.projects.models import ImageGenTool
-    tools = [ImageGenTool(deployment_name=IMAGE_DEPLOYMENT_NAME)]
 
     agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
+        agent_name=unique_agent_name("byom-image-generation-tool"),
         definition=PromptAgentDefinition(
             model=model,
             instructions="You are a concise assistant. Reply in one short sentence.",
-            tools=tools,
+            tools=[ImageGenTool(deployment_name=image_deployment_name)],
         ),
     )
-    print(f"agent: id={agent.id} version={agent.version}")
+    assert agent.id
 
     conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": 'Generate a small icon of a blue circle, reply with the generated image URL.'}],
+        items=[{
+            "type": "message",
+            "role": "user",
+            "content": "Generate a small icon of a blue circle, reply with the generated image URL.",
+        }],
     )
     resp = aoai.responses.create(
         conversation=conversation.id,
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    assert resp.output_text and resp.output_text.strip()

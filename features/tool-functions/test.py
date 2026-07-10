@@ -1,45 +1,42 @@
 """Custom function tool via BYOM-routed Prompt Agent."""
-import os
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model  # noqa: E402
-
-from azure.ai.projects.models import PromptAgentDefinition, FunctionTool
-
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-tool-functions"
+import pytest
+from azure.ai.projects.models import FunctionTool, PromptAgentDefinition
 
 
-def main() -> int:
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind="static")
-    print(f"::group::tool-functions model={model}")
-
-    def get_weather(city: str) -> str:
-        return f"It is 72F and sunny in {city}."
-
-    tool = FunctionTool(functions={get_weather})
-
+@pytest.mark.supported
+def test_tool_functions(project, aoai, static_model, unique_agent_name):
+    tool = FunctionTool(
+        name="get_weather",
+        description="Get the current weather in a city.",
+        parameters={
+            "type": "object",
+            "properties": {"city": {"type": "string", "description": "City name."}},
+            "required": ["city"],
+            "additionalProperties": False,
+        },
+        strict=True,
+    )
     agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
+        agent_name=unique_agent_name("byom-tool-functions"),
         definition=PromptAgentDefinition(
-            model=model,
+            model=static_model(),
             instructions="Call get_weather to answer. One short sentence.",
-            tools=tool.definitions,
+            tools=[tool],
         ),
     )
-    conv = aoai.conversations.create(items=[{"type": "message", "role": "user", "content": "What's the weather in Seattle?"}])
+    assert agent.id
+
+    conv = aoai.conversations.create(
+        items=[{"type": "message", "role": "user", "content": "What's the weather in Seattle?"}]
+    )
     resp = aoai.responses.create(
         conversation=conv.id,
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    # Agent should either call the tool or emit text; assert the response object exists and
+    # includes either output_text or a tool call in output items.
+    assert resp.output is not None
+    assert (resp.output_text and resp.output_text.strip()) or any(
+        getattr(item, "type", "") == "function_call" for item in resp.output
+    )

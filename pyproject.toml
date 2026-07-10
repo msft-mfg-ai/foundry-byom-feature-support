@@ -4,11 +4,30 @@ version = "0.1.0"
 description = "Test scripts for BYOM (bring-your-own-model) features against Azure AI Foundry + APIM gateway"
 requires-python = ">=3.11"
 dependencies = [
+    "azure-ai-evaluation[redteam]>=1.18.1",
     "azure-ai-projects>=2.0.0",
     "azure-identity>=1.19.0",
     "openai>=2.0.0",
     "python-dotenv>=1.0.0",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-xdist>=3.6",
+]
+
 [tool.uv]
 package = false
+
+[tool.pytest.ini_options]
+testpaths = ["features"]
+python_files = ["test.py", "test_*.py"]
+addopts = "-ra --strict-markers --tb=short --import-mode=importlib"
+markers = [
+    "supported: BYOM confirmed working; assertion failure = red CI",
+    "partial: BYOM partially working; some assertions are xfail",
+    "not_confirmed: BYOM behavior unverified; xfail non-strict (XPASS is informational)",
+    "not_supported: BYOM known not to work; xfail strict (XPASS = update the matrix)",
+    "needs_env: test skips when optional env vars are unset",
+]

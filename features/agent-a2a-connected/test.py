@@ -1,51 +1,57 @@
-"""BYOM test: agent-a2a-connected"""
+"""BYOM test: agent-a2a-connected
+
+Creates a small Prompt Agent to act as the "remote" A2A target so the test
+is self-contained. If A2A_REMOTE_AGENT_ENDPOINT is set it overrides this.
+"""
 import os
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model, require_env  # noqa: E402
-
+import pytest
 from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-agent-a2a-connected"
-GATEWAY_KIND = "static"
-A2A_REMOTE_AGENT_ENDPOINT = os.environ.get("A2A_REMOTE_AGENT_ENDPOINT")
 
-def main() -> int:
-    if not A2A_REMOTE_AGENT_ENDPOINT:
-        print("::warning::Missing env for agent-a2a-connected: A2A_REMOTE_AGENT_ENDPOINT")
-        return 0
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::agent-a2a-connected model={model}")
-
+@pytest.mark.not_confirmed
+@pytest.mark.xfail(
+    strict=False,
+    reason="A2A connected agents with a BYOM-routed orchestrator are not yet confirmed.",
+)
+def test_agent_a2a_connected(cfg, project, aoai, static_model, unique_agent_name):
     from azure.ai.projects.models import A2APreviewTool
-    tools = [A2APreviewTool(endpoint=A2A_REMOTE_AGENT_ENDPOINT)]
 
+    remote_endpoint = os.environ.get("A2A_REMOTE_AGENT_ENDPOINT")
+    if not remote_endpoint:
+        remote = project.agents.create_version(
+            agent_name=unique_agent_name("byom-a2a-remote"),
+            definition=PromptAgentDefinition(
+                model=static_model(),
+                instructions="You are a summarizer. Reply with one short sentence.",
+                tools=[],
+            ),
+        )
+        # Best-effort default endpoint format; Foundry exposes Prompt Agents
+        # at /agents/<name> when A2A discovery is enabled on the account.
+        remote_endpoint = f"{cfg.project_endpoint.rstrip('/')}/agents/{remote.name}"
+
+    tools = [A2APreviewTool(endpoint=remote_endpoint)]
     agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
+        agent_name=unique_agent_name("byom-agent-a2a-connected"),
         definition=PromptAgentDefinition(
-            model=model,
-            instructions="You are a concise assistant. Reply in one short sentence.",
+            model=static_model(),
+            instructions="You are a concise assistant. Delegate to the remote A2A agent.",
             tools=tools,
         ),
     )
-    print(f"agent: id={agent.id} version={agent.version}")
+    assert agent.id
 
     conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": 'Delegate a one-sentence summary task to the connected agent.'}],
+        items=[{
+            "type": "message",
+            "role": "user",
+            "content": "Delegate a one-sentence summary task to the connected agent.",
+        }],
     )
     resp = aoai.responses.create(
         conversation=conversation.id,
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    assert resp.output_text and resp.output_text.strip()

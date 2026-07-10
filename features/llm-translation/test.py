@@ -1,29 +1,28 @@
-"""LLM-supported translation via Foundry account endpoint.
-
-Probes whether the translator's targets[].deploymentName accepts the BYOM
-'{conn}/{model}' prefix. Account-level endpoint, not project-level.
-"""
+"""LLM-supported translation via Foundry account endpoint."""
 import json
 import os
-import sys
+import urllib.error
 import urllib.request
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import account_endpoint, aad_token, gateway_model, load_config  # noqa: E402
+import pytest
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-REGION = os.environ.get("FOUNDRY_REGION", "eastus2")
+from _shared import aad_token, account_endpoint, gateway_model
+
+
 API_VERSION = "2026-06-06"
 
 
-def main() -> int:
+@pytest.mark.not_supported
+@pytest.mark.xfail(
+    strict=True,
+    reason="Translator deploymentName is expected not to route the BYOM prefix.",
+)
+def test_llm_translation(cfg):
     endpoint = account_endpoint()
     if not endpoint:
-        print("::warning::FOUNDRY_ACCOUNT_ENDPOINT not set; skipping llm-translation")
-        return 0
-    cfg = load_config()
-    gw_model = gateway_model(MODEL, cfg, kind="static")
+        pytest.skip("PROJECT_ENDPOINT/FOUNDRY_ACCOUNT_ENDPOINT not set")
+    region = os.environ.get("FOUNDRY_REGION", "eastus2")
+    gw_model = gateway_model(os.environ.get("CHAT_MODEL", "gpt-5-mini"), cfg, kind="static")
     url = f"{endpoint}/translator/text/translate?api-version={API_VERSION}"
     body = {
         "inputs": [
@@ -41,22 +40,12 @@ def main() -> int:
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Region": REGION,
+            "Ocp-Apim-Subscription-Region": region,
         },
         method="POST",
     )
-    print(f"::group::llm-translation POST {url} deploymentName={gw_model}")
-    try:
-        with urllib.request.urlopen(req) as resp:
-            payload = resp.read().decode("utf-8")
-            print("OK:", payload[:500])
-            print("::endgroup::")
-            return 0
-    except urllib.error.HTTPError as e:
-        print(f"::error::HTTP {e.code}: {e.read().decode('utf-8', errors='replace')[:500]}")
-        print("::endgroup::")
-        return 1
 
+    with urllib.request.urlopen(req) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
 
-if __name__ == "__main__":
-    sys.exit(main())
+    assert payload

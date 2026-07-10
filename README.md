@@ -40,7 +40,7 @@ For everything else: just [**open the live matrix**](https://msft-mfg-ai.github.
 uv sync
 cp .env.example .env   # then fill in your values
 az login
-uv run python features/<feature-slug>/test.py
+uv run pytest features/<feature-slug>
 ```
 
 You need a network path to the private Foundry + APIM endpoints (VPN, jump host, self-hosted runner, etc.). See [`.env.example`](.env.example) for the full list of variables and the `byom` GitHub Environment for how CI consumes them via OIDC.

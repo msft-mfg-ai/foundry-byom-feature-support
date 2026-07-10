@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-mcp-entra-agent/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-mcp-entra-agent.yml'
       - '.github/workflows/_feature-test.yml'

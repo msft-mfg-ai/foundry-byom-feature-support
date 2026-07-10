@@ -7,5 +7,6 @@
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
+  "test_file": "test.py",
   "notes": "Status-only roll-up card; the prompt-agents tests are the actual functional probes for this routing shape."
 }

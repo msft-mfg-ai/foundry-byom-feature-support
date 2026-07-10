@@ -1,0 +1,173 @@
+name: E2E - all features (sequential)
+
+# Point at any existing Foundry project by resource ID; the workflow
+# derives the account, endpoint, and gateway connection names from it,
+# grants the CI service principal the roles it needs, then runs every
+# feature test sequentially (max-parallel: 1) so we don't burst TPM.
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_resource_id:
+        description: 'Foundry project resource ID (/subscriptions/.../accounts/<account>/projects/<project>)'
+        required: true
+        type: string
+      chat_model:
+        description: 'CHAT_MODEL for baseline tests'
+        required: false
+        type: string
+        default: 'gpt-4o-mini'
+      skip_role_assignment:
+        description: 'Skip granting roles to the CI SP (set true if it already has access)'
+        required: false
+        type: boolean
+        default: false
+      environment:
+        description: 'GitHub environment to pull secrets/vars from'
+        required: false
+        type: string
+        default: 'byom'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  # ────────────────────────────────────────────────────────────────
+  # 1. Resolve everything from project_resource_id (account, endpoint,
+  #    gateway connection names) via the ARM control plane.
+  # ────────────────────────────────────────────────────────────────
+  resolve:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      account_resource_id: ${{ steps.r.outputs.account_resource_id }}
+      project_endpoint: ${{ steps.r.outputs.project_endpoint }}
+      ai_gateway_connection_static: ${{ steps.r.outputs.ai_gateway_connection_static }}
+      ai_gateway_connection_dynamic: ${{ steps.r.outputs.ai_gateway_connection_dynamic }}
+      ai_gateway_connection_anthropic: ${{ steps.r.outputs.ai_gateway_connection_anthropic }}
+      sp_object_id: ${{ steps.sp.outputs.object_id }}
+      slugs: ${{ steps.discover.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve project metadata
+        id: r
+        env:
+          PROJECT_RESOURCE_ID: ${{ inputs.project_resource_id }}
+        run: python3 .github/scripts/resolve_project.py
+
+      - name: Resolve service principal object ID
+        id: sp
+        run: |
+          OID=$(az ad sp show --id "${{ secrets.AZURE_CLIENT_ID }}" --query id -o tsv)
+          echo "object_id=$OID" >> "$GITHUB_OUTPUT"
+
+      - name: Discover feature slugs
+        id: discover
+        run: |
+          slugs=$(find features -mindepth 2 -maxdepth 2 -name test.py \
+                  -printf '%h\n' | sed 's|features/||' | sort | jq -R . | jq -s -c .)
+          echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
+          echo "Discovered $(echo $slugs | jq length) features"
+
+  # ────────────────────────────────────────────────────────────────
+  # 2. Grant the CI SP the roles it needs on the resolved account.
+  # ────────────────────────────────────────────────────────────────
+  assign-roles:
+    if: ${{ !inputs.skip_role_assignment }}
+    needs: resolve
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Grant Azure AI User on account
+        run: |
+          az role assignment create \
+            --assignee-object-id "${{ needs.resolve.outputs.sp_object_id }}" \
+            --assignee-principal-type ServicePrincipal \
+            --role "Azure AI User" \
+            --scope "${{ needs.resolve.outputs.account_resource_id }}" \
+            || echo "Role may already exist - continuing"
+
+      - name: Grant Cognitive Services User on account
+        run: |
+          az role assignment create \
+            --assignee-object-id "${{ needs.resolve.outputs.sp_object_id }}" \
+            --assignee-principal-type ServicePrincipal \
+            --role "Cognitive Services User" \
+            --scope "${{ needs.resolve.outputs.account_resource_id }}" \
+            || echo "Role may already exist - continuing"
+
+      - name: Grant Azure AI Project Manager on project
+        run: |
+          az role assignment create \
+            --assignee-object-id "${{ needs.resolve.outputs.sp_object_id }}" \
+            --assignee-principal-type ServicePrincipal \
+            --role "Azure AI Project Manager" \
+            --scope "${{ inputs.project_resource_id }}" \
+            || echo "Role may already exist - continuing"
+
+      - name: Wait for RBAC propagation
+        run: sleep 60
+
+  # ────────────────────────────────────────────────────────────────
+  # 3. Run every feature sequentially (max-parallel: 1 avoids TPM burst).
+  # ────────────────────────────────────────────────────────────────
+  test:
+    needs: [resolve, assign-roles]
+    if: ${{ always() && needs.resolve.result == 'success' && (needs.assign-roles.result == 'success' || needs.assign-roles.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        feature: ${{ fromJson(needs.resolve.outputs.slugs) }}
+    env:
+      PROJECT_ENDPOINT: ${{ needs.resolve.outputs.project_endpoint }}
+      CHAT_MODEL: ${{ inputs.chat_model }}
+      AI_GATEWAY_CONNECTION_STATIC: ${{ needs.resolve.outputs.ai_gateway_connection_static }}
+      AI_GATEWAY_CONNECTION_DYNAMIC: ${{ needs.resolve.outputs.ai_gateway_connection_dynamic }}
+      AI_GATEWAY_CONNECTION_ANTHROPIC: ${{ needs.resolve.outputs.ai_gateway_connection_anthropic }}
+      # ---- Optional env from the GitHub environment ----
+      AI_GATEWAY_CONNECTION_MODELGATEWAY: ${{ vars.AI_GATEWAY_CONNECTION_MODELGATEWAY }}
+      AI_GATEWAY_CONNECTION_SERVERLESS: ${{ vars.AI_GATEWAY_CONNECTION_SERVERLESS }}
+      REASONING_MODEL: ${{ vars.REASONING_MODEL }}
+      EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL }}
+      RED_TEAM_TARGET_MODEL: ${{ vars.RED_TEAM_TARGET_MODEL }}
+      MODELGATEWAY_MODEL: ${{ vars.MODELGATEWAY_MODEL }}
+      IMAGE_DEPLOYMENT_NAME: ${{ vars.IMAGE_DEPLOYMENT_NAME }}
+      AZURE_AI_SEARCH_CONNECTION_ID: ${{ vars.AZURE_AI_SEARCH_CONNECTION_ID }}
+      AZURE_AI_SEARCH_INDEX_NAME: ${{ vars.AZURE_AI_SEARCH_INDEX_NAME }}
+      BING_CONNECTION_ID: ${{ vars.BING_CONNECTION_ID }}
+      MCP_SERVER_URL: ${{ vars.MCP_SERVER_URL }}
+      MCP_SERVER_URL_AGENT_IDENTITY: ${{ vars.MCP_SERVER_URL_AGENT_IDENTITY }}
+      HOSTED_AGENT_NAME_STATIC: ${{ vars.HOSTED_AGENT_NAME_STATIC }}
+      HOSTED_AGENT_NAME_DYNAMIC: ${{ vars.HOSTED_AGENT_NAME_DYNAMIC }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --frozen || uv sync
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Run feature - ${{ matrix.feature }}
+        run: uv run pytest features/${{ matrix.feature }} -v --tb=short

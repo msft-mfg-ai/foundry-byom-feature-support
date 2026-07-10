@@ -1,31 +1,32 @@
-"""Prompt Agent (v2) via the static AI Gateway connection."""
+"""Prompt Agent (v2) via the static AI Gateway connection.
+
+Reference conversion for the "supported" shape: BYOM works, so assertions
+directly gate CI.
+"""
 import os
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model  # noqa: E402
-
+import pytest
 from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = os.environ.get("PROMPT_AGENT_NAME_STATIC", "byom-prompt-static")
-GATEWAY_KIND = "static"
+
+AGENT_NAME_ENV = "PROMPT_AGENT_NAME_STATIC"
+AGENT_NAME_DEFAULT = "byom-prompt-static"
 
 
-def main() -> int:
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::Prompt agent ({GATEWAY_KIND}) {AGENT_NAME} model={model}")
+@pytest.mark.supported
+def test_prompt_agent_static(project, aoai, static_model, unique_agent_name):
+    model = static_model()
+    agent_name = os.environ.get(AGENT_NAME_ENV) or unique_agent_name(AGENT_NAME_DEFAULT)
 
     agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
+        agent_name=agent_name,
         definition=PromptAgentDefinition(
             model=model,
             instructions="You are a concise assistant. Reply in one short sentence.",
         ),
     )
-    print(f"agent: id={agent.id} version={agent.version} model={agent.definition.model}")
+    assert agent.id
+    assert agent.definition.model == model
 
     conversation = aoai.conversations.create(
         items=[{"type": "message", "role": "user", "content": "Say hello."}],
@@ -35,10 +36,5 @@ def main() -> int:
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
+    assert resp.output_text and resp.output_text.strip()
 
-
-if __name__ == "__main__":
-    sys.exit(main())

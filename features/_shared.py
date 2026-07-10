@@ -49,6 +49,44 @@ def _require(name: str) -> str:
     return val
 
 
+_MODELS_CACHE: dict[str, list[str]] = {}
+
+
+def available_models(project, cfg: Optional[Config] = None, kind: GatewayKind = "static") -> list[str]:
+    """Return the list of model deployment names advertised by the gateway
+    connection's `metadata.models` array. Empty list means dynamic discovery
+    (metadata absent) — in which case we can't statically know what's
+    available and the test should try and let the API 404 speak.
+    """
+    cfg = cfg or load_config()
+    conn_name = cfg.resolve_gateway(kind)
+    if conn_name in _MODELS_CACHE:
+        return _MODELS_CACHE[conn_name]
+    try:
+        conn = project.connections.get(name=conn_name, include_credentials=False)
+        # SDK exposes metadata as a nested dict or object.
+        meta = getattr(conn, "metadata", None) or {}
+        if hasattr(meta, "get"):
+            models_raw = meta.get("models") or []
+        else:
+            models_raw = []
+        if isinstance(models_raw, str):
+            import json as _json
+            models_raw = _json.loads(models_raw)
+        names = []
+        for m in models_raw:
+            if isinstance(m, dict):
+                n = m.get("name") or (m.get("properties") or {}).get("model", {}).get("name")
+                if n:
+                    names.append(n)
+        _MODELS_CACHE[conn_name] = names
+        return names
+    except Exception as e:  # pragma: no cover
+        print(f"::warning::available_models({conn_name}) failed: {e}", file=sys.stderr)
+        _MODELS_CACHE[conn_name] = []
+        return []
+
+
 def load_config() -> Config:
     return Config(
         project_endpoint=_require("PROJECT_ENDPOINT"),
@@ -125,8 +163,22 @@ def require_env(name: str, feature: str) -> Optional[str]:
 
 def account_endpoint() -> Optional[str]:
     """Foundry/Cognitive Services account endpoint, e.g. for the Translator
-    BYOM API which sits at the account level rather than the project."""
-    return os.environ.get("FOUNDRY_ACCOUNT_ENDPOINT")
+    BYOM API which sits at the account level rather than the project.
+
+    Derived from PROJECT_ENDPOINT when FOUNDRY_ACCOUNT_ENDPOINT isn't set:
+    ``https://{account}.services.ai.azure.com/api/projects/{proj}`` ->
+    ``https://{account}.services.ai.azure.com``.
+    """
+    explicit = os.environ.get("FOUNDRY_ACCOUNT_ENDPOINT")
+    if explicit:
+        return explicit
+    proj = os.environ.get("PROJECT_ENDPOINT")
+    if not proj:
+        return None
+    # Strip trailing "/api/projects/<name>" if present.
+    marker = "/api/projects/"
+    idx = proj.find(marker)
+    return proj[:idx] if idx > 0 else proj
 
 
 def aad_token(scope: str = "https://cognitiveservices.azure.com/.default") -> str:

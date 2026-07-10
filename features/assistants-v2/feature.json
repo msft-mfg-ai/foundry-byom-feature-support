@@ -1,0 +1,13 @@
+{
+  "slug": "assistants-v2",
+  "category": "agents",
+  "name": "Assistants API v2 (beta)",
+  "summary": "OpenAI Assistants v2 exposes `model` in four places: POST /v1/assistants, PATCH /v1/assistants/{id}, POST /v1/threads/{id}/runs (override), POST /v1/threads/runs (override).",
+  "description": "The v2 Assistants API defines a persistent assistant with a default `model`, and each thread run can optionally override that model. This gives four distinct `model` slots on four endpoints. OpenAI has flagged v2 Assistants as being replaced by the Responses API, and Foundry's v2 agent surface (`PromptAgentDefinition` / `HostedAgentDefinition`) is the strategic successor tracked by the `prompt-agents-*` and `hosted-agents-*` cards. This card captures the legacy Assistants-v2 shape specifically so that anyone still on that API knows BYOM has not been validated for it and is unlikely to be.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/create",
+  "notes": "Status-only. Included for completeness because the Assistants v2 surface still ships in the OpenAI SDKs; the recommended migration is to Prompt Agents (see `prompt-agents-static` / `prompt-agents-dynamic`).",
+  "test_file": "test.py"
+}

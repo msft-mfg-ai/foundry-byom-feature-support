@@ -1,0 +1,13 @@
+{
+  "slug": "realtime-transcription",
+  "category": "endpoints",
+  "name": "Realtime transcription sessions",
+  "summary": "Dedicated Realtime WebSocket sessions for streaming transcription only (no assistant response); `model` nested under `session.audio.input.transcription.model` (e.g. `gpt-realtime-whisper`).",
+  "description": "The Realtime API supports transcription-only sessions where the caller streams audio and receives partial/final transcripts, without a chat model responding. The transcription model is specified deep inside the session config as `session.audio.input.transcription.model` (typically `gpt-realtime-whisper`). This is a very different `model` placement from the top-level slot the BYOM prefix normally targets, so even if Foundry's realtime plumbing supports BYOM for the conversational session, the nested transcription model may not honor a `{connection}/{deployment}` prefix.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/realtime-transcription",
+  "notes": "Status-only. Split out of the `byom-incompatible-endpoints` realtime rollup so the specific nested-`model` question can be tracked separately from the mainline realtime chat session.",
+  "test_file": "test.py"
+}

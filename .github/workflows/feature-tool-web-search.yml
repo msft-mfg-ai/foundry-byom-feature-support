@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-web-search/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-web-search.yml'
       - '.github/workflows/_feature-test.yml'
