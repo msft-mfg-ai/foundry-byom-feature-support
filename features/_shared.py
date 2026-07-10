@@ -186,20 +186,31 @@ def aad_token(scope: str = "https://cognitiveservices.azure.com/.default") -> st
     return DefaultAzureCredential().get_token(scope).token
 
 
-def attach_agent_card(cfg: "Config", agent_name: str, description: str = "BYOM A2A test agent") -> str:
-    """PATCH `/agents/{name}` to attach a minimal AgentCard, which flips on the
-    A2A protocol endpoint at `/agents/{name}/endpoint/protocols/a2a`.
+def attach_agent_card(cfg: "Config", agent_name: str, description: str = "BYOM A2A test agent", enable_protocols: Optional[list[str]] = None) -> str:
+    """PATCH `/agents/{name}` to attach a minimal AgentCard, which is
+    prerequisite for the A2A protocol endpoint at
+    `/agents/{name}/endpoint/protocols/a2a`.
 
-    There is no SDK method for this (only GET/DELETE on `/agents/{name}` are
-    surfaced by AgentsOperations, even though AgentDetails.agent_card is a
-    read/create/update field). Returns the a2a base URL.
+    If `enable_protocols` is provided (e.g. `['a2a', 'responses']`) it is
+    also PATCHed onto `agent_endpoint.protocols`. Foundry requires BOTH
+    'a2a' and 'responses' on the endpoint to answer A2A JSON-RPC calls;
+    an A2A-only endpoint responds with `EndpointProtocolNotEnabled`.
+
+    There is no SDK method for either PATCH (AgentsOperations only exposes
+    GET/DELETE on `/agents/{name}`), even though AgentDetails.agent_card
+    and AgentDetails.agent_endpoint are read/create/update fields. Returns
+    the a2a base URL.
     """
     import requests
 
     token = aad_token("https://ai.azure.com/.default")
     base = cfg.project_endpoint.rstrip("/")
     url = f"{base}/agents/{agent_name}?api-version=v1"
-    body = {
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/merge-patch+json",
+    }
+    body: dict = {
         "agent_card": {
             "version": "1.0.0",
             "description": description,
@@ -214,17 +225,60 @@ def attach_agent_card(cfg: "Config", agent_name: str, description: str = "BYOM A
             ],
         }
     }
-    r = requests.patch(
-        url,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/merge-patch+json",
-        },
-        json=body,
-        timeout=30,
-    )
+    if enable_protocols:
+        body["agent_endpoint"] = {"protocols": list(enable_protocols)}
+    r = requests.patch(url, headers=headers, json=body, timeout=30)
     r.raise_for_status()
     return f"{base}/agents/{agent_name}/endpoint/protocols/a2a"
+
+
+def a2a_send_and_wait(a2a_url: str, text: str, timeout_s: int = 60) -> str:
+    """Send an A2A JSON-RPC `message/send` to `a2a_url` and poll `tasks/get`
+    until the task completes. Returns the concatenated text of the response
+    artifacts. Uses DefaultAzureCredential for the `ai.azure.com` scope,
+    which is the only scope the A2A endpoint accepts.
+    """
+    import time
+    import uuid
+
+    import requests
+
+    token = aad_token("https://ai.azure.com/.default")
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    send = {
+        "jsonrpc": "2.0",
+        "id": str(uuid.uuid4()),
+        "method": "message/send",
+        "params": {
+            "message": {
+                "kind": "message",
+                "messageId": str(uuid.uuid4()),
+                "role": "user",
+                "parts": [{"kind": "text", "text": text}],
+            }
+        },
+    }
+    resp = requests.post(a2a_url, headers=headers, json=send, timeout=30).json()
+    if "error" in resp:
+        raise RuntimeError(f"A2A message/send error: {resp['error']}")
+    task_id = resp["result"]["id"]
+
+    deadline = time.time() + timeout_s
+    while time.time() < deadline:
+        poll = {"jsonrpc": "2.0", "id": str(uuid.uuid4()), "method": "tasks/get", "params": {"id": task_id}}
+        pr = requests.post(a2a_url, headers=headers, json=poll, timeout=30).json()
+        state = pr["result"]["status"]["state"]
+        if state == "completed":
+            parts = []
+            for art in pr["result"].get("artifacts", []) or []:
+                for p in art.get("parts", []) or []:
+                    if p.get("kind") == "text":
+                        parts.append(p.get("text", ""))
+            return "".join(parts)
+        if state in ("failed", "canceled", "rejected"):
+            raise RuntimeError(f"A2A task ended in state={state}: {pr['result']}")
+        time.sleep(2)
+    raise TimeoutError(f"A2A task {task_id} did not complete within {timeout_s}s")
 
 
 def make_mcp_tool(server_url: str, server_label: str, auth: str = "AgenticIdentity"):
