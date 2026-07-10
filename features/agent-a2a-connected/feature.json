@@ -3,12 +3,12 @@
   "category": "agents",
   "name": "Connected agent (A2A)",
   "summary": "Caller agent that delegates to a remote agent via RemoteA2A connection.",
-  "description": "Creates a caller agent with a RemoteA2A tool / connection pointing at another agent's endpoint. The caller's orchestrator model can be BYOM-routed; the callee is configured independently. Validates that the cross-agent protocol does not strip the BYOM prefix.",
+  "description": "Creates a caller Prompt Agent with an A2APreviewTool pointing at a callee Foundry Prompt Agent's auto-materialised `/endpoint/protocols/a2a` URL. The callee is self-provisioned (BYOM-routed model) and an AgentCard is attached via PATCH `/agents/{name}` to flip on the A2A endpoint. Validates BYOM prefix survives A2A wiring on both sides.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "partial",
+  "implementation_status": "preview",
   "test_file": "test.py",
-  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/register-external-agent",
-  "notes": "Skips unless `A2A_PROJECT_CONNECTION_ID` (an A2A connection registered in the Foundry project) or `A2A_ENDPOINT` (external A2A server URL) is set. A plain Prompt Agent is NOT an A2A server \u2014 Foundry doesn't auto-expose `/agents/<name>` in A2A protocol format, so this cannot be self-provisioned end-to-end without a real A2A backend. BYOM routing of the caller-side orchestrator has not been validated end-to-end yet.",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/register-external-agent",
+  "notes": "Foundry agents CAN be A2A servers now \u2014 attaching an AgentCard via `PATCH /agents/{name}` (SDK doesn't surface this; use raw REST) materialises `/agents/{name}/endpoint/protocols/a2a`. BYOM routing survives that PATCH cleanly. Full caller\u2192callee roundtrip currently fails with `Failed to fetch agent card: 401 Unauthorized` unless the caller uses a registered A2A connection (`A2A_PROJECT_CONNECTION_ID`) with matching credentials \u2014 that's a cross-agent auth issue, not a BYOM regression.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_external_agents_crud.py"
 }

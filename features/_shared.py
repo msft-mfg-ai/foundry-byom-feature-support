@@ -186,6 +186,47 @@ def aad_token(scope: str = "https://cognitiveservices.azure.com/.default") -> st
     return DefaultAzureCredential().get_token(scope).token
 
 
+def attach_agent_card(cfg: "Config", agent_name: str, description: str = "BYOM A2A test agent") -> str:
+    """PATCH `/agents/{name}` to attach a minimal AgentCard, which flips on the
+    A2A protocol endpoint at `/agents/{name}/endpoint/protocols/a2a`.
+
+    There is no SDK method for this (only GET/DELETE on `/agents/{name}` are
+    surfaced by AgentsOperations, even though AgentDetails.agent_card is a
+    read/create/update field). Returns the a2a base URL.
+    """
+    import requests
+
+    token = aad_token("https://ai.azure.com/.default")
+    base = cfg.project_endpoint.rstrip("/")
+    url = f"{base}/agents/{agent_name}?api-version=v1"
+    body = {
+        "agent_card": {
+            "version": "1.0.0",
+            "description": description,
+            "skills": [
+                {
+                    "id": "summarize",
+                    "name": "summarize",
+                    "description": "Produce a one-sentence summary.",
+                    "tags": ["text", "summary"],
+                    "examples": ["Summarize this paragraph in one sentence."],
+                }
+            ],
+        }
+    }
+    r = requests.patch(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/merge-patch+json",
+        },
+        json=body,
+        timeout=30,
+    )
+    r.raise_for_status()
+    return f"{base}/agents/{agent_name}/endpoint/protocols/a2a"
+
+
 def make_mcp_tool(server_url: str, server_label: str, auth: str = "AgenticIdentity"):
     """Build an MCPTool for a 1P MCP server (Foundry IQ / Work IQ / Web IQ /
     Fabric IQ) or any third-party MCP endpoint.
