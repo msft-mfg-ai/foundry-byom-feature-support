@@ -5,10 +5,10 @@
   "summary": "Caller agent that delegates to a remote agent via RemoteA2A connection.",
   "description": "Creates a caller Prompt Agent with an A2APreviewTool pointing at a callee Foundry Prompt Agent's auto-materialised `/endpoint/protocols/a2a` URL. The callee is self-provisioned (BYOM-routed model) and an AgentCard is attached via PATCH `/agents/{name}` to flip on the A2A endpoint. Validates BYOM prefix survives A2A wiring on both sides.",
   "pm": "TBD",
-  "support_status": "partial",
-  "implementation_status": "preview",
+  "support_status": "not_confirmed",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/agents/how-to/register-external-agent",
-  "notes": "Foundry agents CAN be A2A servers now \u2014 attaching an AgentCard via `PATCH /agents/{name}` (SDK doesn't surface this; use raw REST) materialises `/agents/{name}/endpoint/protocols/a2a`. BYOM routing survives that PATCH cleanly. Full caller\u2192callee roundtrip currently fails with `Failed to fetch agent card: 401 Unauthorized` unless the caller uses a registered A2A connection (`A2A_PROJECT_CONNECTION_ID`) with matching credentials \u2014 that's a cross-agent auth issue, not a BYOM regression.",
+  "notes": "Foundry agents CAN be A2A servers now \u2014 attaching an AgentCard via `PATCH /agents/{name}` (SDK doesn't surface this; use raw REST) materialises `/agents/{name}/endpoint/protocols/a2a`. The PATCH itself persists the BYOM-prefixed callee cleanly, but the full caller\u2192callee roundtrip currently 401s (`Failed to fetch agent card: Unauthorized`) before a model call is exercised on either side, so BYOM prefix survival through the actual A2A hop is NOT yet verified end-to-end. Passing `A2A_PROJECT_CONNECTION_ID` (a registered A2A connection) is expected to unblock cross-agent auth.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_external_agents_crud.py"
 }

@@ -163,7 +163,7 @@ jobs:
           enable-cache: true
       - run: uv python install 3.12
       - name: Install dependencies
-        run: uv sync --frozen || uv sync
+        run: uv sync --frozen --all-extras
       - uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}

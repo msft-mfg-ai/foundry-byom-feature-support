@@ -57,7 +57,7 @@ jobs:
               extra_args+=" --extra ${e}"
             done
           fi
-          uv sync --frozen ${extra_args} || uv sync ${extra_args}
+          uv sync --frozen ${extra_args}
 
       - name: Azure login (OIDC)
         uses: azure/login@v2

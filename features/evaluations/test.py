@@ -7,11 +7,11 @@ accepts the '{conn}/{model}' prefix. Research suggests it likely does not.
 import pytest
 
 
-@pytest.mark.not_confirmed
+@pytest.mark.not_supported
 @pytest.mark.needs_env
 @pytest.mark.xfail(
-    strict=False,
-    reason="azure-ai-evaluation may not parse the {conn}/{model} BYOM prefix for judge deployment_name.",
+    strict=True,
+    reason="azure-ai-evaluation builds `/openai/deployments/{apim-conn}/{model}/chat/completions` and Foundry does not route BYOM-prefixed judge deployment_name (400 'API version not supported').",
 )
 def test_evaluations(cfg, static_model, require_env):
     require_env("EVAL_JUDGE_MODEL")
