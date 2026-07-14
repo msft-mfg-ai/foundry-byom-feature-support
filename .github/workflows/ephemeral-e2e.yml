@@ -1,32 +1,38 @@
 name: Ephemeral E2E - provision, test, teardown
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Spins up a fresh `ai-gateway-pe-testing` deployment from
+# Provisions the `ai-gateway-pe-testing` variant from
 # msft-mfg-ai/ai-foundry-deployment-options, runs the full BYOM feature
-# matrix against it, then tears the infra down (with account purge).
+# matrix against it (via the existing `_feature-test.yml` reusable
+# workflow, which reads all its env from the `byom` GitHub Environment),
+# then tears the infra down with account purge.
 #
-# Prereqs in the `byom` GitHub Environment:
-#   secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
-#   vars:
-#     AZURE_ENV_NAME           deterministic token (e.g. "byomtest")
-#     AZURE_LOCATION           e.g. "eastus2"
-#     EXISTING_FOUNDRY_RESOURCE_IDS  ; or OPENAI_RESOURCE_ID — backing Foundry
-#                              instance the gateway points at (must have gpt-4o-mini)
-#     CHAT_MODEL               defaults to gpt-4o-mini
+# ── One-time setup ──────────────────────────────────────────────────────────
+# The `byom` GH Environment must already carry the resource names the tests
+# expect. Because the ai-gateway-pe-testing bicep uses
+# uniqueString(resourceGroup().id, location) for the naming token, once you
+# know the RG and location the names are stable — populate `vars.*` once:
 #
-# The CI service principal needs Contributor + User Access Administrator on
-# the target subscription (or at least the target RG) to run `azd up` and
-# create role assignments inside the deployment.
+#   AZURE_ENV_NAME                 azd env name (also the RG name azd creates)
+#   AZURE_LOCATION                 e.g. "eastus2"
+#   EXISTING_FOUNDRY_RESOURCE_IDS  or OPENAI_RESOURCE_ID — backing model source
+#   PROJECT_ENDPOINT               https://<foundry>.services.ai.azure.com/api/projects/<project>
+#   AI_GATEWAY_CONNECTION_STATIC   apim-<token>-openai-s-for-<project>
+#   AI_GATEWAY_CONNECTION_DYNAMIC  apim-<token>-openai-d-for-<project>
+#   FOUNDRY_NAME                   needed only for teardown purge
+#   RESOURCE_GROUP                 azd's target RG (usually rg-${AZURE_ENV_NAME})
+#   CHAT_MODEL                     defaults to gpt-4o-mini
 #
-# The `test` job needs a self-hosted runner with line-of-sight into the
-# freshly-deployed VNet. Pass its label via the `runner` input.
+# Do a one-off `azd up` locally to discover the exact names, then paste them
+# into the GitHub Environment. Subsequent `azd up` / `azd down` cycles will
+# reuse the same names.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
   workflow_dispatch:
     inputs:
       runner:
-        description: 'Runner label for the test job (needs VNet line-of-sight)'
+        description: 'Runner label for feature tests (needs VNet line-of-sight)'
         required: false
         type: string
         default: self-hosted
@@ -46,7 +52,7 @@ on:
         type: string
         default: main
   schedule:
-    # Weekly on Saturdays at 06:00 UTC — infra is created, tests run, teardown.
+    # Weekly on Saturdays at 06:00 UTC — provision, test, tear down.
     - cron: '0 6 * * 6'
 
 permissions:
@@ -65,11 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'byom' }}
     outputs:
-      resource_group: ${{ steps.outputs.outputs.resource_group }}
-      foundry_name: ${{ steps.outputs.outputs.foundry_name }}
-      project_endpoint: ${{ steps.outputs.outputs.project_endpoint }}
-      static_conn: ${{ steps.outputs.outputs.static_conn }}
-      dynamic_conn: ${{ steps.outputs.outputs.dynamic_conn }}
       slugs: ${{ steps.discover.outputs.slugs }}
     steps:
       - name: Checkout this repo (for feature discovery)
@@ -104,38 +105,9 @@ jobs:
           OPENAI_RESOURCE_ID: ${{ vars.OPENAI_RESOURCE_ID }}
         run: |
           set -euo pipefail
-          # Non-interactive azd auth uses the federated OIDC login above.
           azd env new "${AZURE_ENV_NAME}" --location "${AZURE_LOCATION}" --subscription "${AZURE_SUBSCRIPTION_ID}" --no-prompt || \
             azd env select "${AZURE_ENV_NAME}"
           azd up --no-prompt
-
-      - name: Capture outputs
-        id: outputs
-        working-directory: deployment-options/${{ env.INFRA_PATH }}
-        run: |
-          set -euo pipefail
-          get() { azd env get-value "$1" 2>/dev/null || true; }
-          RG=$(get RESOURCE_GROUP)
-          FN=$(get FOUNDRY_NAME)
-          PE=$(get PROJECT_ENDPOINT)
-          SC=$(get AI_GATEWAY_CONNECTION_STATIC)
-          DC=$(get AI_GATEWAY_CONNECTION_DYNAMIC)
-          if [ -z "$PE" ] || [ -z "$SC" ] || [ -z "$DC" ]; then
-            echo "::error::azd did not emit required outputs (PROJECT_ENDPOINT / AI_GATEWAY_CONNECTION_*)."
-            exit 1
-          fi
-          {
-            echo "resource_group=$RG"
-            echo "foundry_name=$FN"
-            echo "project_endpoint=$PE"
-            echo "static_conn=$SC"
-            echo "dynamic_conn=$DC"
-          } >> "$GITHUB_OUTPUT"
-          echo "── Provisioned ──"
-          echo "RG=$RG  FOUNDRY=$FN"
-          echo "PROJECT_ENDPOINT=$PE"
-          echo "STATIC=$SC"
-          echo "DYNAMIC=$DC"
 
       - name: Discover feature slugs
         id: discover
@@ -145,43 +117,23 @@ jobs:
           echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
 
   # ────────────────────────────────────────────────────────────────
-  # 2. Run every feature sequentially against the ephemeral infra.
+  # 2. Run every feature via the shared reusable workflow.
+  #    All env comes from the `byom` GitHub Environment vars.
   # ────────────────────────────────────────────────────────────────
   test:
     needs: provision
-    runs-on: ${{ inputs.runner || 'self-hosted' }}
-    environment: ${{ inputs.environment || 'byom' }}
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
         feature: ${{ fromJson(needs.provision.outputs.slugs) }}
-    env:
-      PROJECT_ENDPOINT: ${{ needs.provision.outputs.project_endpoint }}
-      AI_GATEWAY_CONNECTION_STATIC: ${{ needs.provision.outputs.static_conn }}
-      AI_GATEWAY_CONNECTION_DYNAMIC: ${{ needs.provision.outputs.dynamic_conn }}
-      CHAT_MODEL: ${{ vars.CHAT_MODEL || 'gpt-4o-mini' }}
-      REASONING_MODEL: ${{ vars.REASONING_MODEL }}
-      EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL }}
-      RED_TEAM_TARGET_MODEL: ${{ vars.RED_TEAM_TARGET_MODEL }}
-      IMAGE_DEPLOYMENT_NAME: ${{ vars.IMAGE_DEPLOYMENT_NAME }}
-      HOSTED_AGENT_NAME_STATIC: ${{ vars.HOSTED_AGENT_NAME_STATIC }}
-      HOSTED_AGENT_NAME_DYNAMIC: ${{ vars.HOSTED_AGENT_NAME_DYNAMIC }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - run: uv python install 3.12
-      - name: Install dependencies
-        run: uv sync --frozen --all-extras
-      - uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Run feature - ${{ matrix.feature }}
-        run: uv run pytest features/${{ matrix.feature }} -v --tb=short
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: ${{ matrix.feature }}
+      environment: ${{ inputs.environment || 'byom' }}
+      runner: ${{ inputs.runner || 'self-hosted' }}
+      extras: eval
+    secrets: inherit
 
   # ────────────────────────────────────────────────────────────────
   # 3. Teardown — runs even on failure so we don't leak resources.
@@ -219,7 +171,8 @@ jobs:
 
       - name: Purge soft-deleted Foundry account
         env:
-          FOUNDRY_NAME: ${{ needs.provision.outputs.foundry_name }}
+          FOUNDRY_NAME: ${{ vars.FOUNDRY_NAME }}
+          RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
         continue-on-error: true
         run: |
@@ -227,6 +180,8 @@ jobs:
           if [ -n "${FOUNDRY_NAME}" ]; then
             az cognitiveservices account purge \
               --name "${FOUNDRY_NAME}" \
-              --resource-group "${{ needs.provision.outputs.resource_group }}" \
+              --resource-group "${RESOURCE_GROUP}" \
               --location "${AZURE_LOCATION}" || echo "Purge failed or account not soft-deleted."
+          else
+            echo "::warning::FOUNDRY_NAME not set in environment — skipping purge."
           fi
