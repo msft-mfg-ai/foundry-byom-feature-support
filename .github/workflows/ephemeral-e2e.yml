@@ -112,8 +112,6 @@ jobs:
       - name: Capture outputs
         id: outputs
         working-directory: deployment-options/${{ env.INFRA_PATH }}
-        env:
-          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
         run: |
           set -euo pipefail
           get() { azd env get-value "$1" 2>/dev/null || true; }
@@ -122,10 +120,10 @@ jobs:
           PE=$(get PROJECT_ENDPOINT)
           SC=$(get AI_GATEWAY_CONNECTION_STATIC)
           DC=$(get AI_GATEWAY_CONNECTION_DYNAMIC)
-          # Fallback to deterministic names if outputs aren't wired.
-          TOKEN="${AZURE_ENV_NAME:-byomtest}"
-          SC="${SC:-apim-${TOKEN}-openai-s-for-ai-project-${TOKEN}-1}"
-          DC="${DC:-apim-${TOKEN}-openai-d-for-ai-project-${TOKEN}-1}"
+          if [ -z "$PE" ] || [ -z "$SC" ] || [ -z "$DC" ]; then
+            echo "::error::azd did not emit required outputs (PROJECT_ENDPOINT / AI_GATEWAY_CONNECTION_*)."
+            exit 1
+          fi
           {
             echo "resource_group=$RG"
             echo "foundry_name=$FN"
