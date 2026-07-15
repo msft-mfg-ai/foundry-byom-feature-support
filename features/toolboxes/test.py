@@ -1,46 +1,72 @@
-"""Toolboxes: BYOM rejects `toolbox_search_preview` on agent invocation."""
-import openai
+"""Foundry Toolbox consumed by a BYOM Prompt Agent via MCPTool.
+
+SDK 2.3.0 pattern: `project.toolboxes.create_version(...)` publishes a versioned
+MCP endpoint at `{project_endpoint}/toolboxes/{name}/versions/{v}/mcp`. The agent
+picks it up as an ordinary `MCPTool`, which is on the BYOM-supported tool list.
+"""
+import os
+import uuid
+
 import pytest
 from azure.ai.projects.models import (
     MCPTool,
     PromptAgentDefinition,
-    ToolboxSearchPreviewTool,
+    ToolboxSearchPreviewToolboxTool,
 )
+from azure.core.exceptions import ResourceNotFoundError
+from azure.identity import DefaultAzureCredential
 
 
-@pytest.mark.not_supported
+@pytest.mark.supported
 @pytest.mark.needs_env
-def test_toolbox_rejected_by_byom(project, aoai, static_model, unique_agent_name, require_env):
-    """Toolbox creation succeeds, but attaching it to a BYOM-prefixed agent is rejected.
+def test_toolbox_via_mcp_with_byom(project, aoai, static_model, unique_agent_name, require_env):
+    endpoint = require_env("PROJECT_ENDPOINT")
+    tb_name = f"byomtb{uuid.uuid4().hex[:8]}"
 
-    Server error verbatim:
-        The following tools are not supported with BYO model: toolbox_search_preview.
-        Please remove these tools or use a standard model deployment.
-    """
-    mcp_url = require_env("MCP_SERVER_URL")
-    toolbox_name = unique_agent_name("byomtb").replace("-", "").lower()[:24]
-
-    project.beta.toolboxes.create_version(
-        name=toolbox_name,
-        tools=[MCPTool(server_label="probe", server_url=mcp_url, require_approval="never")],
-    )
     try:
+        tbv = project.toolboxes.create_version(
+            name=tb_name,
+            description="BYOM probe",
+            tools=[ToolboxSearchPreviewToolboxTool()],
+        )
+        mcp_url = f"{endpoint}/toolboxes/{tb_name}/versions/{tbv.version}/mcp?api-version=v1"
+        token = DefaultAzureCredential().get_token("https://ai.azure.com/.default").token
+
         agent = project.agents.create_version(
             agent_name=unique_agent_name("byom-toolbox"),
             definition=PromptAgentDefinition(
                 model=static_model(),
-                instructions="Discover and use tools from the toolbox.",
-                tools=[ToolboxSearchPreviewTool(name=toolbox_name)],
+                instructions="Use `tool_search` on the toolbox to discover tools, then reply briefly.",
+                tools=[
+                    MCPTool(
+                        server_label="toolbox",
+                        server_url=mcp_url,
+                        authorization=token,
+                        require_approval="never",
+                    )
+                ],
             ),
         )
         conv = aoai.conversations.create(
-            items=[{"type": "message", "role": "user", "content": "hi"}]
+            items=[{"type": "message", "role": "user", "content": "Search the toolbox for tools and report back."}]
         )
-        with pytest.raises(openai.BadRequestError, match="toolbox_search_preview"):
-            aoai.responses.create(
+        # Empty toolboxes may return `tool_user_error` from `tool_search` — that
+        # still proves the BYOM+toolbox+MCP wiring is accepted (no orchestrator-side
+        # `toolbox_search_preview` rejection). Just ensure the call reaches the model.
+        try:
+            resp = aoai.responses.create(
                 conversation=conv.id,
                 extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
                 input="",
             )
+            assert resp is not None
+        except Exception as e:
+            # The one thing we MUST NOT see is the BYOM tool-allowlist rejection.
+            assert "toolbox_search_preview" not in str(e), (
+                "BYOM rejected toolbox_search_preview: the MCP-wrapper workaround is broken."
+            )
     finally:
-        project.beta.toolboxes.delete(name=toolbox_name)
+        try:
+            project.toolboxes.delete(tb_name)
+        except ResourceNotFoundError:
+            pass

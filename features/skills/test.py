@@ -1,81 +1,97 @@
-"""Skills: BYOM rejects the toolbox delivery path used to attach skills."""
-import time
+"""Foundry Skills — probe both the service-side create bug and the BYOM delivery path.
 
-import openai
+Follows the official sample: sample_agent_toolbox_skill.py in azure-sdk-for-python.
+"""
+import time
+import uuid
+
 import pytest
 from azure.ai.projects.models import (
     MCPTool,
     PromptAgentDefinition,
     SkillInlineContent,
-    ToolboxSearchPreviewTool,
+    ToolboxSearchPreviewToolboxTool,
     ToolboxSkillReference,
 )
-from azure.core.exceptions import ResourceExistsError
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
+from azure.identity import DefaultAzureCredential
 
 
-@pytest.mark.not_supported
+@pytest.mark.not_confirmed
 @pytest.mark.needs_env
 @pytest.mark.xfail(
-    reason="SDK/service bug: skill create() succeeds but the returned version id is "
-    "not addressable via `version='1'` on toolbox create_version (returns 'not found'). "
-    "Even if that were fixed, the toolbox delivery is blocked by BYOM.",
+    reason="Service-side bug: beta.skills.create leaves the skill in state='Creating' "
+    "indefinitely; default_version='1' is claimed but list_versions() is empty and "
+    "get_version(name, '1') returns 404. Repro'd in the Foundry portal too. Once the "
+    "service is fixed, the toolbox+MCP delivery path is BYOM-supported so this should pass.",
     strict=False,
 )
-def test_skill_via_toolbox_rejected_by_byom(project, aoai, static_model, unique_agent_name, require_env):
-    """Create an inline skill, attach it to a toolbox, then confirm BYOM rejects the delivery.
-
-    The skill+toolbox provisioning itself works; the block is on the agent side,
-    identical to the plain toolboxes card — the `toolbox_search_preview` tool is
-    the only way to hand a skill to an agent, and it is not accepted with BYOM.
-    """
-    mcp_url = require_env("MCP_SERVER_URL")
-    skill_name = unique_agent_name("byomskill").replace("-", "").lower()[:24]
-    toolbox_name = unique_agent_name("byomtb").replace("-", "").lower()[:24]
+def test_skill_via_toolbox_with_byom(project, aoai, static_model, unique_agent_name, require_env):
+    endpoint = require_env("PROJECT_ENDPOINT")
+    skill_name = f"byomskill{uuid.uuid4().hex[:8]}"
+    tb_name = f"byomtb{uuid.uuid4().hex[:8]}"
 
     try:
-        sv = project.beta.skills.create(
-            name=skill_name,
-            inline_content=SkillInlineContent(
-                description="Reply with exactly one short sentence.",
-                instructions="You MUST reply with exactly one short sentence.\n",
-            ),
-        )
-    except ResourceExistsError:
-        # SDK's LRO polling races with the async create; the resource actually exists.
-        time.sleep(2)
-        sv = project.beta.skills.get(name=skill_name)
+        try:
+            sv = project.beta.skills.create(
+                name=skill_name,
+                inline_content=SkillInlineContent(
+                    description="Reply with CANARY-42.",
+                    instructions="When asked anything, reply with exactly: CANARY-42",
+                ),
+            )
+        except ResourceExistsError:
+            # SDK LRO polling races with the service's async create. Wait briefly
+            # then read the skill; if the version never materializes this test xfails.
+            for _ in range(20):
+                time.sleep(3)
+                versions = list(project.beta.skills.list_versions(name=skill_name))
+                if versions:
+                    sv = versions[0]
+                    break
+            else:
+                pytest.xfail("Skill stuck in state='Creating', no version materialized")
 
-    version = getattr(sv, "version", None) or getattr(sv, "default_version", "1")
-
-    try:
-        project.beta.toolboxes.create_version(
-            name=toolbox_name,
-            tools=[MCPTool(server_label="probe", server_url=mcp_url, require_approval="never")],
-            skills=[ToolboxSkillReference(name=skill_name, version=version)],
+        tbv = project.toolboxes.create_version(
+            name=tb_name,
+            description="skill delivery",
+            tools=[ToolboxSearchPreviewToolboxTool()],
+            skills=[ToolboxSkillReference(name=sv.name, version=sv.version)],
         )
+
+        mcp_url = f"{endpoint}/toolboxes/{tb_name}/versions/{tbv.version}/mcp?api-version=v1"
+        token = DefaultAzureCredential().get_token("https://ai.azure.com/.default").token
+
         agent = project.agents.create_version(
             agent_name=unique_agent_name("byom-skill"),
             definition=PromptAgentDefinition(
                 model=static_model(),
-                instructions="Follow the skill's instructions.",
-                tools=[ToolboxSearchPreviewTool(name=toolbox_name)],
+                instructions="Follow the skill instructions in your context. Do not call any tool.",
+                tools=[
+                    MCPTool(
+                        server_label="skill-tb",
+                        server_url=mcp_url,
+                        authorization=token,
+                        require_approval="never",
+                    )
+                ],
             ),
         )
         conv = aoai.conversations.create(
-            items=[{"type": "message", "role": "user", "content": "Say hi."}]
+            items=[{"type": "message", "role": "user", "content": "Say the magic word."}]
         )
-        with pytest.raises(openai.BadRequestError, match="toolbox_search_preview"):
-            aoai.responses.create(
-                conversation=conv.id,
-                extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-                input="",
-            )
+        resp = aoai.responses.create(
+            conversation=conv.id,
+            extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
+            input="",
+        )
+        assert "CANARY-42" in (resp.output_text or "")
     finally:
-        try:
-            project.beta.toolboxes.delete(name=toolbox_name)
-        except Exception:
-            pass
-        try:
-            project.beta.skills.delete(name=skill_name)
-        except Exception:
-            pass
+        for op in (
+            lambda: project.toolboxes.delete(tb_name),
+            lambda: project.beta.skills.delete(skill_name),
+        ):
+            try:
+                op()
+            except (ResourceNotFoundError, Exception):
+                pass

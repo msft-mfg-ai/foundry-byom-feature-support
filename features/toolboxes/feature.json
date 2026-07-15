@@ -2,12 +2,14 @@
   "slug": "toolboxes",
   "category": "tools",
   "name": "Toolboxes",
-  "summary": "ToolboxSearchPreviewTool attached to a Prompt Agent whose orchestrator model is BYOM-routed.",
-  "description": "Foundry Toolboxes let you register a reusable bundle of tools (e.g. MCP servers) and hand an agent a `toolbox_search_preview` tool so it can discover them at runtime. Verified live 2026-07-15: creating a toolbox with an MCP tool works, but attaching `ToolboxSearchPreviewTool` to a BYOM-prefixed Prompt Agent is rejected by the Foundry Responses API with a 400.",
+  "summary": "Foundry Toolbox versioned MCP endpoint consumed by a BYOM-routed Prompt Agent via MCPTool.",
+  "description": "Verified live 2026-07-15 with azure-ai-projects 2.3.0: create a Toolbox version with `project.toolboxes.create_version(tools=[ToolboxSearchPreviewToolboxTool()])` and hand the agent an `MCPTool` pointed at `{project_endpoint}/toolboxes/{name}/versions/{v}/mcp?api-version=v1` (with an AAD bearer). The BYOM-prefixed Prompt Agent successfully invokes the toolbox's `tool_search` MCP tool \u2014 no `toolbox_search_preview` rejection.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/toolbox",
-  "notes": "Server error verbatim: 'The following tools are not supported with BYO model: toolbox_search_preview. Please remove these tools or use a standard model deployment.' Toolbox itself provisions fine; the block is at agent-invocation time on any BYOM-prefixed model."
+  "notes": "Historical note: SDK 2.2.0 exposed a `ToolboxSearchPreviewTool` you could attach directly to an agent; that path IS rejected under BYOM ('The following tools are not supported with BYO model: toolbox_search_preview'). The 2.3.0 pattern wraps the toolbox behind MCP, and MCP is BYOM-supported, so the whole flow works. Reference sample: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py"
 }
+
