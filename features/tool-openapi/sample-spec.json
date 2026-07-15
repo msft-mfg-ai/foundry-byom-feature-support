@@ -1,0 +1,35 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Cat Facts API",
+    "description": "Public, anonymous API that returns random cat facts. Used by tool-openapi for a minimal end-to-end OpenAPI tool test.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://catfact.ninja" }
+  ],
+  "paths": {
+    "/fact": {
+      "get": {
+        "operationId": "getRandomCatFact",
+        "summary": "Return a single random cat fact.",
+        "responses": {
+          "200": {
+            "description": "A cat fact.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fact": { "type": "string" },
+                    "length": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
