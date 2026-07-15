@@ -1,0 +1,13 @@
+{
+  "slug": "toolboxes",
+  "category": "tools",
+  "name": "Toolboxes",
+  "summary": "ToolboxSearchPreviewTool attached to a Prompt Agent whose orchestrator model is BYOM-routed.",
+  "description": "Foundry Toolboxes let you register a reusable bundle of tools (e.g. MCP servers) and hand an agent a `toolbox_search_preview` tool so it can discover them at runtime. Verified live 2026-07-15: creating a toolbox with an MCP tool works, but attaching `ToolboxSearchPreviewTool` to a BYOM-prefixed Prompt Agent is rejected by the Foundry Responses API with a 400.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/toolbox",
+  "notes": "Server error verbatim: 'The following tools are not supported with BYO model: toolbox_search_preview. Please remove these tools or use a standard model deployment.' Toolbox itself provisions fine; the block is at agent-invocation time on any BYOM-prefixed model."
+}

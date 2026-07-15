@@ -3,12 +3,13 @@
   "category": "tools",
   "name": "Tool \u2014 Azure AI Search",
   "summary": "AzureAISearchTool against a customer-owned search index, attached to a BYOM-routed agent.",
-  "description": "Index-side embeddings are configured at index-build time outside this matrix. Skips if AZURE_AI_SEARCH_CONNECTION_ID or AZURE_AI_SEARCH_INDEX_NAME is unset.",
+  "description": "Verified live 2026-07-15: attaching AzureAISearchTool to a Prompt Agent whose orchestrator model is BYOM-prefixed works end-to-end \u2014 the search tool executes against the customer's index and returns results to the model. Skips if AZURE_AI_SEARCH_CONNECTION_ID or AZURE_AI_SEARCH_INDEX_NAME is unset.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search",
-  "notes": "Needs to be re-verified end-to-end against a BYOM-routed agent. Not in the official supported-tools list.",
+  "notes": "SDK signature is AzureAISearchTool(azure_ai_search=AzureAISearchToolResource(indexes=[AISearchIndexResource(project_connection_id=..., index_name=..., query_type=..., top_k=...)])) \u2014 the older kwargs-style constructor (connection_id/index_name) does not exist in azure-ai-projects.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_ai_search.py"
 }
+

@@ -2,12 +2,13 @@
   "slug": "knowledge-bases",
   "category": "tools",
   "name": "Knowledge bases",
-  "summary": "Foundry Knowledge Bases attached to an agent, backed by a BYOM-routed embedding/chat model.",
-  "description": "Knowledge bases require a deployed model (typically an embedding model for ingestion and a chat model at query time). Initial observation is that the Knowledge Base configuration only accepts a Foundry-native model deployment and does not honor an AI-Gateway / APIM-routed BYOM connection \u2014 needs to be re-verified end-to-end before we mark it as not_supported.",
+  "summary": "Register a Foundry Index (knowledge base) referencing a customer-owned Azure AI Search index and query it through a BYOM-routed agent.",
+  "description": "Verified live 2026-07-15 against the ai-gateway-pe-testing environment (which only has APIM-routed model connections \u2014 no direct AOAI deployments): `project.indexes.create_or_update()` with an `AzureAISearchIndex(connection_name=..., index_name=...)` successfully registers the index as a project-level knowledge base, and an agent whose orchestrator model is BYOM-prefixed can consume it via the AzureAISearchTool.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Status-only card. Suspected unsupported (knowledge-base config doesn't appear to accept an AI-Gateway connection), but needs hands-on confirmation.",
+  "notes": "Contrary to earlier suspicion: the KB registration API does NOT require a Foundry-native model deployment on the account. It only wraps an Azure AI Search connection + index name; retrieval flows through the search tool at query time, which itself works with a BYOM-prefixed orchestrator.",
   "test_file": "test.py"
 }
+

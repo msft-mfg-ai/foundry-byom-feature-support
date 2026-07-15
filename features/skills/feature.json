@@ -1,0 +1,13 @@
+{
+  "slug": "skills",
+  "category": "tools",
+  "name": "Skills",
+  "summary": "Inline Skills (agentskills.io SKILL.md) referenced by a toolbox attached to a BYOM-routed agent.",
+  "description": "Foundry Skills let you package reusable instructions (SKILL.md) and roll them out to agents via a Toolbox. Because Toolboxes themselves are rejected by BYOM (see the toolboxes card), skills cannot be delivered to a BYOM agent — the skill resource itself provisions, but the delivery vehicle is blocked.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/skills",
+  "notes": "Downstream of the toolbox_search_preview BYOM block. Also worth noting: the SDK create call for skills triggers a transient `state 'Creating'` conflict on the automatic LRO poll (skills are created async), so the test wraps that as a soft warning rather than a hard failure."
+}
