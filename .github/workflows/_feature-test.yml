@@ -123,4 +123,10 @@ jobs:
           IMAGE_VARIATION_MODEL: ${{ vars.IMAGE_VARIATION_MODEL }}
           REALTIME_TRANSCRIPTION_MODEL: ${{ vars.REALTIME_TRANSCRIPTION_MODEL }}
           REALTIME_TRANSLATION_MODEL: ${{ vars.REALTIME_TRANSLATION_MODEL }}
+          # ---- Hosted-agent (pre-built image mode) ----
+          AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+          AZURE_CONTAINER_REGISTRY_ENDPOINT: ${{ vars.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
+          HOSTED_AGENT_IMAGE: ${{ vars.HOSTED_AGENT_IMAGE }}
+          # ---- Secrets (masked) ----
+          WEB_IQ_API_KEY: ${{ secrets.WEB_IQ_API_KEY }}
         run: uv run pytest features/${{ inputs.feature }} ${{ inputs.pytest_args }}

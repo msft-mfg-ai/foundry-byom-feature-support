@@ -281,16 +281,27 @@ def a2a_send_and_wait(a2a_url: str, text: str, timeout_s: int = 60) -> str:
     raise TimeoutError(f"A2A task {task_id} did not complete within {timeout_s}s")
 
 
-def make_mcp_tool(server_url: str, server_label: str, auth: str = "AgenticIdentity"):
+def make_mcp_tool(
+    server_url: str,
+    server_label: str,
+    auth: str = "AgenticIdentity",
+    headers: Optional[dict] = None,
+):
     """Build an MCPTool for a 1P MCP server (Foundry IQ / Work IQ / Web IQ /
     Fabric IQ) or any third-party MCP endpoint.
 
     auth is the MCPTool authType: 'AgenticIdentity' (project or agent identity),
     'UserEntraToken' (OAuth on-behalf-of passthrough), or 'None'.
+
+    headers is an optional dict of custom HTTP headers to forward on every
+    MCP call (e.g. {'x-apikey': '...'} for WebIQ).
     """
     from azure.ai.projects.models import MCPTool
 
-    return MCPTool(server_url=server_url, server_label=server_label, auth_type=auth)
+    kwargs = {"server_url": server_url, "server_label": server_label, "auth_type": auth}
+    if headers:
+        kwargs["headers"] = headers
+    return MCPTool(**kwargs)
 
 
 # ---------------------------------------------------------------------------

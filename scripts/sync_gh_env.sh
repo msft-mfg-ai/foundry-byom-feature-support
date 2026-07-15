@@ -63,6 +63,14 @@ WORKFLOW_VARS=(
   EVAL_JUDGE_MODEL RED_TEAM_TARGET_MODEL
   MODERATION_MODEL WEB_SEARCH_MODEL VIDEO_MODEL IMAGE_VARIATION_MODEL
   REALTIME_TRANSCRIPTION_MODEL REALTIME_TRANSLATION_MODEL
+  AZURE_CONTAINER_REGISTRY_NAME AZURE_CONTAINER_REGISTRY_ENDPOINT HOSTED_AGENT_IMAGE
+)
+
+# Keys treated as secrets (masked in workflow logs, pushed via `gh secret set`
+# instead of `gh variable set`). Anything listed here is also removed from the
+# regular vars pipeline above.
+WORKFLOW_SECRETS=(
+  WEB_IQ_API_KEY
 )
 
 get() {
@@ -91,7 +99,22 @@ for gh_var in "${WORKFLOW_VARS[@]}"; do
   pushed=$((pushed + 1))
 done
 
+secret_pushed=0
+secret_skipped=0
+for gh_secret in "${WORKFLOW_SECRETS[@]}"; do
+  value="$(get "${gh_secret}" || true)"
+  if [[ -z "${value}" ]]; then
+    printf '  %-40s (secret unset — skipping)\n' "${gh_secret}"
+    secret_skipped=$((secret_skipped + 1))
+    continue
+  fi
+  printf '  %-40s ← ******** (secret)\n' "${gh_secret}"
+  gh secret set "${gh_secret}" --repo "${GH_REPO}" --env "${GH_ENV}" --body "${value}" >/dev/null
+  secret_pushed=$((secret_pushed + 1))
+done
+
 echo
-echo "Pushed ${pushed} variables, skipped ${skipped}."
+echo "Pushed ${pushed} variables (${skipped} skipped), ${secret_pushed} secrets (${secret_skipped} skipped)."
 echo "Verify:  gh variable list --repo ${GH_REPO} --env ${GH_ENV}"
+echo "         gh secret   list --repo ${GH_REPO} --env ${GH_ENV}"
 
