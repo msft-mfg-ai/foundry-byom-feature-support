@@ -1,0 +1,74 @@
+name: Feature matrix (tests only)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Runs every feature's test.py against the infrastructure already described
+# by the `byom` GitHub Environment vars — **no provisioning, no teardown**.
+#
+# Prerequisites:
+#   1. Infrastructure exists (deployed once via `ephemeral-e2e.yml` or manually
+#      with `azd up` in ai-foundry-deployment-options/options-infra/
+#      ai-gateway-pe-testing).
+#   2. GH env `byom` populated by running:
+#        scripts/sync_gh_env.sh <path-to-.env-or-azd-env-dir>
+#
+# Trigger via `gh workflow run feature-matrix.yml` any time — tests re-run
+# against the persistent env without any Azure resource changes.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner label (self-hosted for private-networked envs)'
+        required: false
+        type: string
+        default: self-hosted
+      environment:
+        description: 'GitHub environment to pull secrets/vars from'
+        required: false
+        type: string
+        default: byom
+      feature_filter:
+        description: 'Optional regex to filter feature slugs (empty = all)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      slugs: ${{ steps.list.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        env:
+          FILTER: ${{ inputs.feature_filter }}
+        run: |
+          set -euo pipefail
+          all=$(find features -mindepth 2 -maxdepth 2 -name test.py \
+                -printf '%h\n' | sed 's|features/||' | sort)
+          if [ -n "${FILTER}" ]; then
+            all=$(echo "$all" | grep -E "${FILTER}" || true)
+          fi
+          slugs=$(echo "$all" | jq -R . | jq -s -c .)
+          echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: discover
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        feature: ${{ fromJson(needs.discover.outputs.slugs) }}
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: ${{ matrix.feature }}
+      environment: ${{ inputs.environment || 'byom' }}
+      runner: ${{ inputs.runner || 'self-hosted' }}
+      extras: eval
+    secrets: inherit

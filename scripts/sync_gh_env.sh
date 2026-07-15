@@ -1,66 +1,97 @@
 #!/usr/bin/env bash
-# Populate the `byom` GitHub Environment with variables read from an azd
-# environment produced by the `ai-gateway-pe-testing` bicep variant.
+# Populate the `byom` GitHub Environment with every KEY=VALUE line found in a
+# local .env file, so the reusable test workflow (_feature-test.yml) can run
+# **independently of any deployment** — once you sync, tests can be re-run
+# against the same underlying infrastructure without re-provisioning.
+#
+# The .env file can be:
+#   1. The repo-local .env you use for local pytest runs (recommended — it is
+#      the exact same source of truth), OR
+#   2. An azd env dir; the script auto-detects `<dir>/.env`.
+#
+# Values from the workflow that are NOT in your .env are simply not pushed
+# (so tests that need them will `::warning::` and skip, exactly as they do
+# locally).
 #
 # Usage:
-#   scripts/sync_gh_env.sh <path-to-azd-env-dir> [gh-repo] [gh-env-name]
+#   scripts/sync_gh_env.sh                                 # uses ./.env
+#   scripts/sync_gh_env.sh path/to/.env                    # explicit file
+#   scripts/sync_gh_env.sh path/to/azd/env-dir             # dir with .env
+#   scripts/sync_gh_env.sh path/to/.env owner/repo envname
 #
-# Example:
-#   scripts/sync_gh_env.sh \
-#     ~/projects/otis/ai-foundry-config-testing/options-infra/ai-gateway-pe-testing/.azure/testing-byom
-#
-# Requires: gh (authenticated), jq. The current gh user needs
-# `admin:repo` on the target repo to write environment variables.
+# Requires: gh (authenticated with admin:repo on the target repo).
 
 set -euo pipefail
 
-AZD_ENV_DIR="${1:-}"
+SRC="${1:-.env}"
 GH_REPO="${2:-msft-mfg-ai/foundry-byom-feature-support}"
 GH_ENV="${3:-byom}"
 
-if [[ -z "${AZD_ENV_DIR}" || ! -f "${AZD_ENV_DIR}/.env" ]]; then
-  echo "usage: $0 <path-to-azd-env-dir> [gh-repo] [gh-env-name]" >&2
-  echo "  (expected ${AZD_ENV_DIR}/.env to exist)" >&2
+if [[ -d "${SRC}" && -f "${SRC}/.env" ]]; then
+  ENV_FILE="${SRC}/.env"
+else
+  ENV_FILE="${SRC}"
+fi
+
+if [[ ! -f "${ENV_FILE}" ]]; then
+  echo "usage: $0 <path-to-.env-or-dir> [gh-repo] [gh-env-name]" >&2
+  echo "  (could not find ${ENV_FILE})" >&2
   exit 2
 fi
 
-# ── azd-provisioned values that must land in the GH env unchanged ──
-# key = GH environment variable name
-# value = azd .env key it comes from
-declare -A MAPPING=(
-  [PROJECT_ENDPOINT]=PROJECT_ENDPOINT
-  [AI_GATEWAY_CONNECTION_STATIC]=AI_GATEWAY_CONNECTION_STATIC
-  [AI_GATEWAY_CONNECTION_DYNAMIC]=AI_GATEWAY_CONNECTION_DYNAMIC
-  [BING_CONNECTION_ID]=BING_CONNECTION_ID
-  [AZURE_AI_SEARCH_CONNECTION_ID]=AZURE_AI_SEARCH_CONNECTION_ID
-  [AZURE_AI_SEARCH_INDEX_NAME]=AZURE_AI_SEARCH_INDEX_NAME
-  [FOUNDRY_NAME]=FOUNDRY_NAME
-  [RESOURCE_GROUP]=RESOURCE_GROUP
-  [AZURE_ENV_NAME]=AZURE_ENV_NAME
-  [AZURE_LOCATION]=AZURE_LOCATION
+# Superset of every var the reusable workflow reads. Only keys in this list
+# get pushed — keeps stray local values (AZURE_*, subscription IDs, etc.) out
+# of the GH environment.
+WORKFLOW_VARS=(
+  PROJECT_ENDPOINT FOUNDRY_ACCOUNT_ENDPOINT FOUNDRY_REGION
+  CHAT_MODEL REASONING_MODEL IMAGE_MODEL IMAGE_DEPLOYMENT_NAME
+  AI_GATEWAY_CONNECTION_STATIC AI_GATEWAY_CONNECTION_DYNAMIC
+  AI_GATEWAY_CONNECTION_ANTHROPIC AI_GATEWAY_CONNECTION_MODELGATEWAY
+  AI_GATEWAY_CONNECTION_SERVERLESS
+  ANTHROPIC_MODEL MODELGATEWAY_MODEL SERVERLESS_MODEL
+  PROMPT_AGENT_NAME_STATIC PROMPT_AGENT_NAME_DYNAMIC
+  HOSTED_AGENT_NAME_STATIC HOSTED_AGENT_NAME_DYNAMIC
+  BING_CONNECTION_ID FILE_SEARCH_VECTOR_STORE_ID
+  AZURE_AI_SEARCH_CONNECTION_ID AZURE_AI_SEARCH_INDEX_NAME
+  SHAREPOINT_CONNECTION_ID FABRIC_CONNECTION_ID
+  A2A_REMOTE_AGENT_ENDPOINT A2A_PROJECT_CONNECTION_ID A2A_ENDPOINT
+  LOGIC_APP_RESOURCE_ID LOGIC_APP_WORKFLOW_NAME
+  COMPUTER_USE_ENVIRONMENT OPENAPI_SPEC_PATH
+  KNOWLEDGE_BASE_ID MEMORY_STORE_ID
+  MCP_SERVER_URL MCP_SERVER_URL_AGENT_IDENTITY MCP_SERVER_URL_OAUTH
+  FOUNDRY_IQ_MCP_URL WORK_IQ_MCP_URL WEB_IQ_MCP_URL FABRIC_IQ_MCP_URL
+  EVAL_JUDGE_MODEL RED_TEAM_TARGET_MODEL
+  MODERATION_MODEL WEB_SEARCH_MODEL VIDEO_MODEL IMAGE_VARIATION_MODEL
+  REALTIME_TRANSCRIPTION_MODEL REALTIME_TRANSLATION_MODEL
 )
 
-# Parse "KEY=\"value\"" style lines from the azd .env file.
 get() {
   local key="$1"
-  grep -E "^${key}=" "${AZD_ENV_DIR}/.env" | tail -n1 | sed -E "s/^${key}=//" | sed -E 's/^"(.*)"$/\1/'
+  grep -E "^${key}=" "${ENV_FILE}" | tail -n1 | sed -E "s/^${key}=//" | sed -E 's/^"(.*)"$/\1/'
 }
 
-echo "Reading azd env from: ${AZD_ENV_DIR}/.env"
-echo "Target: gh repo=${GH_REPO}  env=${GH_ENV}"
+echo "Source .env: ${ENV_FILE}"
+echo "Target:      gh repo=${GH_REPO}  env=${GH_ENV}"
 echo
 
-for gh_var in "${!MAPPING[@]}"; do
-  azd_key="${MAPPING[$gh_var]}"
-  value="$(get "${azd_key}")"
+pushed=0
+skipped=0
+for gh_var in "${WORKFLOW_VARS[@]}"; do
+  value="$(get "${gh_var}" || true)"
   if [[ -z "${value}" ]]; then
-    echo "::warning:: ${azd_key} not set in azd env — skipping ${gh_var}"
+    printf '  %-40s (unset — skipping)\n' "${gh_var}"
+    skipped=$((skipped + 1))
     continue
   fi
-  printf '  %-32s ← %s\n' "${gh_var}" "${value}"
+  # Truncate display for long values (resource IDs).
+  display="${value}"
+  if (( ${#display} > 60 )); then display="${display:0:57}..."; fi
+  printf '  %-40s ← %s\n' "${gh_var}" "${display}"
   gh variable set "${gh_var}" --repo "${GH_REPO}" --env "${GH_ENV}" --body "${value}" >/dev/null
+  pushed=$((pushed + 1))
 done
 
 echo
-echo "Done. Verify with:"
-echo "  gh variable list --repo ${GH_REPO} --env ${GH_ENV}"
+echo "Pushed ${pushed} variables, skipped ${skipped}."
+echo "Verify:  gh variable list --repo ${GH_REPO} --env ${GH_ENV}"
+
