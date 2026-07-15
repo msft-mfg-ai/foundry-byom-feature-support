@@ -1,4 +1,8 @@
-"""Knowledge Base: register a Foundry Index and query it via a BYOM Prompt Agent."""
+"""Foundry Index (project.indexes) + AzureAISearchTool consumed by a BYOM Prompt Agent.
+
+This is the lower-level 'Indexes' primitive — NOT the Foundry IQ 'Knowledge bases'
+surface, which needs Standard-SKU AI Search + semantic ranker + network access.
+"""
 import uuid
 
 import pytest
@@ -13,31 +17,23 @@ from azure.ai.projects.models import (
 
 @pytest.mark.supported
 @pytest.mark.needs_env
-def test_knowledge_base_create_and_query(project, aoai, static_model, unique_agent_name, require_env):
-    """Create a project-level Foundry Index (KB) backed by AI Search, then query it via BYOM.
-
-    The ai-gateway-pe-testing environment has NO Foundry-native model deployments
-    on the account itself — every model call flows through APIM. If KB creation
-    or query worked only with account-local deployments, this test would fail.
-    """
+def test_foundry_index_registered_and_queried(project, aoai, static_model, unique_agent_name, require_env):
     connection_id = require_env("AZURE_AI_SEARCH_CONNECTION_ID")
     index_name = require_env("AZURE_AI_SEARCH_INDEX_NAME")
-    # Search connection is the last segment of the ARM-style connection id.
     connection_name = connection_id.split("/")[-1]
 
-    kb_name = f"byomkb{uuid.uuid4().hex[:8]}"
+    kb_name = f"byomidx{uuid.uuid4().hex[:8]}"
     try:
         project.indexes.create_or_update(
             name=kb_name,
             version="1",
             index=AzureAISearchIndex(connection_name=connection_name, index_name=index_name),
         )
-
         agent = project.agents.create_version(
-            agent_name=unique_agent_name("byom-knowledge-bases"),
+            agent_name=unique_agent_name("byom-foundry-index"),
             definition=PromptAgentDefinition(
                 model=static_model(),
-                instructions="Use the knowledge base to answer. Reply briefly.",
+                instructions="Search the index and summarize one result briefly.",
                 tools=[
                     AzureAISearchTool(
                         azure_ai_search=AzureAISearchToolResource(
@@ -55,7 +51,7 @@ def test_knowledge_base_create_and_query(project, aoai, static_model, unique_age
             ),
         )
         conv = aoai.conversations.create(
-            items=[{"type": "message", "role": "user", "content": "Search the knowledge base and summarize one fact."}]
+            items=[{"type": "message", "role": "user", "content": "Search the index and summarize."}]
         )
         resp = aoai.responses.create(
             conversation=conv.id,
