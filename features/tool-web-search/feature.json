@@ -2,13 +2,13 @@
   "slug": "tool-web-search",
   "category": "tools",
   "name": "Tool \u2014 Web search (Bing grounding)",
-  "summary": "BingGroundingTool / WebSearchTool inside a Prompt Agent whose orchestrator model is BYOM-routed.",
-  "description": "Tool has no model param of its own; BYOM applies only to the host agent's orchestrator. Skips if BING_CONNECTION_ID is unset.",
+  "summary": "BingGroundingTool inside a Prompt Agent whose orchestrator model is BYOM-routed.",
+  "description": "Not supported: the Foundry Responses API rejects agents with the bing_grounding tool when the orchestrator model uses the {conn}/{deployment} BYOM prefix. Verified live 2026-07-14 against ai-gateway-pe-testing.",
   "pm": "TBD",
-  "support_status": "partial",
-  "implementation_status": "preview",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/bing-tools",
-  "notes": "Known bug: first invocation succeeds, every subsequent web-search call in the same agent fails. See test.py for the repro.",
+  "notes": "Server error verbatim: 'The following tools are not supported with BYO model: bing_grounding. Please remove these tools or use a standard model deployment.' Bing grounding is also absent from the docs' BYOM-supported tools list (learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations).",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_bing_grounding.py"
 }
