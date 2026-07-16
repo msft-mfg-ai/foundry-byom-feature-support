@@ -1,6 +1,11 @@
 ---
 import type { Feature } from '../data/features.ts';
+import { marked } from 'marked';
 const { feature, repo } = Astro.props as { feature: Feature; repo: string };
+
+marked.setOptions({ breaks: true, gfm: true });
+const notesHtml = feature.notes ? marked.parse(feature.notes) as string : null;
+const descriptionHtml = marked.parse(feature.description) as string;
 
 const supportBadge: Record<Feature['support_status'], { label: string; cls: string; icon: string }> = {
   supported:      { label: 'Supported',     cls: 'bg-emerald-100 text-emerald-800 ring-emerald-600/20',  icon: '✓' },
@@ -50,10 +55,11 @@ const badgeUrl = feature.test_file ? `${repo}/actions/workflows/feature-${featur
     <div class="grid gap-6 md:grid-cols-3">
       <div class="md:col-span-2 space-y-3">
         <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Description</h4>
-        <p class="whitespace-pre-line text-sm leading-relaxed text-slate-700">{feature.description}</p>
-        {feature.notes && (
-          <div class="rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
-            <span class="font-semibold">Note:</span> {feature.notes}
+        <div class="prose prose-sm prose-slate max-w-none text-slate-700" set:html={descriptionHtml}></div>
+        {notesHtml && (
+          <div class="prose prose-sm prose-amber max-w-none rounded-lg bg-amber-50 p-3 text-amber-900 ring-1 ring-amber-200 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_ol]:my-2 [&_ul]:my-2 [&_code]:rounded [&_code]:bg-amber-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-amber-900 [&_code]:before:content-none [&_code]:after:content-none">
+            <p class="mb-2 font-semibold text-amber-900">Note</p>
+            <div set:html={notesHtml}></div>
           </div>
         )}
       </div>
