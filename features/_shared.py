@@ -442,7 +442,7 @@ def invoke_hosted_agent(cfg, agent_name: str, prompt: str = "Say hello."):
     r = requests.post(
         url,
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        json={"prompt": prompt},
+        json={"message": prompt, "prompt": prompt},
         timeout=120,
     )
     r.raise_for_status()
