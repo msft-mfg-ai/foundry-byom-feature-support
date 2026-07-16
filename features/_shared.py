@@ -438,12 +438,13 @@ def invoke_hosted_agent(cfg, agent_name: str, prompt: str = "Say hello."):
     import requests
 
     token = aad_token("https://ai.azure.com/.default")
-    url = f"{cfg.project_endpoint}/agents/{agent_name}/endpoint/protocols/invocations"
+    url = f"{cfg.project_endpoint}/agents/{agent_name}/endpoint/protocols/invocations?api-version=v1"
     r = requests.post(
         url,
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         json={"message": prompt, "prompt": prompt},
         timeout=120,
     )
-    r.raise_for_status()
+    if not r.ok:
+        raise AssertionError(f"invoke_hosted_agent {agent_name} -> {r.status_code}: {r.text}")
     return r.json()
