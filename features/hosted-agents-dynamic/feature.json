@@ -5,11 +5,11 @@
   "summary": "Same as hosted-agents-static but routes through the dynamic-discovery APIM connection.",
   "description": "Self-provisions the same inline Invocations-protocol agent as `hosted-agents-static` but passes the dynamic-discovery gateway connection name as the container env var. See hosted-agents-static for the full flow. Marker: `slow` \u2014 opt-in via `pytest -m slow`.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
-  "notes": "Skips if `AI_GATEWAY_CONNECTION_DYNAMIC` is unset. Otherwise identical wiring to hosted-agents-static.",
+  "notes": "**Concept verified** by the `hosted-agents-canary` card, which probes both the static AND dynamic-discovery gateways from inside the container (`BYOM_MODEL` + `BYOM_MODEL_DYNAMIC` env vars) and returns `ok:true` for the `responses-openai-dynamic` sub-probe. This card's test uses `remote_build` (Foundry builds the container from an inline zip), which is slower/cold-start-flaky, hence still `slow` + `xfail`. The BYOM behavior on the wire is identical to the canary.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
 

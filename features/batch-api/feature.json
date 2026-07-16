@@ -3,11 +3,11 @@
   "category": "endpoints",
   "name": "Batch API \u2014 Per-line `model` in JSONL",
   "summary": "POST /v1/batches wraps other endpoints (chat/completions, responses, embeddings, moderations, videos); each JSONL line's `body.model` is the BYOM slot.",
-  "description": "The Batch API itself does not take a top-level `model`; instead each JSONL input line contains a full request body for the wrapped endpoint (chat completions, responses, embeddings, moderations, or videos), including that request's own `model`. The BYOM question is whether the batch runner faithfully forwards a `{connection}/{deployment}` prefix down to the wrapped endpoint the same way a live call would, or whether the batch scheduler strips/rewrites the model to something on the Foundry account. Untested \u2014 batch jobs run 24 h and are inconvenient to iterate against, which is likely why this hasn't been validated yet.",
+  "description": "The Batch API itself does not take a top-level `model`; each JSONL input line contains a full request body for the wrapped endpoint (chat completions, responses, embeddings, moderations, videos) including that request's own `model`. **Verified negative:** the Foundry project OpenAI client returns `404 NotFound` when calling `aoai.batches.create(...)` — the `/batches` endpoint is not exposed on the Foundry Responses surface at all, so the BYOM prefix question is moot. Batch is a native OpenAI/Azure OpenAI feature, not a Foundry-orchestrated one.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/batch",
-  "notes": "Status-only. Overlaps with `byom-incompatible-endpoints` rollup, which currently lists batch as not-supported; promote out of the rollup once tested and split into a supported/not-supported outcome.",
+  "notes": "Test confirms: `aoai.batches.create` on the Foundry project's OpenAI client returns `openai.NotFoundError: 404` on the batch creation step (file upload also fails against Foundry). No BYOM prefix will help because the endpoint doesn't exist server-side. Card belongs alongside embeddings/TTS/STT/fine-tuning/realtime in the `byom-incompatible-endpoints` rollup.",
   "test_file": "test.py"
 }
