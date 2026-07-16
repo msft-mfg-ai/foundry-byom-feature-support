@@ -8,5 +8,5 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "notes": "ModelGateway supports OAuth2 client_credentials; ApiManagement supports AAD/MI. They are NOT interchangeable connection categories."
+  "notes": "BYOM routing through ModelGateway is not interchangeable with APIM routing.\n\n`ModelGateway` supports OAuth2 `client_credentials`; `ApiManagement` supports AAD/MI."
 }

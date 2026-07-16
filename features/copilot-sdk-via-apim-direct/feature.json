@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "ga",
   "azure_docs": "https://learn.microsoft.com/azure/api-management/genai-gateway-capabilities",
-  "notes": "Useful when the team wants APIM's load-balancing/rate-limiting/observability but doesn't need Foundry orchestration (agents, tools, connections). Same static-credential limitation as via-foundry \u2014 `apiKey` or `bearerToken` only; no automatic Entra refresh. If APIM is fronted by Entra, use a background token-refresh thread to recreate sessions before expiry. Not verified end-to-end \u2014 the shape should Just Work because Copilot SDK just needs an OpenAI-compatible endpoint, but confirmation pending.",
+  "notes": "BYOM is not verified end-to-end, but should work because Copilot SDK only needs an OpenAI-compatible endpoint.\n\nUse this path when you want APIM load-balancing, rate-limiting, or observability without Foundry orchestration.\n\n**Auth gotcha:** Copilot SDK accepts only static `apiKey` or `bearerToken`; it does not refresh Entra tokens. If APIM is Entra-fronted, recreate sessions from a background token-refresh thread before expiry.",
   "sample_url": "https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md"
 }

@@ -9,7 +9,7 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
-  "notes": "**Concept verified** by the `hosted-agents-canary` card (azd-provisioned Foundry Hosted Agent registered via the `azure.ai.agents` extension, invoked via Invocations 2.0.0, calls `responses.create(model='{static-apim-conn}/gpt-4o-mini')` from inside the container and returns `ok:true`). This card's test uses a different deploy path (`remote_build` — Foundry builds the container in-place from an inline zip, no ACR), which is slower and cold-start-flaky, hence still marked `slow` + `xfail`. The BYOM behavior on the wire is identical to the canary once the agent is `active`.",
+  "notes": "**Concept verified via canary**: BYOM static routing works on the wire.\n\nThe `hosted-agents-canary` card uses an `azd`-provisioned Foundry Hosted Agent registered via the `azure.ai.agents` extension. Invocations 2.0.0 calls `responses.create(model='{static-apim-conn}/gpt-4o-mini')` from inside the container and returns `ok:true`.\n\nThis card uses `remote_build` instead: Foundry builds the container in-place from an inline zip, with no ACR. That path is slower and cold-start-flaky, so the test remains `slow` + `xfail`.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
 

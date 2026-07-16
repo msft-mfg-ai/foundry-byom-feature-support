@@ -8,6 +8,6 @@
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/compaction",
-  "notes": "Status-only. Add a test.py once we can confirm whether the BYOM prefix flows through both the nested `context_management` config and the standalone `/v1/responses/compact` endpoint. If server-side compaction reuses the top-level `model` cleanly it may end up `partial` (server-side works, standalone doesn't) rather than fully `not_supported`.",
+  "notes": "BYOM is not confirmed for response compaction.\n\nAdd `test.py` after confirming whether the BYOM prefix flows through:\n\n- nested `context_management` config\n- standalone `/v1/responses/compact`\n\nIf server-side compaction reuses the top-level `model`, this may become `partial` rather than `not_supported`.",
   "test_file": "test.py"
 }

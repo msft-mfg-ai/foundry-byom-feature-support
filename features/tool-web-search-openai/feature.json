@@ -9,5 +9,5 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://platform.openai.com/docs/guides/tools-web-search",
-  "notes": "Requires no BING_CONNECTION_ID. Depends on whether Foundry's APIM connection forwards the OpenAI-native web_search tool call through to OpenAI's back-end."
+  "notes": "BYOM is not confirmed for OpenAI-native `web_search` forwarding.\n\nRequires no `BING_CONNECTION_ID`. Result depends on whether the Foundry APIM connection forwards the OpenAI-native `web_search` tool call through to OpenAI's backend."
 }

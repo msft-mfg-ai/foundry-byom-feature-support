@@ -8,6 +8,6 @@
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/video-generation",
-  "notes": "Status-only. Likely will remain `not_supported` given the platform-native nature (jobs, storage, webhooks) and the pending Sora 2 sunset.",
+  "notes": "BYOM is expected to remain not supported because video generation is platform-native: jobs, storage, and webhooks.\n\nStatus-only card; also tracks the pending Sora 2 sunset.",
   "test_file": "test.py"
 }

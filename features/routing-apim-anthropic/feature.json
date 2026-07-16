@@ -9,5 +9,5 @@
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal",
-  "notes": "Distinct from the ModelGateway connection category (see routing-modelgateway-non-openai). No OpenAI-to-Anthropic translation policy is needed — APIM AI Gateway speaks the provider's API natively."
+  "notes": "BYOM routing through APIM to Anthropic is a separate path from `routing-modelgateway-non-openai`.\n\nNo OpenAI-to-Anthropic translation policy is needed; APIM AI Gateway speaks the provider API natively."
 }

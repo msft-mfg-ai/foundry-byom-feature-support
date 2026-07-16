@@ -9,6 +9,6 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/developer/azure-developer-cli/extensions/azure-ai-foundry-extension",
-  "notes": "Skips if `HOSTED_AGENT_NAME_CANARY` is unset (i.e. the infra repo hasn't been `azd deploy`-ed). The agent's `agent.yaml` sets `BYOM_MODEL=${AI_GATEWAY_CONNECTION_STATIC}/${CHAT_MODEL}` and optionally `BYOM_MODEL_ANTHROPIC=${AI_GATEWAY_CONNECTION_ANTHROPIC}/${ANTHROPIC_MODEL}`. Each probe becomes an assertion.",
+  "notes": "BYOM works in the hosted-agent canary when the infra repo has been `azd deploy`-ed.\n\nSkips if `HOSTED_AGENT_NAME_CANARY` is unset. The agent's `agent.yaml` sets:\n\n- `BYOM_MODEL=${AI_GATEWAY_CONNECTION_STATIC}/${CHAT_MODEL}`\n- `BYOM_MODEL_ANTHROPIC=${AI_GATEWAY_CONNECTION_ANTHROPIC}/${ANTHROPIC_MODEL}` when configured\n\nEach probe becomes an assertion.",
   "sample_url": "https://learn.microsoft.com/azure/developer/azure-developer-cli/extensions/azure-ai-foundry-extension"
 }

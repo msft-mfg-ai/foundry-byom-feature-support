@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/agent-to-agent",
-  "notes": "Not in the official supported-tools list. Foundry agents CAN be exposed as A2A servers (PATCH `/agents/{name}` with an AgentCard), but the tool call from caller \u2192 callee returns 401 unless bound to a registered A2A connection with credentials. BYOM prefix does survive the callee's model definition.",
+  "notes": "BYOM survives in the callee's model definition, but the caller-to-callee tool path is not working yet.\n\nFoundry agents can be exposed as A2A servers via `PATCH /agents/{name}` with an AgentCard. The tool call from caller to callee returns 401 unless it is bound to a registered A2A connection with credentials.\n\nNot in the official supported-tools list.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_to_agent.py"
 }

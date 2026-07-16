@@ -9,7 +9,7 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search",
-  "notes": "SDK signature is AzureAISearchTool(azure_ai_search=AzureAISearchToolResource(indexes=[AISearchIndexResource(project_connection_id=..., index_name=..., query_type=..., top_k=...)])) \u2014 the older kwargs-style constructor (connection_id/index_name) does not exist in azure-ai-projects.",
+  "notes": "BYOM works; the tool has no model parameter, but the SDK shape is easy to get wrong.\n\nUse `AzureAISearchTool(azure_ai_search=AzureAISearchToolResource(indexes=[AISearchIndexResource(project_connection_id=..., index_name=..., query_type=..., top_k=...)]))`.\n\nThe older kwargs-style constructor (`connection_id`, `index_name`) does not exist in `azure-ai-projects`.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_ai_search.py"
 }
 

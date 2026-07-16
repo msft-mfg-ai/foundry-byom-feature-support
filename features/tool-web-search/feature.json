@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/bing-tools",
-  "notes": "Server error verbatim: 'The following tools are not supported with BYO model: bing_grounding. Please remove these tools or use a standard model deployment.' Bing grounding is also absent from the docs' BYOM-supported tools list (learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations).",
+  "notes": "BYOM does not work with Bing grounding.\n\nServer error verbatim:\n\n> The following tools are not supported with BYO model: bing_grounding. Please remove these tools or use a standard model deployment.\n\nBing grounding is also absent from the docs' BYOM-supported tools list: learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_bing_grounding.py"
 }

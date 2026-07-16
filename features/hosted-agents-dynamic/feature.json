@@ -9,7 +9,7 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
-  "notes": "**Concept verified** by the `hosted-agents-canary` card, which probes both the static AND dynamic-discovery gateways from inside the container (`BYOM_MODEL` + `BYOM_MODEL_DYNAMIC` env vars) and returns `ok:true` for the `responses-openai-dynamic` sub-probe. This card's test uses `remote_build` (Foundry builds the container from an inline zip), which is slower/cold-start-flaky, hence still `slow` + `xfail`. The BYOM behavior on the wire is identical to the canary.",
+  "notes": "**Concept verified via canary**: BYOM dynamic discovery works on the wire.\n\nThe `hosted-agents-canary` card probes static and dynamic-discovery gateways from inside the container using `BYOM_MODEL` and `BYOM_MODEL_DYNAMIC`, and `responses-openai-dynamic` returns `ok:true`.\n\nThis card still uses `remote_build`, where Foundry builds the container from an inline zip. That path is slower and cold-start-flaky, so the test remains `slow` + `xfail`.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
 

@@ -8,5 +8,5 @@
   "support_status": "not_confirmed",
   "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Prerequisites to test: (1) AI Search on Standard SKU (or higher) with semanticSearch='standard'; (2) semantic ranker enabled; (3) publicNetworkAccess='Enabled' OR the caller inside the search VNet; (4) BYOM agent given a KnowledgeBase retrieval tool (SDK surface for the KB retrieve tool on Prompt Agents is not yet present in azure-ai-projects 2.3.0 — orchestrator wires it via raw REST + OBO header x-ms-query-source-authorization, see Azure/gpt-rag-orchestrator connectors/foundry_iq.py). Blocker on our current env, hence not_confirmed."
+  "notes": "BYOM is not confirmed because the current environment lacks the required Knowledge Base prerequisites.\n\nPrerequisites to test:\n\n1. AI Search Standard SKU or higher with `semanticSearch='standard'`.\n2. Semantic ranker enabled.\n3. `publicNetworkAccess='Enabled'`, or a caller inside the search VNet.\n4. A BYOM agent with a KnowledgeBase retrieval tool.\n\nSDK blocker: the KB retrieve tool for Prompt Agents is not yet in `azure-ai-projects 2.3.0`. The orchestrator uses raw REST plus OBO header `x-ms-query-source-authorization`; see `Azure/gpt-rag-orchestrator` `connectors/foundry_iq.py`."
 }

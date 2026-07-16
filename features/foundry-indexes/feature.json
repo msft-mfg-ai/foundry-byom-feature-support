@@ -9,5 +9,5 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search",
-  "notes": "Works with Basic-tier AI Search; semantic ranker is not required at this layer. Query paths: 'simple', 'semantic', 'vector', 'vector_simple_hybrid', 'vector_semantic_hybrid' (the latter three require an index with the corresponding capabilities enabled)."
+  "notes": "BYOM works with Basic-tier AI Search; semantic ranker is not required for this layer.\n\nSupported query paths:\n\n- `simple`\n- `semantic`\n- `vector`\n- `vector_simple_hybrid`\n- `vector_semantic_hybrid`\n\nThe vector and hybrid paths require an index with the matching capabilities enabled."
 }

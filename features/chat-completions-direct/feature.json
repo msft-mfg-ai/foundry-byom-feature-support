@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/openai/chatgpt-quickstart",
-  "notes": "Verified live against `gpt-4o-mini` behind AI_GATEWAY_CONNECTION_STATIC: `aoai.chat.completions.create(model='{gateway}/gpt-4o-mini', ...)` returns 404 DeploymentNotFound for both stream/non-stream. Same model works fine on `aoai.responses.create(...)`. Use the Responses API when routing through BYOM; Chat Completions currently requires a local Foundry deployment.",
+  "notes": "BYOM does not work on Chat Completions; the same model works through Responses API.\n\nVerified against `gpt-4o-mini` behind `AI_GATEWAY_CONNECTION_STATIC`: `aoai.chat.completions.create(model='{gateway}/gpt-4o-mini', ...)` returns `404 DeploymentNotFound` for streaming and non-streaming.\n\nUse `aoai.responses.create(...)` for BYOM routing.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/inference"
 }

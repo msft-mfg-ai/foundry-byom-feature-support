@@ -9,6 +9,6 @@
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/run-scans-ai-red-teaming-agent",
-  "notes": "Verified against ai-foundry-63fhh7glaqhvw: azure-ai-evaluation[redteam] accepts a `{apim-conn}/{model}` prefix for the target model at RedTeam-object init. Test is thin — it does not run a full adversarial scan, only proves the SDK doesn't reject the BYOM-prefixed deployment name.",
+  "notes": "BYOM works for the RedTeam target model name.\n\nVerified against `ai-foundry-63fhh7glaqhvw`: `azure-ai-evaluation[redteam]` accepts `{apim-conn}/{model}` at `RedTeam` object init.\n\nThe test is thin: it does not run a full adversarial scan; it only proves the SDK accepts the BYOM-prefixed deployment name.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/red_team/sample_red_team.py"
 }

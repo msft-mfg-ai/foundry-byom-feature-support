@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation",
-  "notes": "Verified regression on ai-foundry-63fhh7glaqhvw with azure-ai-evaluation installed: the eval SDK constructs the request URL as `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route → returns 400 'API version not supported'. Judge-model BYOM will require either eval-SDK changes or a Foundry URL-rewrite. Skips if EVAL_JUDGE_MODEL is unset.",
+  "notes": "Judge-model BYOM is blocked by the eval SDK URL-shape bug.\n\nVerified on `ai-foundry-63fhh7glaqhvw` with `azure-ai-evaluation`: the SDK constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, returning `400 'API version not supported'`.\n\nRequires eval-SDK changes or a Foundry URL rewrite. Skips if `EVAL_JUDGE_MODEL` is unset.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/evaluations"
 }
