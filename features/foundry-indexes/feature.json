@@ -1,0 +1,13 @@
+{
+  "slug": "foundry-indexes",
+  "category": "tools",
+  "name": "Foundry Indexes",
+  "summary": "project.indexes.create_or_update registers an Azure AI Search index as a project-level resource, queried from a BYOM-routed agent via AzureAISearchTool.",
+  "description": "Verified live 2026-07-15 against ai-gateway-pe-testing (APIM-only, no account-local model deployments; Basic-SKU AI Search): `project.indexes.create_or_update(AzureAISearchIndex(connection_name=..., index_name=...))` registers the index and a BYOM-prefixed Prompt Agent with `AzureAISearchTool` can query it end-to-end. This is the primitive shown under the portal's 'Indexes' tab — NOT the higher-level Foundry IQ 'Knowledge bases' surface (see `knowledge-bases` card, which needs Standard-SKU + semantic ranker + network access).",
+  "pm": "TBD",
+  "support_status": "supported",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search",
+  "notes": "Works with Basic-tier AI Search; semantic ranker is not required at this layer. Query paths: 'simple', 'semantic', 'vector', 'vector_simple_hybrid', 'vector_semantic_hybrid' (the latter three require an index with the corresponding capabilities enabled)."
+}

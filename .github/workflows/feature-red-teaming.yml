@@ -22,4 +22,5 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: red-teaming
+      extras: eval
     secrets: inherit

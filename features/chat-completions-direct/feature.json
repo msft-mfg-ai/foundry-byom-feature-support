@@ -1,0 +1,14 @@
+{
+  "slug": "chat-completions-direct",
+  "category": "endpoints",
+  "name": "Chat Completions (direct)",
+  "summary": "Plain /openai/v1/chat/completions on the project-scoped OpenAI client, with and without streaming.",
+  "description": "The project's `get_openai_client()` returns an OpenAI client pointed at `{PROJECT_ENDPOINT}/openai/v1/`. Responses API on that client honours BYOM prefixes; Chat Completions does not — the proxy resolves the model name locally on the Foundry account and returns 404 `DeploymentNotFound` before ever reaching the APIM gateway. Covers both `stream=False` and `stream=True`.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/ai-foundry/openai/chatgpt-quickstart",
+  "notes": "Verified live against `gpt-4o-mini` behind AI_GATEWAY_CONNECTION_STATIC: `aoai.chat.completions.create(model='{gateway}/gpt-4o-mini', ...)` returns 404 DeploymentNotFound for both stream/non-stream. Same model works fine on `aoai.responses.create(...)`. Use the Responses API when routing through BYOM; Chat Completions currently requires a local Foundry deployment.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/inference"
+}

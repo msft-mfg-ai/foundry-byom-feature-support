@@ -24,7 +24,7 @@ The matrix is **use-case-oriented**, not API-primitive-oriented. Cards are group
 - **agents** — Foundry v2 Prompt / Hosted / Connected agents (`PromptAgentDefinition`, `HostedAgentDefinition`, RemoteA2A) with the BYOM model passed as `model="{conn}/{deployment}"`. Static + dynamic gateway pairs for prompt and hosted.
 - **endpoints** — Direct (non-agent) API surfaces probed with a BYOM-prefixed model: `image-generation-direct`, `image-generation-tool`, `llm-translation` (Translator API `targets[].deploymentName`), `reasoning-models-byom`, `responses-direct`.
 - **routing** — Different connection categories and upstream providers: `ApiManagement` vs `ModelGateway` vs `Serverless` × OpenAI / Anthropic / OpenRouter-LiteLLM-DeepSeek / Foundry catalog. The `static-vs-dynamic-discovery` card documents the difference between `models[]` arrays in metadata vs `modelDiscovery` runtime calls.
-- **tools** — Tools attached to a Prompt Agent whose orchestrator model is BYOM-routed. The tool itself has no model param. **The official BYOM-supported tools per [the docs](https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations) are: Code Interpreter, Functions, File Search, OpenAPI, Foundry IQ, SharePoint Grounding, Fabric Data Agent, MCP, and Browser Automation.** Anything outside that list (Bing/Web Search, Azure AI Search, A2A, Logic Apps, Work IQ, Web IQ, Fabric IQ, Memory) is tracked as `not_supported`. Web search is `partial` due to a documented 2nd-consecutive-call regression — `tool-web-search/test.py` runs two turns and warns on the second.
+- **tools** — Tools attached to a Prompt Agent whose orchestrator model is BYOM-routed. The tool itself has no model param. **The official BYOM-supported tools per [the docs](https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations) are: Code Interpreter, Functions, File Search, OpenAPI, Foundry IQ, SharePoint Grounding, Fabric Data Agent, MCP, and Browser Automation.** Anything outside that list (Bing/Web Search, Azure AI Search, A2A, Logic Apps, Work IQ, Web IQ, Fabric IQ, Memory) is tracked as `not_supported`. Web search was previously tracked as `partial` (documented 2nd-consecutive-call regression), but as of 2026-07-14 the Foundry Responses API rejects `bing_grounding` outright when the agent uses a BYOM-prefixed model (`"The following tools are not supported with BYO model: bing_grounding"`), so `tool-web-search/test.py` now asserts the 400.
 - **quality** — `evaluations` (judge LLM via `initialization_parameters.deployment_name`) and `red-teaming` (target model via BYOM).
 - **infrastructure** — Status-only cards: `private-foundry`, `private-apim`, `publish-to-teams`, `portal-ui-parity-providers` (UI only creates AzureOpenAI/OpenAI; APIM/ModelGateway are code-only), `sdk-enum-coverage` (`ConnectionType` enum missing ApiManagement/ModelGateway), `byom-incompatible-endpoints` (rollup for embeddings/TTS/STT/batch/fine-tuning/realtime).
 
@@ -63,13 +63,33 @@ There is no lint or formatter configured — do not add one unless asked.
 5. Wrap the actual call in `::group::` / `::endgroup::` log markers and exit non-zero on failure — that is how the workflow surfaces pass/fail.
 6. `_shared.py` is imported via a `sys.path.insert(0, parent)` shim from inside each `test.py`; keep that shim when adding a new feature so the script stays runnable directly (`python features/<slug>/test.py`) without packaging.
 
+## XFAIL hides test-code bugs, not just BYOM regressions
+
+Our marker convention (`not_supported` → `xfail(strict=True)`, `not_confirmed` → `xfail(strict=False)`) only inverts pass/fail — a `TypeError` from an out-of-date SDK signature still xfails silently and looks green on the site. Two consequences:
+
+- **After bumping any dep** (`azure-ai-projects`, `azure-ai-evaluation`, `openai`, `azure-ai-agentserver-*`), run `uv run pytest features/ --runxfail` locally to force xfailed tests to raise their real error, and fix any that changed shape. Real example: `azure-ai-projects>=2.2.0` dropped the `endpoint=` kwarg on `A2APreviewTool` — both A2A tests silently xfailed with `TypeError` for weeks before being surfaced by a `--runxfail` sweep.
+- **Preview-SDK tests are the highest-churn** offenders (A2A, hosted-agent, MCP variants, evaluators). Prefer `pytest.skip("... requires <specific env var / connection>")` over `xfail` when the test truly can't run without external setup, so we skip cleanly instead of masking whatever error happens to fall out.
+
 ## Adding a new feature (checklist)
 
 1. `mkdir features/<slug>` with `feature.json` and (optionally) `test.py`. Copy `features/prompt-agents-static/` as the template for an automated feature, or `features/private-foundry/` for a status-only card.
 2. `feature.json` fields are typed in `site/src/data/features.ts` — `support_status` ∈ `supported | partial | not_supported | not_confirmed` (did **we** verify the BYOM behavior?), `implementation_status` ∈ `ga | preview | in_progress | not_confirmed | tbd` (how is **engineering** tracking the underlying feature?). Convention: whenever `support_status` is `not_supported` or `not_confirmed`, set `implementation_status: "tbd"` — if we haven't verified the BYOM path, we can't honestly claim a maturity for the underlying feature either. The site will fail to type-check if you invent new values. Omit `test_file` for a status-only card.
 3. If you added a `test.py`, copy `.github/workflows/feature-prompt-agents-static.yml` → `feature-<slug>.yml`. Update **both** the `paths:` filter and the `with.feature:` input. Keep the weekly cron so the matrix stays "live".
 4. If the feature needs a new env var, add it to `.env.example`, the `env:` block of `_feature-test.yml`, **and** document it in `README.md` under the GitHub environment section.
-5. Folders prefixed with `_` (e.g. `_shared.py`) are skipped by `loadFeatures()` — use that prefix for any non-feature helpers.
+5. If the feature needs a **preview / bleeding-edge SDK** that would conflict with core deps (or that is too heavy to include in every install), add it as an **optional-dependency extra** in `pyproject.toml` rather than to the top-level `dependencies` list. Then set `extras: <name>` in that feature's workflow. See `[project.optional-dependencies]` for existing extras (e.g. `eval` covers `azure-ai-evaluation[redteam]` for the four eval-family cards). Local dev: `uv sync --extra <name>` to enable it. Tests must `try: import ...` and `pytest.skip("... not installed")` on `ImportError` so the core-only lane stays green. Never add conflicting versions of the same package to two different extras — only one extra is active per test run.
+6. Folders prefixed with `_` (e.g. `_shared.py`) are skipped by `loadFeatures()` — use that prefix for any non-feature helpers.
+
+## Keeping the site in sync with new findings
+
+The `features/*/feature.json` files **are** the site. Any time you learn something new that changes a feature's real support level, you must update the JSON in the same PR that carries the finding — otherwise the badge on the static site silently lies. Concretely:
+
+- **Test now passes** against real Foundry → flip `support_status` from `not_confirmed`/`not_supported` to `supported` (or `partial` if only sub-cases work), and set `implementation_status` to the real maturity (`ga`/`preview`).
+- **Test starts XFAILing after being `supported`** → downgrade to `partial` and add a `notes:` line describing the regression.
+- **New docs/samples/blog posts** discovered (MS Learn, azure-sdk-for-python samples, foundry-samples, Ignite/Build talks) → update `azure_docs` and `sample_url` on the affected cards.
+- **New feature discovered that BYOM doesn't cover** → add a new `features/<slug>/feature.json` (status-only card is fine) rather than leaving the finding in chat / PR description only.
+- **Env-var contracts change** (e.g. new platform-injected variable, new required custom var) → update `.env.example`, `_feature-test.yml`'s `env:` block, and the relevant `feature.json`'s `notes:` field.
+
+Rule of thumb: **if a human would want to see the new info as a badge, tooltip, or card on the site, it belongs in `feature.json` — not just in the test file or a chat reply.** After editing JSON, verify with `cd site && npm run build` (the site's TypeScript layer will reject invalid enum values).
 
 ## Auth, environment, runners
 

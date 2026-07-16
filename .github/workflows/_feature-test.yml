@@ -17,6 +17,16 @@ on:
         required: false
         type: string
         default: ubuntu-latest
+      extras:
+        description: Comma-separated optional-dependency extras to install (e.g. "eval"). See [project.optional-dependencies] in pyproject.toml.
+        required: false
+        type: string
+        default: ""
+      pytest_args:
+        description: Extra pytest args (e.g. "-m slow" to opt into slow tests like hosted-agent code deployments)
+        required: false
+        type: string
+        default: ""
 
 permissions:
   id-token: write
@@ -37,7 +47,17 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --frozen || uv sync
+        env:
+          EXTRAS: ${{ inputs.extras }}
+        run: |
+          set -euo pipefail
+          extra_args=""
+          if [ -n "${EXTRAS}" ]; then
+            for e in $(echo "${EXTRAS}" | tr ',' ' '); do
+              extra_args+=" --extra ${e}"
+            done
+          fi
+          uv sync --frozen ${extra_args}
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
@@ -68,6 +88,7 @@ jobs:
           PROMPT_AGENT_NAME_DYNAMIC: ${{ vars.PROMPT_AGENT_NAME_DYNAMIC }}
           HOSTED_AGENT_NAME_STATIC: ${{ vars.HOSTED_AGENT_NAME_STATIC }}
           HOSTED_AGENT_NAME_DYNAMIC: ${{ vars.HOSTED_AGENT_NAME_DYNAMIC }}
+          HOSTED_AGENT_NAME_CANARY: ${{ vars.HOSTED_AGENT_NAME_CANARY }}
           # ---- Tool connections / params ----
           BING_CONNECTION_ID: ${{ vars.BING_CONNECTION_ID }}
           FILE_SEARCH_VECTOR_STORE_ID: ${{ vars.FILE_SEARCH_VECTOR_STORE_ID }}
@@ -76,11 +97,15 @@ jobs:
           SHAREPOINT_CONNECTION_ID: ${{ vars.SHAREPOINT_CONNECTION_ID }}
           FABRIC_CONNECTION_ID: ${{ vars.FABRIC_CONNECTION_ID }}
           A2A_REMOTE_AGENT_ENDPOINT: ${{ vars.A2A_REMOTE_AGENT_ENDPOINT }}
+          A2A_PROJECT_CONNECTION_ID: ${{ vars.A2A_PROJECT_CONNECTION_ID }}
+          A2A_ENDPOINT: ${{ vars.A2A_ENDPOINT }}
           LOGIC_APP_RESOURCE_ID: ${{ vars.LOGIC_APP_RESOURCE_ID }}
           LOGIC_APP_WORKFLOW_NAME: ${{ vars.LOGIC_APP_WORKFLOW_NAME }}
           COMPUTER_USE_ENVIRONMENT: ${{ vars.COMPUTER_USE_ENVIRONMENT }}
           IMAGE_DEPLOYMENT_NAME: ${{ vars.IMAGE_DEPLOYMENT_NAME }}
           OPENAPI_SPEC_PATH: ${{ vars.OPENAPI_SPEC_PATH }}
+          KNOWLEDGE_BASE_ID: ${{ vars.KNOWLEDGE_BASE_ID }}
+          MEMORY_STORE_ID: ${{ vars.MEMORY_STORE_ID }}
           # ---- MCP servers ----
           MCP_SERVER_URL: ${{ vars.MCP_SERVER_URL }}
           MCP_SERVER_URL_AGENT_IDENTITY: ${{ vars.MCP_SERVER_URL_AGENT_IDENTITY }}
@@ -92,4 +117,16 @@ jobs:
           # ---- Quality / safety ----
           EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL }}
           RED_TEAM_TARGET_MODEL: ${{ vars.RED_TEAM_TARGET_MODEL }}
-        run: uv run python features/${{ inputs.feature }}/test.py
+          # ---- Extra models for probe tests ----
+          MODERATION_MODEL: ${{ vars.MODERATION_MODEL }}
+          WEB_SEARCH_MODEL: ${{ vars.WEB_SEARCH_MODEL }}
+          VIDEO_MODEL: ${{ vars.VIDEO_MODEL }}
+          IMAGE_VARIATION_MODEL: ${{ vars.IMAGE_VARIATION_MODEL }}
+          REALTIME_TRANSCRIPTION_MODEL: ${{ vars.REALTIME_TRANSCRIPTION_MODEL }}
+          REALTIME_TRANSLATION_MODEL: ${{ vars.REALTIME_TRANSLATION_MODEL }}
+          # ---- Container registry (used by azd-provisioned canary hosted agent) ----
+          AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+          AZURE_CONTAINER_REGISTRY_ENDPOINT: ${{ vars.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
+          # ---- Secrets (masked) ----
+          WEB_IQ_API_KEY: ${{ secrets.WEB_IQ_API_KEY }}
+        run: uv run pytest features/${{ inputs.feature }} ${{ inputs.pytest_args }}

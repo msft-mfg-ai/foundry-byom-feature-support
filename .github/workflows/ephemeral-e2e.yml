@@ -1,0 +1,187 @@
+name: Ephemeral E2E - provision, test, teardown
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Provisions the `ai-gateway-pe-testing` variant from
+# msft-mfg-ai/ai-foundry-deployment-options, runs the full BYOM feature
+# matrix against it (via the existing `_feature-test.yml` reusable
+# workflow, which reads all its env from the `byom` GitHub Environment),
+# then tears the infra down with account purge.
+#
+# ── One-time setup ──────────────────────────────────────────────────────────
+# The `byom` GH Environment must already carry the resource names the tests
+# expect. Because the ai-gateway-pe-testing bicep uses
+# uniqueString(resourceGroup().id, location) for the naming token, once you
+# know the RG and location the names are stable — populate `vars.*` once:
+#
+#   AZURE_ENV_NAME                 azd env name (also the RG name azd creates)
+#   AZURE_LOCATION                 e.g. "eastus2"
+#   EXISTING_FOUNDRY_RESOURCE_IDS  or OPENAI_RESOURCE_ID — backing model source
+#   PROJECT_ENDPOINT               https://<foundry>.services.ai.azure.com/api/projects/<project>
+#   AI_GATEWAY_CONNECTION_STATIC   apim-<token>-openai-s-for-<project>
+#   AI_GATEWAY_CONNECTION_DYNAMIC  apim-<token>-openai-d-for-<project>
+#   FOUNDRY_NAME                   needed only for teardown purge
+#   RESOURCE_GROUP                 azd's target RG (usually rg-${AZURE_ENV_NAME})
+#   CHAT_MODEL                     defaults to gpt-4o-mini
+#
+# Do a one-off `azd up` locally to discover the exact names, then paste them
+# into the GitHub Environment. Subsequent `azd up` / `azd down` cycles will
+# reuse the same names.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner label for feature tests (needs VNet line-of-sight)'
+        required: false
+        type: string
+        default: self-hosted
+      teardown:
+        description: 'Tear down infra after tests'
+        required: false
+        type: boolean
+        default: true
+      environment:
+        description: 'GitHub environment to pull secrets/vars from'
+        required: false
+        type: string
+        default: byom
+      deployment_options_ref:
+        description: 'Ref of msft-mfg-ai/ai-foundry-deployment-options to check out'
+        required: false
+        type: string
+        default: main
+  schedule:
+    # Weekly on Saturdays at 06:00 UTC — provision, test, tear down.
+    - cron: '0 6 * * 6'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DEPLOY_REPO: msft-mfg-ai/ai-foundry-deployment-options
+  INFRA_PATH: options-infra/ai-gateway-pe-testing
+
+jobs:
+  # ────────────────────────────────────────────────────────────────
+  # 1. Provision the ephemeral infra with azd.
+  # ────────────────────────────────────────────────────────────────
+  provision:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'byom' }}
+    outputs:
+      slugs: ${{ steps.discover.outputs.slugs }}
+    steps:
+      - name: Checkout this repo (for feature discovery)
+        uses: actions/checkout@v4
+
+      - name: Checkout deployment options
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ inputs.deployment_options_ref || 'main' }}
+          path: deployment-options
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install azd
+        uses: Azure/setup-azd@v2
+
+      - name: azd up
+        working-directory: deployment-options/${{ env.INFRA_PATH }}
+        env:
+          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          EXISTING_FOUNDRY_RESOURCE_IDS: ${{ vars.EXISTING_FOUNDRY_RESOURCE_IDS }}
+          OPENAI_RESOURCE_ID: ${{ vars.OPENAI_RESOURCE_ID }}
+        run: |
+          set -euo pipefail
+          azd env new "${AZURE_ENV_NAME}" --location "${AZURE_LOCATION}" --subscription "${AZURE_SUBSCRIPTION_ID}" --no-prompt || \
+            azd env select "${AZURE_ENV_NAME}"
+          azd up --no-prompt
+
+      - name: Discover feature slugs
+        id: discover
+        run: |
+          slugs=$(find features -mindepth 2 -maxdepth 2 -name test.py \
+                  -printf '%h\n' | sed 's|features/||' | sort | jq -R . | jq -s -c .)
+          echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
+
+  # ────────────────────────────────────────────────────────────────
+  # 2. Run every feature via the shared reusable workflow.
+  #    All env comes from the `byom` GitHub Environment vars.
+  # ────────────────────────────────────────────────────────────────
+  test:
+    needs: provision
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        feature: ${{ fromJson(needs.provision.outputs.slugs) }}
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: ${{ matrix.feature }}
+      environment: ${{ inputs.environment || 'byom' }}
+      runner: ${{ inputs.runner || 'self-hosted' }}
+      extras: eval
+    secrets: inherit
+
+  # ────────────────────────────────────────────────────────────────
+  # 3. Teardown — runs even on failure so we don't leak resources.
+  # ────────────────────────────────────────────────────────────────
+  teardown:
+    needs: [provision, test]
+    if: ${{ always() && (inputs.teardown == null || inputs.teardown == true) && needs.provision.result == 'success' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'byom' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ inputs.deployment_options_ref || 'main' }}
+          path: deployment-options
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install azd
+        uses: Azure/setup-azd@v2
+
+      - name: azd down --purge
+        working-directory: deployment-options/${{ env.INFRA_PATH }}
+        env:
+          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          azd env select "${AZURE_ENV_NAME}" || true
+          azd down --purge --force --no-prompt
+
+      - name: Purge soft-deleted Foundry account
+        env:
+          FOUNDRY_NAME: ${{ vars.FOUNDRY_NAME }}
+          RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          if [ -n "${FOUNDRY_NAME}" ]; then
+            az cognitiveservices account purge \
+              --name "${FOUNDRY_NAME}" \
+              --resource-group "${RESOURCE_GROUP}" \
+              --location "${AZURE_LOCATION}" || echo "Purge failed or account not soft-deleted."
+          else
+            echo "::warning::FOUNDRY_NAME not set in environment — skipping purge."
+          fi

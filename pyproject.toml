@@ -4,11 +4,52 @@ version = "0.1.0"
 description = "Test scripts for BYOM (bring-your-own-model) features against Azure AI Foundry + APIM gateway"
 requires-python = ">=3.11"
 dependencies = [
-    "azure-ai-projects>=2.0.0",
+    "azure-ai-projects==2.3.0",
     "azure-identity>=1.19.0",
     "openai>=2.0.0",
     "python-dotenv>=1.0.0",
+    "requests>=2.32",
+]
+
+# Optional extras keep bleeding-edge / heavy / preview-only SDKs out of the
+# default install so the core suite (`uv sync` \u2192 `pytest -m 'not slow'`) stays
+# fast and unambiguous. Enable per-feature in CI via:
+#
+#   uses: ./.github/workflows/_feature-test.yml
+#   with:
+#     feature: <slug>
+#     extras: eval        # \u2190 passed through to `uv sync --extra <name>`
+#
+# When adding a new preview feature that needs a bleeding-edge SDK, add its
+# deps as a new extra here and set `extras:` in that feature's workflow.
+# Rule of thumb: one extra per "family of preview features that share a SDK
+# version boundary". Never add conflicting versions of the same package to
+# two different extras \u2014 only one extra is active per run.
+[project.optional-dependencies]
+# Heavy AI-judge/red-team SDK. Pulls pyrit + big transitive tail.
+# Required by: evaluations, agent-evaluators, evals-generative-model, red-teaming.
+eval = [
+    "azure-ai-evaluation[redteam]>=1.18.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-xdist>=3.6",
 ]
 
 [tool.uv]
 package = false
+
+[tool.pytest.ini_options]
+testpaths = ["features"]
+python_files = ["test.py", "test_*.py"]
+addopts = "-ra --strict-markers --tb=short --import-mode=importlib -m 'not slow'"
+markers = [
+    "supported: BYOM confirmed working; assertion failure = red CI",
+    "partial: BYOM partially working; some assertions are xfail",
+    "not_confirmed: BYOM behavior unverified; xfail non-strict (XPASS is informational)",
+    "not_supported: BYOM known not to work; xfail strict (XPASS = update the matrix)",
+    "needs_env: test skips when optional env vars are unset",
+    "slow: opt-in only (pytest -m slow) \u2014 tests that take >60s (e.g. hosted-agent code deployments)",
+]

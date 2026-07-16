@@ -1,0 +1,13 @@
+{
+  "slug": "batch-api",
+  "category": "endpoints",
+  "name": "Batch API \u2014 Per-line `model` in JSONL",
+  "summary": "POST /v1/batches wraps other endpoints (chat/completions, responses, embeddings, moderations, videos); each JSONL line's `body.model` is the BYOM slot.",
+  "description": "The Batch API itself does not take a top-level `model`; instead each JSONL input line contains a full request body for the wrapped endpoint (chat completions, responses, embeddings, moderations, or videos), including that request's own `model`. The BYOM question is whether the batch runner faithfully forwards a `{connection}/{deployment}` prefix down to the wrapped endpoint the same way a live call would, or whether the batch scheduler strips/rewrites the model to something on the Foundry account. Untested \u2014 batch jobs run 24 h and are inconvenient to iterate against, which is likely why this hasn't been validated yet.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/batch",
+  "notes": "Status-only. Overlaps with `byom-incompatible-endpoints` rollup, which currently lists batch as not-supported; promote out of the rollup once tested and split into a supported/not-supported outcome.",
+  "test_file": "test.py"
+}

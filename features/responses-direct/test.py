@@ -1,23 +1,16 @@
-"""Direct Responses API call with BYOM model, no agent."""
-import os
-import sys
-from pathlib import Path
+"""Direct Responses API call with BYOM model, no agent.
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model  # noqa: E402
-
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
+Reference conversion for a "supported" endpoint probe.
+"""
+import pytest
 
 
-def main() -> int:
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind="static")
-    print(f"::group::responses-direct model={model}")
-    resp = aoai.responses.create(model=model, input="Say hello in one short sentence.")
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
+@pytest.mark.supported
+def test_responses_direct(aoai, static_model):
+    model = static_model()
+    resp = aoai.responses.create(
+        model=model,
+        input="Say hello in one short sentence.",
+    )
+    assert resp.output_text and resp.output_text.strip()
 
-
-if __name__ == "__main__":
-    sys.exit(main())

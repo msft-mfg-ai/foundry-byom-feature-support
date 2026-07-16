@@ -1,0 +1,25 @@
+name: Feature - responses-compaction
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/responses-compaction/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-responses-compaction.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: responses-compaction
+    secrets: inherit

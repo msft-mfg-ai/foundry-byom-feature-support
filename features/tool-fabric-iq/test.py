@@ -1,51 +1,23 @@
-"""BYOM test: tool-fabric-iq"""
-import os
-import sys
-from pathlib import Path
+"""Fabric IQ MCP tool via BYOM-routed Prompt Agent."""
+import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model, require_env  # noqa: E402
+from _shared import invoke_agent, make_mcp_tool, make_prompt_agent_with_tools
 
-from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-tool-fabric-iq"
-GATEWAY_KIND = "static"
-FABRIC_IQ_MCP_URL = os.environ.get("FABRIC_IQ_MCP_URL")
+@pytest.mark.not_supported
+@pytest.mark.needs_env
+@pytest.mark.xfail(strict=True, reason="Fabric IQ is not in the documented BYOM-supported tools list.")
+def test_tool_fabric_iq(project, aoai, cfg, unique_agent_name, require_env):
+    server_url = require_env("FABRIC_IQ_MCP_URL")
 
-def main() -> int:
-    if not FABRIC_IQ_MCP_URL:
-        print("::warning::Missing env for tool-fabric-iq: FABRIC_IQ_MCP_URL")
-        return 0
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::tool-fabric-iq model={model}")
-
-    from _shared import make_mcp_tool
-    tools = [make_mcp_tool(FABRIC_IQ_MCP_URL, "fabric-iq", auth="AgenticIdentity")]
-
-    agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
-        definition=PromptAgentDefinition(
-            model=model,
-            instructions="You are a concise assistant. Reply in one short sentence.",
-            tools=tools,
-        ),
+    agent = make_prompt_agent_with_tools(
+        project,
+        unique_agent_name("byom-tool-fabric-iq"),
+        [make_mcp_tool(server_url, "fabric-iq", auth="AgenticIdentity")],
+        instructions="You are a concise assistant. Reply in one short sentence.",
+        cfg=cfg,
     )
-    print(f"agent: id={agent.id} version={agent.version}")
+    assert agent.id
 
-    conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": 'Ask Fabric IQ for one workspace name.'}],
-    )
-    resp = aoai.responses.create(
-        conversation=conversation.id,
-        extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        input="",
-    )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    resp = invoke_agent(aoai, agent, "Ask Fabric IQ for one workspace name.")
+    assert resp.output_text and resp.output_text.strip()

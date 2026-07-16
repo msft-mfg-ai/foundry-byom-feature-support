@@ -1,0 +1,25 @@
+name: Feature - realtime-translation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/realtime-translation/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-realtime-translation.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: realtime-translation
+    secrets: inherit

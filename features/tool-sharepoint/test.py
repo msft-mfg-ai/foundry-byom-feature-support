@@ -1,51 +1,24 @@
-"""BYOM test: tool-sharepoint"""
-import os
-import sys
-from pathlib import Path
+"""SharePoint grounding tool via BYOM-routed Prompt Agent."""
+import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model, require_env  # noqa: E402
+from _shared import invoke_agent, make_prompt_agent_with_tools
 
-from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-tool-sharepoint"
-GATEWAY_KIND = "static"
-SHAREPOINT_CONNECTION_ID = os.environ.get("SHAREPOINT_CONNECTION_ID")
-
-def main() -> int:
-    if not SHAREPOINT_CONNECTION_ID:
-        print("::warning::Missing env for tool-sharepoint: SHAREPOINT_CONNECTION_ID")
-        return 0
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::tool-sharepoint model={model}")
+@pytest.mark.supported
+@pytest.mark.needs_env
+def test_tool_sharepoint(project, aoai, cfg, unique_agent_name, require_env):
+    connection_id = require_env("SHAREPOINT_CONNECTION_ID")
 
     from azure.ai.projects.models import SharepointPreviewTool
-    tools = [SharepointPreviewTool(connection_id=SHAREPOINT_CONNECTION_ID)]
 
-    agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
-        definition=PromptAgentDefinition(
-            model=model,
-            instructions="You are a concise assistant. Reply in one short sentence.",
-            tools=tools,
-        ),
+    agent = make_prompt_agent_with_tools(
+        project,
+        unique_agent_name("byom-tool-sharepoint"),
+        [SharepointPreviewTool(connection_id=connection_id)],
+        instructions="You are a concise assistant. Reply in one short sentence.",
+        cfg=cfg,
     )
-    print(f"agent: id={agent.id} version={agent.version}")
+    assert agent.id
 
-    conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": 'Search SharePoint for one document and return its title.'}],
-    )
-    resp = aoai.responses.create(
-        conversation=conversation.id,
-        extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        input="",
-    )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    resp = invoke_agent(aoai, agent, "Search SharePoint for one document and return its title.")
+    assert resp.output_text and resp.output_text.strip()

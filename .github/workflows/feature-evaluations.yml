@@ -22,4 +22,5 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: evaluations
+      extras: eval
     secrets: inherit

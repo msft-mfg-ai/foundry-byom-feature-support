@@ -9,6 +9,7 @@ on:
     paths:
       - 'features/tool-sharepoint/**'
       - 'features/_shared.py'
+      - 'features/conftest.py'
       - 'pyproject.toml'
       - '.github/workflows/feature-tool-sharepoint.yml'
       - '.github/workflows/_feature-test.yml'

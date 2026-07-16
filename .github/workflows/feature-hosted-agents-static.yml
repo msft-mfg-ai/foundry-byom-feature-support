@@ -22,4 +22,5 @@ jobs:
     uses: ./.github/workflows/_feature-test.yml
     with:
       feature: hosted-agents-static
+      pytest_args: "-m slow"
     secrets: inherit

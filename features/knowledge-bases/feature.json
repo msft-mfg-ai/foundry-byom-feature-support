@@ -1,12 +1,12 @@
 {
   "slug": "knowledge-bases",
   "category": "tools",
-  "name": "Knowledge bases",
-  "summary": "Foundry Knowledge Bases attached to an agent, backed by a BYOM-routed embedding/chat model.",
-  "description": "Knowledge bases require a deployed model (typically an embedding model for ingestion and a chat model at query time). Initial observation is that the Knowledge Base configuration only accepts a Foundry-native model deployment and does not honor an AI-Gateway / APIM-routed BYOM connection \u2014 needs to be re-verified end-to-end before we mark it as not_supported.",
+  "name": "Knowledge bases (Foundry IQ)",
+  "summary": "Foundry IQ Knowledge Base — search-service-hosted retrieval, queried from a BYOM-routed agent.",
+  "description": "This is the portal 'Knowledge bases' (Foundry IQ) surface, NOT the lower-level Indexes surface (see the `foundry-indexes` card). Foundry IQ KBs are hosted on the Azure AI Search service itself (POST {search-endpoint}/knowledgebases/{name}/retrieve?api-version=2026-05-01-preview) and require Semantic Ranker + Standard SKU + reachable search endpoint. In the ai-gateway-pe-testing environment the AI Search is deployed on Basic SKU with public network access closed after provisioning, so the portal itself errors out ('Request is denied as the source is not allowed', 'Semantic ranker is required'). The current azd template needs to be upgraded before BYOM behavior can be verified end-to-end.",
   "pm": "TBD",
   "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Status-only card. Suspected unsupported (knowledge-base config doesn't appear to accept an AI-Gateway connection), but needs hands-on confirmation."
+  "notes": "Prerequisites to test: (1) AI Search on Standard SKU (or higher) with semanticSearch='standard'; (2) semantic ranker enabled; (3) publicNetworkAccess='Enabled' OR the caller inside the search VNet; (4) BYOM agent given a KnowledgeBase retrieval tool (SDK surface for the KB retrieve tool on Prompt Agents is not yet present in azure-ai-projects 2.3.0 — orchestrator wires it via raw REST + OBO header x-ms-query-source-authorization, see Azure/gpt-rag-orchestrator connectors/foundry_iq.py). Blocker on our current env, hence not_confirmed."
 }

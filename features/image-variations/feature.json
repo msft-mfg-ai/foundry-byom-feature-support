@@ -1,0 +1,13 @@
+{
+  "slug": "image-variations",
+  "category": "endpoints",
+  "name": "Image variations",
+  "summary": "POST /v1/images/variations with `model: dall-e-2` \u2014 generate variations of an existing image. DALL\u00b7E 2 only.",
+  "description": "Separate from image generation and image edits, `POST /v1/images/variations` takes an input image and produces variations. `model` is a top-level required param, but only `dall-e-2` is supported. Tracked separately from `image-generation-direct` because it exercises a distinct code path (image-in, image-out with no prompt) and because DALL\u00b7E 2 is the sole supported upstream, which makes BYOM routing narrower than for generations.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/image-generation",
+  "notes": "Status-only. Included as a distinct card because it appears in the OpenAI docs as its own endpoint with a `model` field, even though the practical BYOM surface is narrow.",
+  "test_file": "test.py"
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "realtime-translation",
+  "category": "endpoints",
+  "name": "Realtime translation sessions",
+  "summary": "Dedicated Realtime translation endpoints (`wss://.../v1/realtime/translations` + `POST /v1/realtime/translations/client_secrets|calls`); model is `gpt-realtime-translate`, passed as WebSocket query param or in `session.model`.",
+  "description": "OpenAI exposes a separate Realtime endpoint family for continuous audio translation, distinct from the general realtime chat session. The model is `gpt-realtime-translate`, provided either via the WebSocket `?model=` query string or nested inside the `session.model` field of the client-secret / call request. Two different placements means two different BYOM code paths, neither of which has been validated against a Foundry APIM connection.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "azure_docs": "https://developers.openai.com/api/docs/guides/realtime-translation",
+  "notes": "Status-only. Split out of the `byom-incompatible-endpoints` realtime rollup \u2014 the translation endpoints are a distinct URL family with their own model.",
+  "test_file": "test.py"
+}

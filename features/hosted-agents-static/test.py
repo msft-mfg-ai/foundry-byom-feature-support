@@ -1,43 +1,49 @@
-"""Invoke a pre-deployed Hosted Agent (static gateway).
+"""Self-provisioning hosted agent \u2014 static gateway.
 
-The hosted agent itself must already exist in the Foundry project (deployed
-via HostedAgentDefinition with a container or code configuration). This test
-only validates that BYOM routing through the static APIM gateway works when
-the hosted agent is invoked through the Responses API.
+Marked @slow because deploying a hosted-agent version cold-starts a container
+build (2\u20135 min). Opt-in via `pytest -m slow`.
+
+Flow:
+  1. Package a tiny inline agent (main.py + requirements.txt) as an in-memory zip
+  2. Create a HostedAgentDefinition version via remote_build (no ACR needed)
+  3. Poll until the version is `active`
+  4. Invoke via POST to the Invocations endpoint with a bearer token
+  5. Assert the response text is non-empty
+  6. Delete the version (best-effort cleanup)
+
+Custom env vars passed into the container:
+  * AI_GATEWAY_CONNECTION \u2014 static APIM connection name (from cfg)
+  * CHAT_MODEL            \u2014 model to route (default gpt-4o-mini)
+Platform-injected (do NOT set manually \u2014 reserved FOUNDRY_* prefix):
+  * FOUNDRY_PROJECT_ENDPOINT
 """
+from __future__ import annotations
+
 import os
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients  # noqa: E402
+import pytest
 
-AGENT_NAME = os.environ.get("HOSTED_AGENT_NAME_STATIC")
+from _shared import deploy_hosted_byom_probe, invoke_hosted_agent
 
 
-def main() -> int:
-    if not AGENT_NAME:
-        print("::warning::HOSTED_AGENT_NAME_STATIC not set; skipping hosted-agents-static test")
-        return 0
+@pytest.mark.slow
+@pytest.mark.not_confirmed
+@pytest.mark.xfail(
+    strict=False,
+    reason="Self-provisioning hosted-agent BYOM roundtrip not yet verified end-to-end (remote_build cold-start is slow and flaky).",
+)
+def test_hosted_agents_static(project, cfg, require_gateway, unique_agent_name):
+    gateway = require_gateway("static")
+    model = os.environ.get("CHAT_MODEL", "gpt-4o-mini")
+    agent_name = unique_agent_name("byom-hosted-static")
 
-    cfg, project, aoai = build_clients()
-    print(f"::group::Hosted agent (static) {AGENT_NAME}")
+    try:
+        deploy_hosted_byom_probe(project, agent_name, gateway_conn=gateway, model=model)
+        result = invoke_hosted_agent(cfg, agent_name, prompt="Say hello in five words.")
+        assert result.get("output_text", "").strip(), f"empty response: {result!r}"
+    finally:
+        try:
+            project.agents.delete(agent_name=agent_name, force=True)
+        except Exception:  # noqa: BLE001
+                pass
 
-    agent = project.agents.get(agent_name=AGENT_NAME)
-    print(f"agent: id={agent.id} kind={getattr(agent.versions.latest.definition, 'kind', '?')}")
-
-    conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": "Say hello."}],
-    )
-    resp = aoai.responses.create(
-        conversation=conversation.id,
-        extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        input="",
-    )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

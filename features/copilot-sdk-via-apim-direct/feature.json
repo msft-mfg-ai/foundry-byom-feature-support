@@ -1,0 +1,13 @@
+{
+  "slug": "copilot-sdk-via-apim-direct",
+  "category": "endpoints",
+  "name": "GitHub Copilot SDK \u2014 direct to APIM",
+  "summary": "Copilot SDK BYOK provider pointed straight at the APIM AI Gateway, bypassing Foundry entirely.",
+  "description": "APIM already exposes an OpenAI-compatible surface, so `base_url = \"https://<apim>.azure-api.net/openai/v1/\"` + APIM subscription key (or a static JWT via `bearerToken`) lets the Copilot SDK talk to your AI Gateway without any Foundry involvement. In this topology there is no `{conn}/{model}` BYOM prefix \u2014 the model string is just the APIM deployment name, because you're already at the gateway.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "ga",
+  "azure_docs": "https://learn.microsoft.com/azure/api-management/genai-gateway-capabilities",
+  "notes": "Useful when the team wants APIM's load-balancing/rate-limiting/observability but doesn't need Foundry orchestration (agents, tools, connections). Same static-credential limitation as via-foundry \u2014 `apiKey` or `bearerToken` only; no automatic Entra refresh. If APIM is fronted by Entra, use a background token-refresh thread to recreate sessions before expiry. Not verified end-to-end \u2014 the shape should Just Work because Copilot SDK just needs an OpenAI-compatible endpoint, but confirmation pending.",
+  "sample_url": "https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md"
+}

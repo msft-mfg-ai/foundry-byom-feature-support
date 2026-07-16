@@ -1,51 +1,39 @@
-"""BYOM test: tool-file-search"""
-import os
-import sys
-from pathlib import Path
+"""BYOM test: tool-file-search
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from _shared import build_clients, gateway_model, require_env  # noqa: E402
+Reference conversion for a "needs env" probe: the vector-store id is optional,
+so we self-skip when it isn't provided.
+"""
+import pytest
+from azure.ai.projects.models import FileSearchTool, PromptAgentDefinition
 
-from azure.ai.projects.models import PromptAgentDefinition
 
-MODEL = os.environ.get("CHAT_MODEL", "gpt-5-mini")
-AGENT_NAME = "byom-tool-file-search"
-GATEWAY_KIND = "static"
-FILE_SEARCH_VECTOR_STORE_ID = os.environ.get("FILE_SEARCH_VECTOR_STORE_ID")
-
-def main() -> int:
-    if not FILE_SEARCH_VECTOR_STORE_ID:
-        print("::warning::Missing env for tool-file-search: FILE_SEARCH_VECTOR_STORE_ID")
-        return 0
-    cfg, project, aoai = build_clients()
-    model = gateway_model(MODEL, cfg, kind=GATEWAY_KIND)
-    print(f"::group::tool-file-search model={model}")
-
-    from azure.ai.projects.models import FileSearchTool
-    tools = [FileSearchTool(vector_store_ids=[FILE_SEARCH_VECTOR_STORE_ID])]
+@pytest.mark.supported
+@pytest.mark.needs_env
+def test_tool_file_search(project, aoai, static_model, unique_agent_name, require_env):
+    vector_store_id = require_env("FILE_SEARCH_VECTOR_STORE_ID")
+    model = static_model()
 
     agent = project.agents.create_version(
-        agent_name=AGENT_NAME,
+        agent_name=unique_agent_name("byom-tool-file-search"),
         definition=PromptAgentDefinition(
             model=model,
             instructions="You are a concise assistant. Reply in one short sentence.",
-            tools=tools,
+            tools=[FileSearchTool(vector_store_ids=[vector_store_id])],
         ),
     )
-    print(f"agent: id={agent.id} version={agent.version}")
+    assert agent.id
 
     conversation = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": 'Search the indexed files for an interesting term and quote one line.'}],
+        items=[{
+            "type": "message",
+            "role": "user",
+            "content": "Search the indexed files for an interesting term and quote one line.",
+        }],
     )
     resp = aoai.responses.create(
         conversation=conversation.id,
         extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
         input="",
     )
-    print("OK:", resp.output_text)
-    print("::endgroup::")
-    return 0
+    assert resp.output_text and resp.output_text.strip()
 
-
-if __name__ == "__main__":
-    sys.exit(main())

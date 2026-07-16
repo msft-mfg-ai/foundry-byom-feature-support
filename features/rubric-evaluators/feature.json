@@ -1,0 +1,13 @@
+{
+  "slug": "rubric-evaluators",
+  "category": "quality",
+  "name": "Rubric evaluators",
+  "summary": "Foundry-native rubric evaluators (preview) with a BYOM-routed LLM-as-judge.",
+  "description": "Rubric evaluators let you score agent/model responses against custom weighted criteria using an LLM as the judge. The judge model is picked per-rubric (either auto-generated or manually configured). BYOM question: does the rubric evaluator accept a `{conn}/{model}` prefix for the judge, and does the resulting judge call route through the AI Gateway?",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators",
+  "notes": "Preview surface \u2014 primarily portal-driven with a REST API behind it. Recommended judges per docs: gpt-5.5 / gpt-5.4 / gpt-5.4-mini (avoid gpt-4o-mini as judge). Adding a self-contained BYOM probe requires the REST create-rubric-evaluator + create-evaluation-run flow, which is heavier than a single SDK call \u2014 tracked as a follow-up. Status is `not_confirmed` until we probe it end-to-end.",
+  "sample_url": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators"
+}
