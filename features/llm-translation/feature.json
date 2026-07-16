@@ -9,5 +9,5 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai-services/translator/text-translation/2026-06-06/translate-api",
-  "notes": "BYOM does not work: Translator `targets[].deploymentName` does not accept the BYOM prefix.\n\nCalls use `FOUNDRY_ACCOUNT_ENDPOINT` at the account level, not the project level, and require the `Ocp-Apim-Subscription-Region` header."
+  "notes": "BYOM does not work: the Translator API treats the entire `{connection}/{model}` string as a literal deployment name and fails to look it up.\n\nServer error verbatim:\n\n> `HTTP 400: Failed to get information on deployment apim-<gateway>/gpt-4o-mini. Please double check that the deployment exists.`\n\nCalls use `FOUNDRY_ACCOUNT_ENDPOINT` (account-level, not project-level) and require the `Ocp-Apim-Subscription-Region` header. The BYOM prefix reaches the Translator surface intact but Translator does not implement the prefix-parsing contract."
 }

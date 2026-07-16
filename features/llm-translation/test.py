@@ -38,14 +38,20 @@ def test_llm_translation(cfg):
         url,
         data=json.dumps(body).encode("utf-8"),
         headers={
-            "Authorization": f"Bearer {token}",
+            "Authorization": "Bearer " + token,
             "Content-Type": "application/json",
             "Ocp-Apim-Subscription-Region": region,
         },
         method="POST",
     )
 
-    with urllib.request.urlopen(req) as resp:
-        payload = json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body_text = e.read().decode("utf-8", errors="replace")
+        raise AssertionError(
+            f"Translator returned HTTP {e.code}: {body_text}"
+        ) from None
 
     assert payload

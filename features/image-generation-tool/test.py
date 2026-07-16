@@ -1,26 +1,33 @@
-"""BYOM test: image-generation-tool"""
+"""BYOM test: image-generation-tool.
+
+Attaches the built-in ImageGenTool to a BYOM Prompt Agent. If the image
+model slot itself accepts a BYOM `{connection}/{deployment}` prefix, the
+tool call succeeds. Historically it does not.
+"""
+import os
+
 import pytest
-from azure.ai.projects.models import PromptAgentDefinition
+from azure.ai.projects.models import ImageGenTool, PromptAgentDefinition
 
 
 @pytest.mark.not_supported
 @pytest.mark.needs_env
 @pytest.mark.xfail(
-    strict=True,
-    reason="Image generation tool is expected not to route through a BYOM orchestrator model.",
+    strict=False,
+    reason="Image generation tool is not in the BYOM-supported tools list.",
 )
 def test_image_generation_tool(project, aoai, static_model, unique_agent_name, require_env):
     image_deployment_name = require_env("IMAGE_DEPLOYMENT_NAME")
     model = static_model()
-
-    from azure.ai.projects.models import ImageGenTool
+    conn = os.environ.get("AI_GATEWAY_CONNECTION_STATIC", "")
+    tool_model = f"{conn}/{image_deployment_name}" if conn else image_deployment_name
 
     agent = project.agents.create_version(
         agent_name=unique_agent_name("byom-image-generation-tool"),
         definition=PromptAgentDefinition(
             model=model,
             instructions="You are a concise assistant. Reply in one short sentence.",
-            tools=[ImageGenTool(deployment_name=image_deployment_name)],
+            tools=[ImageGenTool(model=tool_model)],
         ),
     )
     assert agent.id
