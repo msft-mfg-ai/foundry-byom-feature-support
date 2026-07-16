@@ -45,6 +45,83 @@ uv run pytest features/<feature-slug>
 
 You need a network path to the private Foundry + APIM endpoints (VPN, jump host, self-hosted runner, etc.). See [`.env.example`](.env.example) for the full list of variables and the `byom` GitHub Environment for how CI consumes them via OIDC.
 
+## 🔐 Azure OIDC setup for CI
+
+Workflows authenticate to Azure via **federated credentials** on `azure/login@v3` — **no client secrets**. You need one Entra ID app registration / service principal with narrowly-scoped roles.
+
+### 1. Create the app + federated credential
+
+```bash
+# App + SP
+APP_ID=$(az ad app create --display-name byom-ci --query appId -o tsv)
+az ad sp create --id "$APP_ID"
+
+# Federated credential for the `byom` GH Environment on this repo
+az ad app federated-credential create --id "$APP_ID" --parameters '{
+  "name": "byom-env",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:msft-mfg-ai/foundry-byom-feature-support:environment:byom",
+  "audiences": ["api://AzureADTokenExchange"]
+}'
+```
+
+Set the three GitHub Environment secrets on the `byom` environment: `AZURE_CLIENT_ID` = `$APP_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
+
+### 2. Assign roles — conditional and narrowly scoped
+
+The SP does two very different things depending on which workflow runs. Grant the minimum set for the workflows you actually use.
+
+| Workflow | Purpose | Roles required | Scope |
+| --- | --- | --- | --- |
+| `feature-matrix.yml`, `feature-<slug>.yml` | **Test-only** — talks to an already-provisioned Foundry project via the data plane. | `Azure AI User` | The Foundry **project** resource |
+| `ephemeral-e2e.yml` | Full lifecycle: `azd up` → tests → `azd down --purge`. Creates/deletes RG, Foundry account, APIM, ACR, storage, etc. | `Contributor` **plus** `User Access Administrator` (needed so bicep can grant the Foundry system-assigned identity access to APIM & storage) | The **resource group** (or the whole subscription, if you let `azd up` create the RG for you) |
+| `feature-hosted-agents-canary.yml` (+ `azd deploy` of the canary agent) | Builds a container image and registers a Hosted Agent version. | `AcrPush` on the ACR; `Azure AI User` on the Foundry project | ACR + Foundry project |
+| `deploy-site.yml` | Publishes to GH Pages. | *none* — pure GitHub-side, no Azure login. | — |
+
+**Conditional role assignment via bicep** (recommended — keeps the role-graph in code, no click-ops):
+
+```bicep
+// param ciPrincipalId string  // objectId of the byom-ci SP (NOT the appId)
+// param assignCiRoles bool = false
+// param scope resourceGroup
+
+var azureAIUserRoleId       = '53ca6127-db72-4b80-b1b0-d745d6d5456d'  // Azure AI User
+var contributorRoleId       = 'b24988ac-6180-42a0-ab88-20f7382dd24c'  // Contributor
+var userAccessAdminRoleId   = '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9'  // User Access Administrator
+var acrPushRoleId           = '8311e382-0749-4cb8-b61a-304f252e45ec'  // AcrPush
+
+resource aiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (assignCiRoles) {
+  name: guid(subscription().id, ciPrincipalId, foundryProject.id, azureAIUserRoleId)
+  scope: foundryProject
+  properties: {
+    principalId: ciPrincipalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', azureAIUserRoleId)
+  }
+}
+```
+
+The infra repo ([`ai-gateway-pe-testing`](https://github.com/msft-mfg-ai/ai-foundry-deployment-options/tree/main/options-infra/ai-gateway-pe-testing)) already accepts a `ciPrincipalId` parameter; toggle `assignCiRoles=true` per environment.
+
+**Alternative — pure `az cli` conditional assignment** (skips if already present):
+
+```bash
+SP_OID=$(az ad sp show --id "$APP_ID" --query id -o tsv)
+PROJECT_ID=$(az resource show --ids "$AZURE_AI_PROJECT_ID" --query id -o tsv)
+
+# idempotent: skip if role already assigned
+if ! az role assignment list --assignee "$SP_OID" --scope "$PROJECT_ID" \
+       --role "Azure AI User" --query "[0].id" -o tsv | grep -q .; then
+  az role assignment create --assignee "$SP_OID" --scope "$PROJECT_ID" --role "Azure AI User"
+fi
+```
+
+### 3. Why *not* Owner / Subscription-scoped Contributor
+
+- **`Azure AI User`** (not Contributor) on the Foundry project is enough for the test-only path — it grants data-plane access to agents / connections / responses without the ability to mutate the resource itself.
+- `Contributor` + `User Access Administrator` are only needed for the ephemeral E2E path, and should be **scoped to the RG** the ephemeral env lives in. Never grant subscription-scope unless `azd up` needs to create the RG.
+- The canary agent needs `AcrPush` only — Foundry pulls the image via its own managed identity.
+
 ## ▶️ Running the matrix in GitHub
 
 Tests run in CI **independently of provisioning**. Because the

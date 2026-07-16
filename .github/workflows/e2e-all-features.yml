@@ -49,9 +49,9 @@ jobs:
       sp_object_id: ${{ steps.sp.outputs.object_id }}
       slugs: ${{ steps.discover.outputs.slugs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -158,14 +158,14 @@ jobs:
       HOSTED_AGENT_NAME_DYNAMIC: ${{ vars.HOSTED_AGENT_NAME_DYNAMIC }}
       HOSTED_AGENT_NAME_CANARY: ${{ vars.HOSTED_AGENT_NAME_CANARY }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
       - run: uv python install 3.12
       - name: Install dependencies
         run: uv sync --frozen --all-extras
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
