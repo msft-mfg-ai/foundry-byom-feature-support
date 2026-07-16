@@ -21,7 +21,7 @@ const workflowUrl = feature.test_file ? `${repo}/actions/workflows/feature-${fea
 const sourceUrl = feature.test_file ? `${repo}/blob/main/features/${feature.slug}/${feature.test_file}` : null;
 const badgeUrl = feature.test_file ? `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.svg` : null;
 ---
-<details id={feature.slug} class="group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md open:shadow-md">
+<details id={feature.slug} data-support={feature.support_status} class="feature-card group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:shadow-md open:shadow-md">
   <summary class="cursor-pointer list-none p-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="min-w-0 flex-1">

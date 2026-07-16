@@ -65,37 +65,38 @@ for (const f of features) byCategory[f.category].push(f);
 
     <section class="mx-auto max-w-6xl px-6 pt-8">
       <div class="grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-lg ring-1 ring-slate-200 sm:grid-cols-5">
-        <div class="rounded-xl bg-slate-50 p-4 text-center">
+        <button type="button" data-filter="all" class="filter-tile is-active rounded-xl bg-slate-50 p-4 text-center transition ring-1 ring-transparent hover:ring-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 data-[active=true]:ring-2 data-[active=true]:ring-slate-400" data-active="true">
           <div class="text-2xl font-bold text-slate-900">{total}</div>
           <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Tracked</div>
-        </div>
-        <div class="rounded-xl bg-emerald-50 p-4 text-center">
+        </button>
+        <button type="button" data-filter="supported" class="filter-tile rounded-xl bg-emerald-50 p-4 text-center transition ring-1 ring-transparent hover:ring-emerald-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 data-[active=true]:ring-2 data-[active=true]:ring-emerald-500">
           <div class="text-2xl font-bold text-emerald-700">{supported}</div>
           <div class="text-xs font-medium uppercase tracking-wide text-emerald-700">Supported</div>
-        </div>
-        <div class="rounded-xl bg-amber-50 p-4 text-center">
+        </button>
+        <button type="button" data-filter="partial" class="filter-tile rounded-xl bg-amber-50 p-4 text-center transition ring-1 ring-transparent hover:ring-amber-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 data-[active=true]:ring-2 data-[active=true]:ring-amber-500">
           <div class="text-2xl font-bold text-amber-700">{partial}</div>
           <div class="text-xs font-medium uppercase tracking-wide text-amber-700">Partial</div>
-        </div>
-        <div class="rounded-xl bg-rose-50 p-4 text-center">
+        </button>
+        <button type="button" data-filter="not_supported" class="filter-tile rounded-xl bg-rose-50 p-4 text-center transition ring-1 ring-transparent hover:ring-rose-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 data-[active=true]:ring-2 data-[active=true]:ring-rose-500">
           <div class="text-2xl font-bold text-rose-700">{notSupported}</div>
           <div class="text-xs font-medium uppercase tracking-wide text-rose-700">Not supported</div>
-        </div>
-        <div class="rounded-xl bg-slate-100 p-4 text-center">
+        </button>
+        <button type="button" data-filter="not_confirmed" class="filter-tile rounded-xl bg-slate-100 p-4 text-center transition ring-1 ring-transparent hover:ring-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 data-[active=true]:ring-2 data-[active=true]:ring-slate-500">
           <div class="text-2xl font-bold text-slate-700">{notConfirmed}</div>
           <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Not confirmed</div>
-        </div>
+        </button>
       </div>
+      <p id="filter-status" class="mt-3 hidden text-center text-sm text-slate-500"></p>
     </section>
 
     <section id="features" class="mx-auto max-w-6xl px-6 py-16">
       <div class="mb-8 flex items-end justify-between">
         <h2 class="text-2xl font-bold tracking-tight text-slate-900">Features</h2>
-        <p class="text-sm text-slate-500">Click a card to expand the description, code sample and workflow links.</p>
+        <p class="text-sm text-slate-500">Click a tile above to filter · click a card to expand it.</p>
       </div>
       <div class="space-y-12">
         {CATEGORY_ORDER.filter((c) => byCategory[c].length > 0).map((cat) => (
-          <div>
+          <div class="category-group" data-category={cat}>
             <div class="mb-4 border-b border-slate-200 pb-2">
               <h3 class="text-lg font-semibold text-slate-900">{CATEGORY_LABEL[cat]}</h3>
               <p class="mt-1 text-sm text-slate-500">{CATEGORY_DESCRIPTION[cat]}</p>
@@ -106,6 +107,7 @@ for (const f of features) byCategory[f.category].push(f);
           </div>
         ))}
       </div>
+      <p id="filter-empty" class="hidden py-16 text-center text-sm text-slate-500">No features match the current filter.</p>
     </section>
 
     <footer class="border-t border-slate-200 bg-white">
@@ -116,3 +118,59 @@ for (const f of features) byCategory[f.category].push(f);
     </footer>
   </main>
 </Layout>
+
+<script is:inline>
+  (() => {
+    const tiles = document.querySelectorAll('.filter-tile');
+    const cards = document.querySelectorAll('.feature-card');
+    const groups = document.querySelectorAll('.category-group');
+    const statusEl = document.getElementById('filter-status');
+    const emptyEl = document.getElementById('filter-empty');
+    const LABELS = {
+      supported: 'Supported',
+      partial: 'Partial',
+      not_supported: 'Not supported',
+      not_confirmed: 'Not confirmed',
+    };
+
+    function apply(filter) {
+      let visible = 0;
+      cards.forEach((el) => {
+        const match = filter === 'all' || el.dataset.support === filter;
+        el.classList.toggle('hidden', !match);
+        if (match) visible++;
+      });
+      groups.forEach((g) => {
+        const anyVisible = g.querySelectorAll('.feature-card:not(.hidden)').length > 0;
+        g.classList.toggle('hidden', !anyVisible);
+      });
+      tiles.forEach((t) => {
+        const active = t.dataset.filter === filter;
+        t.dataset.active = active ? 'true' : 'false';
+        t.classList.toggle('is-active', active);
+      });
+      if (filter === 'all') {
+        statusEl.classList.add('hidden');
+      } else {
+        statusEl.textContent = `Showing ${visible} “${LABELS[filter] || filter}” feature${visible === 1 ? '' : 's'} — click the tile again to clear.`;
+        statusEl.classList.remove('hidden');
+      }
+      emptyEl.classList.toggle('hidden', visible !== 0);
+      const url = new URL(window.location.href);
+      if (filter === 'all') url.searchParams.delete('status');
+      else url.searchParams.set('status', filter);
+      history.replaceState(null, '', url.toString());
+    }
+
+    tiles.forEach((tile) => {
+      tile.addEventListener('click', () => {
+        const target = tile.dataset.filter;
+        const current = document.querySelector('.filter-tile[data-active="true"]')?.dataset.filter;
+        apply(target === current && target !== 'all' ? 'all' : target);
+      });
+    });
+
+    const initial = new URLSearchParams(window.location.search).get('status');
+    if (initial && Object.prototype.hasOwnProperty.call(LABELS, initial)) apply(initial);
+  })();
+</script>
