@@ -1,0 +1,26 @@
+name: Feature - copilot-sdk-via-apim-direct
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/copilot-sdk-via-apim-direct/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-copilot-sdk-via-apim-direct.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: copilot-sdk-via-apim-direct
+      extras: copilot
+    secrets: inherit

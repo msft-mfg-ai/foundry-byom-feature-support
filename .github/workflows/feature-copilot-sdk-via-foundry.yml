@@ -1,0 +1,26 @@
+name: Feature - copilot-sdk-via-foundry
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/copilot-sdk-via-foundry/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-copilot-sdk-via-foundry.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: copilot-sdk-via-foundry
+      extras: copilot
+    secrets: inherit

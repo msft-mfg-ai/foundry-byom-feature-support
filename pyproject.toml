@@ -32,6 +32,12 @@ eval = [
     "azure-ai-evaluation[redteam]>=1.18.1",
 ]
 
+# GitHub Copilot SDK — spawns the Copilot CLI as a subprocess.
+# Required by: copilot-sdk-via-foundry, copilot-sdk-via-apim-direct.
+copilot = [
+    "github-copilot-sdk>=1.0.7",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",

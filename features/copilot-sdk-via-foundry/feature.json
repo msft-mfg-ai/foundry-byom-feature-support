@@ -5,9 +5,10 @@
   "summary": "Copilot SDK BYOK provider pointed at the Foundry project /openai/v1/ URL with a `{conn}/{model}` BYOM prefix in the model field.",
   "description": "The GitHub Copilot SDK (github/copilot-sdk) supports BYOK against OpenAI-compatible endpoints. If you point it at the Foundry **project-level** endpoint (`{project_endpoint}/openai/v1/`) and pass `model=\"{apim-conn}/{deployment}\"`, Foundry should parse the prefix and route to the APIM connection the same way it does for direct Responses API calls. Auth path is static-credential only (`apiKey` or `bearerToken`), so Entra flows require a caller-managed refresh loop.",
   "pm": "TBD",
-  "support_status": "partial",
-  "implementation_status": "preview",
+  "support_status": "not_confirmed",
+  "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-auth",
-  "notes": "BYOM is not verified yet because `model=\"{conn}/{deployment}\"` may be stripped or rejected across Copilot SDK validation, JSON-RPC, CLI, or Responses API.\n\n**Endpoint gotcha:** the `byok.md` sample uses `https://<resource>.openai.azure.com/openai/v1/`, which is account-level AOAI and cannot see Foundry connections. BYOM prefixes 404 there. Use the project URL: `https://<account>.services.ai.azure.com/api/projects/<project>/openai/v1/`.\n\n**Auth gotcha:** `bearerToken` is static; the SDK never refreshes it. Workable pattern: refresh Entra via `az account get-access-token --resource https://ai.azure.com` about 5 minutes before expiry and recreate the session.\n\nRequires `wire_api: \"responses\"`.",
+  "notes": "Not yet verified end-to-end. The test `test.py` builds a Copilot session against `{project_endpoint}/openai/v1/` with `wire_model=\"{connection}/{deployment}\"` and sends a single message — run it locally to confirm the BYOM prefix survives Copilot SDK validation → JSON-RPC → CLI → Responses API.\n\n**Endpoint gotcha:** the `byok.md` sample uses `https://<resource>.openai.azure.com/openai/v1/`, which is the account-level AOAI endpoint and cannot see Foundry connections. BYOM prefixes 404 there. Use the project URL: `https://<account>.services.ai.azure.com/api/projects/<project>/openai/v1/`.\n\n**Auth:** use `bearer_token_provider` (a callable) so Entra tokens refresh on every request — the static `bearer_token` field would not refresh. Requires `wire_api: \"responses\"`.",
+  "test_file": "test.py",
   "sample_url": "https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md"
 }
