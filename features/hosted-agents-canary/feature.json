@@ -1,0 +1,14 @@
+{
+  "slug": "hosted-agents-canary",
+  "category": "agents",
+  "name": "Hosted Agents — azd-provisioned canary",
+  "summary": "Long-lived Hosted Agent provisioned by `azd deploy` (via the `azure.ai.agents` extension) whose container code runs a BYOM probe matrix against the APIM AI Gateway from inside Foundry.",
+  "description": "The infra repo declares `services: ByomCanaryAgent:` with `host: azure.ai.agent` in `azure.yaml`. `azd deploy` invokes the [azd AI agent extension](https://learn.microsoft.com/azure/developer/azure-developer-cli/extensions/azure-ai-foundry-extension) which builds+pushes the container to ACR and registers a Foundry Hosted Agent version. `azd` then exports `HOSTED_AGENT_NAME_CANARY` as an environment variable. The container itself uses the BYOM `{connection}/{model}` convention through a single `BYOM_MODEL` env var, and returns a JSON pass/fail matrix. This test just POSTs to the pre-provisioned Invocations endpoint and asserts every sub-probe returned `ok=true`. Unlike `hosted-agents-static`/`-dynamic` (which self-provision via `remote_build`), the canary has no cold-start on the test path — the agent stays live between runs.",
+  "pm": "TBD",
+  "support_status": "not_confirmed",
+  "implementation_status": "preview",
+  "test_file": "test.py",
+  "azure_docs": "https://learn.microsoft.com/azure/developer/azure-developer-cli/extensions/azure-ai-foundry-extension",
+  "notes": "Skips if `HOSTED_AGENT_NAME_CANARY` is unset (i.e. the infra repo hasn't been `azd deploy`-ed). The agent's `agent.yaml` sets `BYOM_MODEL=${AI_GATEWAY_CONNECTION_STATIC}/${CHAT_MODEL}` and optionally `BYOM_MODEL_ANTHROPIC=${AI_GATEWAY_CONNECTION_ANTHROPIC}/${ANTHROPIC_MODEL}`. Each probe becomes an assertion.",
+  "sample_url": "https://learn.microsoft.com/azure/developer/azure-developer-cli/extensions/azure-ai-foundry-extension"
+}

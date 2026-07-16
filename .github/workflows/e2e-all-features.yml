@@ -156,6 +156,7 @@ jobs:
       MCP_SERVER_URL_AGENT_IDENTITY: ${{ vars.MCP_SERVER_URL_AGENT_IDENTITY }}
       HOSTED_AGENT_NAME_STATIC: ${{ vars.HOSTED_AGENT_NAME_STATIC }}
       HOSTED_AGENT_NAME_DYNAMIC: ${{ vars.HOSTED_AGENT_NAME_DYNAMIC }}
+      HOSTED_AGENT_NAME_CANARY: ${{ vars.HOSTED_AGENT_NAME_CANARY }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
