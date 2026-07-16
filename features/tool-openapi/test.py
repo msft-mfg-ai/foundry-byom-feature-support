@@ -11,16 +11,22 @@ from azure.ai.projects.models import PromptAgentDefinition
 def test_tool_openapi(project, aoai, static_model, unique_agent_name, require_env):
     spec_path = require_env("OPENAPI_SPEC_PATH")
     try:
-        from azure.ai.projects.models import OpenApiAnonymousAuthDetails, OpenApiTool
+        from azure.ai.projects.models import (
+            OpenApiAnonymousAuthDetails,
+            OpenApiFunctionDefinition,
+            OpenApiTool,
+        )
     except ImportError as exc:
         pytest.skip(f"OpenApiTool is not available in the installed azure-ai-projects package: {exc}")
 
     spec = json.loads(Path(spec_path).read_text())
     tool = OpenApiTool(
-        name="openapi",
-        description="Generic OpenAPI tool",
-        spec=spec,
-        auth=OpenApiAnonymousAuthDetails(),
+        openapi=OpenApiFunctionDefinition(
+            name="openapi",
+            description="Generic OpenAPI tool",
+            spec=spec,
+            auth=OpenApiAnonymousAuthDetails(),
+        ),
     )
     agent = project.agents.create_version(
         agent_name=unique_agent_name("byom-tool-openapi"),
