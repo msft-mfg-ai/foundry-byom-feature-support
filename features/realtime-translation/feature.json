@@ -3,11 +3,11 @@
   "category": "endpoints",
   "name": "Realtime translation sessions",
   "summary": "Dedicated Realtime translation endpoints (`wss://.../v1/realtime/translations` + `POST /v1/realtime/translations/client_secrets|calls`); model is `gpt-realtime-translate`, passed as WebSocket query param or in `session.model`.",
-  "description": "OpenAI exposes a separate Realtime endpoint family for continuous audio translation, distinct from the general realtime chat session. The model is `gpt-realtime-translate`, provided either via the WebSocket `?model=` query string or nested inside the `session.model` field of the client-secret / call request. Two different placements means two different BYOM code paths, neither of which has been validated against a Foundry APIM connection.",
+  "description": "Realtime translation uses the dedicated Foundry OpenAI WebSocket translation endpoint (`wss://.../openai/v1/realtime/translations`) to stream speech into translated output. The model is `gpt-realtime-translate`, selected by the realtime session endpoint/configuration rather than a normal Responses-style model field.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/realtime-translation",
-  "notes": "Status-only. Split out of the `byom-incompatible-endpoints` realtime rollup \u2014 the translation endpoints are a distinct URL family with their own model.",
+  "notes": "No BYOM probe is meaningful: the translation model is selected by the realtime translation endpoint/session, not by a top-level `model` field that can carry `{connection}/{deployment}`. Source: https://learn.microsoft.com/azure/foundry/openai/how-to/realtime-audio.",
   "test_file": "test.py"
 }

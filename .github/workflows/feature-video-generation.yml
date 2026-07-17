@@ -3,7 +3,7 @@ name: Feature - video-generation
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * 1'
+    - cron: '11 7 * * 1'
   push:
     branches: [main]
     paths:

@@ -1,14 +1,14 @@
 {
   "slug": "tool-a2a",
   "category": "tools",
-  "name": "Tool \u2014 Agent-to-Agent (A2A)",
+  "name": "Tool — Agent-to-Agent (A2A)",
   "summary": "A2APreviewTool: invoke another Foundry agent as a tool from a BYOM-routed caller.",
-  "description": "A2APreviewTool wired at a Foundry Prompt Agent whose `/agents/{name}/endpoint/protocols/a2a` endpoint was materialised by attaching an AgentCard via PATCH. Not in the official BYOM-supported tools list; tracked to verify whether cross-agent auth ever unlocks the full loop.",
+  "description": "Agent-to-Agent uses `A2APreviewTool` so one Foundry Prompt Agent can invoke another Foundry agent as a tool. The caller's orchestrator model is BYOM-routed, and the user problem is delegating work across agents.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/agent-to-agent",
-  "notes": "BYOM survives in the callee's model definition, but the caller-to-callee tool path is not working yet.\n\nFoundry agents can be exposed as A2A servers via `PATCH /agents/{name}` with an AgentCard. The tool call from caller to callee returns 401 unless it is bound to a registered A2A connection with credentials.\n\nNot in the official supported-tools list.",
+  "notes": "Not supported: the live BYOM tool probe failed while fetching the callee agent card. See `test.py`. Official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations.\n\n> openai.BadRequestError: 400 - `Failed to fetch agent card: Response status code does not indicate success: 424 (Failed Dependency).`",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_to_agent.py"
 }

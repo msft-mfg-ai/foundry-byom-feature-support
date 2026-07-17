@@ -3,7 +3,7 @@ name: Feature - responses-compaction
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * 1'
+    - cron: '12 7 * * 1'
   push:
     branches: [main]
     paths:

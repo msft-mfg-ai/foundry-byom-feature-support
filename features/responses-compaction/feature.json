@@ -1,13 +1,13 @@
 {
   "slug": "responses-compaction",
   "category": "endpoints",
-  "name": "Responses API \u2014 Conversation compaction",
+  "name": "Responses API — Conversation compaction",
   "summary": "Server-side and standalone context compaction for long-running Responses conversations (POST /v1/responses/compact and context_management on POST /v1/responses).",
-  "description": "Compaction summarizes prior turns of a long-running Responses conversation into an opaque encrypted 'compaction item' so future turns stay within the model's context window. It surfaces in two shapes, each of which takes its own `model` parameter: (1) server-side, by adding `context_management: [{type: 'compaction', compact_threshold: N}]` to `POST /v1/responses` \u2014 compaction runs on the same top-level `model` as the generation; and (2) standalone, via `POST /v1/responses/compact`, which takes its own top-level `model` and returns a compacted context you feed into the next Responses call. Neither path has been validated end-to-end when the model is BYOM-prefixed (`{connection}/{deployment}`) \u2014 the standalone `/compact` endpoint in particular is a new surface that the Foundry data plane / APIM connection has not been confirmed to forward.",
+  "description": "Responses compaction keeps long-running conversations within context limits by compacting prior turns into server-managed context. It has two surfaces: inline `context_management` on `POST /v1/responses`, which uses the generation model, and standalone `POST /v1/responses/compact`, which has its own top-level `model`.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "partial",
+  "implementation_status": "not_confirmed",
   "azure_docs": "https://developers.openai.com/api/docs/guides/compaction",
-  "notes": "BYOM is not confirmed for response compaction.\n\nAdd `test.py` after confirming whether the BYOM prefix flows through:\n\n- nested `context_management` config\n- standalone `/v1/responses/compact`\n\nIf server-side compaction reuses the top-level `model`, this may become `partial` rather than `not_supported`.",
+  "notes": "Partial: inline `context_management` works with the BYOM-prefixed model, but the standalone `/responses/compact` endpoint returns 404. See `test.py`.\n\n> responses.create context_management OK: status='completed', output_text='Hello! How can I assist you today?'\n> responses.compact HTTP 404: {\n>   \"error\": {\n>     \"message\": \"The API deployment for this resource does not exist. If you created the deployment within the last 5 minutes, please wait a moment and try again.\",\n>     \"type\": \"invalid_request_error\",\n>     \"param\": null,\n>     \"code\": \"DeploymentNotFound\"\n>   }\n> }",
   "test_file": "test.py"
 }

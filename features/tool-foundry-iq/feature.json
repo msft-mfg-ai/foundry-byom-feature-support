@@ -1,13 +1,13 @@
 {
   "slug": "tool-foundry-iq",
   "category": "tools",
-  "name": "Tool \u2014 Foundry IQ (1P MCP)",
+  "name": "Tool — Foundry IQ (1P MCP)",
   "summary": "Microsoft 1P MCP server: Foundry IQ. Attached via MCPTool with AgenticIdentity auth.",
-  "description": "1P MCP endpoint surfacing Foundry knowledge. Skips if FOUNDRY_IQ_MCP_URL is unset.",
+  "description": "The **Foundry IQ** first-party MCP server exposes Microsoft Foundry's own knowledge (docs, samples, model catalog) as a tool. Attached to a BYOM Prompt Agent so the agent can answer 'how do I do X in Foundry?' with citations.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."
+  "notes": "Foundry IQ is on the official BYOM-supported tools list (`https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations` — '1P MCP servers: Foundry IQ, SharePoint Grounding, Fabric Data Agent'). **Not yet probed against Foundry** — the test wires it via `make_mcp_tool(url=FOUNDRY_IQ_MCP_URL, label='foundry_iq')` and skips with `::warning::` if `FOUNDRY_IQ_MCP_URL` is unset. Set the env var to run."
 }
