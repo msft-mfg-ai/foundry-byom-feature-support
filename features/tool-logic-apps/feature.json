@@ -3,11 +3,11 @@
   "category": "tools",
   "name": "Tool \u2014 Logic Apps",
   "summary": "AzureStandardLogicAppTool: invoke an Azure Logic App workflow from a BYOM-routed agent.",
-  "description": "Skips if LOGIC_APP_RESOURCE_ID or LOGIC_APP_WORKFLOW_NAME is unset.",
+  "description": "`AzureStandardLogicAppTool` lets a Prompt Agent invoke an Azure Logic Apps workflow while the host orchestrator model is BYOM-routed. It would let users trigger workflow automation from a gateway-backed agent.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/connectors",
-  "notes": "Not in the official supported-tools list."
+  "notes": "Not yet confirmed against Foundry for BYOM routing. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/tools/connectors. See `test.py` for the `LOGIC_APP_RESOURCE_ID` and `LOGIC_APP_WORKFLOW_NAME` probe.\n\nLogic Apps is not in the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations."
 }

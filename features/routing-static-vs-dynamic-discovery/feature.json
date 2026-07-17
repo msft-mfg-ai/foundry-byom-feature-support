@@ -1,11 +1,11 @@
 {
   "slug": "routing-static-vs-dynamic-discovery",
   "category": "routing",
-  "name": "Routing \u2014 static vs dynamic model discovery",
+  "name": "Routing — static vs dynamic model discovery",
   "summary": "Documentation card: the difference between a connection with a static models[] array vs one with a modelDiscovery endpoint.",
-  "description": "Both forms produce identical on-wire behavior \u2014 you still call '{conn}/{model}'. The difference is whether Foundry validates the model name at agent-creation time by inspecting connection metadata (static) or by calling GET {target}{listModelsEndpoint} (dynamic). The functional probes are prompt-agents-{static,dynamic}.",
+  "description": "Static and dynamic AI Gateway connections are the two BYOM routing categories for calling upstream model deployments as `{connection}/{deployment}`. Static connections list exact deployment names in metadata; dynamic connections query the upstream at runtime through `modelDiscovery`.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
-  "notes": "Status-only explanatory card."
+  "notes": "**Both discovery modes work end-to-end.** See `prompt-agents-static` (static gateway) and `prompt-agents-dynamic` (dynamic gateway) — both are `supported`. Static config lists exact deployment names in the connection metadata; dynamic mode queries the upstream at runtime via `modelDiscovery`."
 }

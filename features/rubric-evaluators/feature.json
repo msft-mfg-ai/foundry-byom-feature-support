@@ -8,6 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators",
-  "notes": "Preview surface \u2014 primarily portal-driven with a REST API behind it. Recommended judges per docs: gpt-5.5 / gpt-5.4 / gpt-5.4-mini (avoid gpt-4o-mini as judge). Adding a self-contained BYOM probe requires the REST create-rubric-evaluator + create-evaluation-run flow, which is heavier than a single SDK call \u2014 tracked as a follow-up. Status is `not_confirmed` until we probe it end-to-end.",
+  "notes": "The rubric-evaluator REST surface is not exposed on the Foundry project endpoint yet; every plausible path × api-version combination returns 400 or 404, so we can't submit a BYOM-prefixed judge for the service to accept or reject. See `test.py`.\n\n> Live probe on 2026-07-16 against `ai-foundry-3swd46vd3j22a` project endpoint. Tried `evaluations/rubrics`, `evaluations/rubric-evaluators`, `evaluators/rubric`, `rubrics`, `rubric-evaluators` × api-versions `v1`, `2025-04-01-preview`, `2025-05-01`, `2025-05-01-preview`, `2025-10-01-preview`, `2025-11-15-preview`, `2026-04-01-preview` — every combination returned `400 'API version not supported'`.\n\nThe preview is portal-driven today and there is no public SDK. Once Microsoft publishes the REST endpoint we can flip the xfail off and see whether the judge field accepts the `{connection}/{deployment}` prefix. Docs recommend judges `gpt-5.5`, `gpt-5.4`, or `gpt-5.4-mini`; avoid `gpt-4o-mini` as judge.",
+  "test_file": "test.py",
   "sample_url": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators"
 }

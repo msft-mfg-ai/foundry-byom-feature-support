@@ -3,13 +3,12 @@
   "category": "agents",
   "name": "Hosted Agents \u2014 dynamic gateway",
   "summary": "Same as hosted-agents-static but routes through the dynamic-discovery APIM connection.",
-  "description": "Self-provisions the same inline Invocations-protocol agent as `hosted-agents-static` but passes the dynamic-discovery gateway connection name as the container env var. See hosted-agents-static for the full flow. Marker: `slow` \u2014 opt-in via `pytest -m slow`.",
+  "description": "`project.beta.agents.create_version_from_code(...)` can remote-build an Invocations-protocol Hosted Agent whose container calls `responses.create(model='{dynamic-connection}/{deployment}', ...)`. This exercises dynamic-discovery AI Gateway routing from inside a customer-hosted agent runtime.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
-  "notes": "Skips if `AI_GATEWAY_CONNECTION_DYNAMIC` is unset. Otherwise identical wiring to hosted-agents-static.",
+  "notes": "Verified on the wire via the hosted-agent canary's dynamic-discovery probe. See `hosted-agents-canary` for the concrete proof and `test.py` for the remote-build variant.\n\nThe canary uses `BYOM_MODEL_DYNAMIC` and reports `responses-openai-dynamic` as `ok:true`. This card keeps the inline `remote_build` path, where Foundry builds the container from an inline zip; that path is slower and cold-start-flaky.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
-

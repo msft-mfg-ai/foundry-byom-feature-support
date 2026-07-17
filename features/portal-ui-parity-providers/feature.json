@@ -3,9 +3,9 @@
   "category": "ui",
   "name": "Portal UI \u2014 connection creation",
   "summary": "Foundry portal supports creating BYOM connections, but only for v2 APIM resources fronting OpenAI-compatible chat completions APIs.",
-  "description": "Per Operate \u2192 Admin console \u2192 Admin-connected models \u2192 Add: 'Azure API Management' connection type requires a v2 APIM resource and a model implementing the OpenAI-compatible chat completions API. ModelGateway connections and non-OpenAI providers (Anthropic, OpenRouter, LiteLLM, DeepSeek) are not creatable through the portal \u2014 use the Bicep templates in microsoft-foundry/foundry-samples for those.",
+  "description": "The Foundry portal's Operate \u2192 Admin console \u2192 Admin-connected models \u2192 Add wizard creates some connected-model providers, including `Azure API Management`. The user problem is whether the UI can create every BYOM connection category and upstream provider that the code/Bicep path supports.",
   "pm": "TBD",
   "support_status": "partial",
   "implementation_status": "ga",
-  "notes": "Status-only. The 'Other source' option in the wizard covers self-hosted/non-Azure OpenAI-compatible gateways but still requires an OpenAI-compatible chat completions surface."
+  "notes": "Partially supported in the portal: the wizard creates Azure API Management and generic OpenAI-compatible sources, but ModelGateway and non-OpenAI provider configurations still require code or Bicep. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal.\n\nTechnical facts preserved: `Azure API Management` requires a v2 APIM resource and an OpenAI-compatible chat completions API; the `Other source` option covers self-hosted or non-Azure OpenAI-compatible gateways, but still requires an OpenAI-compatible chat completions surface. Use the Bicep templates in `microsoft-foundry/foundry-samples` for ModelGateway and non-OpenAI providers such as Anthropic, OpenRouter, LiteLLM, and DeepSeek."
 }

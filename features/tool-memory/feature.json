@@ -3,12 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 Memory (status-only)",
   "summary": "Foundry Memory Stores (MemoryStores=V1Preview opt-in key).",
-  "description": "No public SDK / docs at the time of writing. Tracked here so the matrix surface stays complete.",
+  "description": "`MemorySearchPreviewTool` would let a Prompt Agent search a memory store while the host orchestrator model is BYOM-routed. This covers persisted user or conversation memory as a tool, separate from the agent's model routing.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/memory-usage",
-  "notes": "Status-only \u2014 no test.py. Not in the official supported-tools list.",
+  "notes": "Not yet probed against Foundry because public SDK/docs support is not stable in the current environment. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/memory-usage. See `test.py` for the `MEMORY_STORE_ID` wiring.\n\nMemory is not in the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_memory_search.py",
   "test_file": "test.py"
 }

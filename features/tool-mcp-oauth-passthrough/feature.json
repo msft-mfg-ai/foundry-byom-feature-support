@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 MCP with OAuth identity passthrough",
   "summary": "MCPTool with authType='UserEntraToken' \u2014 the end user's bearer token is passed through to the MCP server.",
-  "description": "OBO-style identity for MCP. Skips if MCP_SERVER_URL_OAUTH is unset.",
+  "description": "An MCP tool with OAuth passthrough forwards delegated user identity to the MCP server while the Prompt Agent's orchestrator model is `{connection}/{deployment}`. This supports user-scoped tool authorization for BYOM-routed agents.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/mcp-authentication",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_mcp.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_mcp.py",
+  "notes": "Not yet confirmed against Foundry for OAuth passthrough MCP auth. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/mcp-authentication. See `test.py` for the `MCP_SERVER_URL_OAUTH` probe.\n\nMCP is on the official BYOM-supported tools list, but this identity mode still needs a live OAuth-enabled server configured in the canary environment."
 }

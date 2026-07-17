@@ -3,13 +3,12 @@
   "category": "agents",
   "name": "Hosted Agents \u2014 static gateway",
   "summary": "Self-provisioned Hosted Agent (code-deployed via remote_build) whose container code BYOM-routes through the static APIM gateway.",
-  "description": "Deploys a tiny Invocations-protocol agent from inline source (~40 LOC main.py) using `project.beta.agents.create_version_from_code` with `dependency_resolution=remote_build`. No ACR needed \u2014 Foundry builds the container. The agent reads the AI Gateway connection + model from custom env vars (`AI_GATEWAY_CONNECTION`, `CHAT_MODEL`) plus the platform-injected `FOUNDRY_PROJECT_ENDPOINT`, then calls `responses.create(model=f'{conn}/{model}', ...)` from inside the container. Marker: `slow` \u2014 cold-start build is 2\u20135 min, so this test is opt-in via `pytest -m slow`.",
+  "description": "`project.beta.agents.create_version_from_code(...)` can remote-build an Invocations-protocol Hosted Agent whose container calls `responses.create(model='{static-connection}/{deployment}', ...)`. This lets users deploy custom agent code while still routing the model call through a static APIM AI Gateway connection.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code",
-  "notes": "Requires `azure-ai-projects>=2.2.0` (uses the `beta` client surface for code deployment). Runtime: `python_3_13`. Cleans up the version in a finally block. Skips if `AI_GATEWAY_CONNECTION_STATIC` is unset.",
+  "notes": "Verified on the wire via the hosted-agent canary's static APIM probe. See `hosted-agents-canary` for the concrete proof and `test.py` for the remote-build variant.\n\nThe canary uses an `azd`-provisioned Foundry Hosted Agent registered by the `azure.ai.agents` extension; Invocations 2.0.0 calls `responses.create(model='{static-apim-conn}/gpt-4o-mini')` from inside the container and returns `ok:true`. This card keeps the inline `remote_build` path, where Foundry builds the container in place from an inline zip without ACR; that path is slower and cold-start-flaky.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-code"
 }
-

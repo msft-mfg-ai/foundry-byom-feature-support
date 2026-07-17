@@ -2,12 +2,12 @@
   "slug": "byom-behavior-checks",
   "category": "endpoints",
   "name": "BYOM behavioral checks (streaming / structured / multi-turn / parity / concurrent / retry)",
-  "summary": "Cross-cutting BYOM correctness probes on the Responses API — streaming, JSON-schema structured output, multi-turn retention, static-vs-dynamic parity, concurrency, and retry-after-429.",
-  "description": "Not a Foundry feature per se — a suite of properties every BYOM path must satisfy. Each test asserts that the BYOM {conn}/{model} prefix survives a particular Responses API code path (SSE streaming, response_format=json_schema, multi-turn conversation, parallel calls, rate-limit backoff).",
+  "summary": "Cross-cutting BYOM correctness probes on the Responses API \u2014 streaming, JSON-schema structured output, multi-turn retention, static-vs-dynamic parity, concurrency, and retry-after-429.",
+  "description": "The `aoai.responses.create(model='{connection}/{deployment}', ...)` BYOM path must preserve the gateway-prefixed model across Responses API behaviors such as SSE streaming, `response_format=json_schema`, multi-turn conversations, parallel calls, and rate-limit handling. These checks protect users from regressions in common request shapes that sit below agents and tools.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway",
-  "notes": "Fills the gap between per-feature BYOM tests and end-to-end correctness. If any of these regress, the whole BYOM matrix is unreliable."
+  "notes": "Verified end-to-end across the Responses API behavior checks. See `test.py`.\n\nThe rate-limit backoff probe is best-effort because it only observes APIM throttling when the canary environment returns a 429. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway."
 }

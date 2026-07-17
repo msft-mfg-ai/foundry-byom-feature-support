@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 SharePoint (OBO)",
   "summary": "SharepointPreviewTool with OAuth on-behalf-of, attached to a BYOM-routed agent.",
-  "description": "OBO flow requires a delegated user token. Hard limitation: does not work when the agent is published to Teams. Skips if SHAREPOINT_CONNECTION_ID is unset.",
+  "description": "`SharepointPreviewTool` connects a Prompt Agent to SharePoint grounding through a configured connection while the orchestrator model is BYOM-routed. This lets users answer from SharePoint content using a gateway-hosted model.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/sharepoint",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_sharepoint.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_sharepoint.py",
+  "notes": "Verified end-to-end with `SharepointPreviewTool` when `SHAREPOINT_CONNECTION_ID` is configured. See `test.py`.\n\nSharePoint Grounding is on the official BYOM-supported tools list. Known limitation preserved: the OBO flow does not work when the agent is published to Teams."
 }

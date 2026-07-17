@@ -36,9 +36,9 @@ def test_tool_a2a(project, aoai, cfg, static_model, unique_agent_name):
 
         conn_id = os.environ.get("A2A_PROJECT_CONNECTION_ID")
         if conn_id:
-            tool = A2APreviewTool(project_connection_id=conn_id, name="summarizer", description="Remote summarizer")
+            tool = A2APreviewTool(project_connection_id=conn_id)
         else:
-            tool = A2APreviewTool(base_url=a2a_url, name="summarizer", description="Remote summarizer")
+            tool = A2APreviewTool(base_url=a2a_url)
 
         agent = make_prompt_agent_with_tools(
             project,

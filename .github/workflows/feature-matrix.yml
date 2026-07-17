@@ -44,7 +44,7 @@ jobs:
     outputs:
       slugs: ${{ steps.list.outputs.slugs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: list
         env:
           FILTER: ${{ inputs.feature_filter }}

@@ -3,11 +3,11 @@
   "category": "tools",
   "name": "Tool \u2014 Foundry IQ (1P MCP)",
   "summary": "Microsoft 1P MCP server: Foundry IQ. Attached via MCPTool with AgenticIdentity auth.",
-  "description": "1P MCP endpoint surfacing Foundry knowledge. Skips if FOUNDRY_IQ_MCP_URL is unset.",
+  "description": "Foundry IQ is a first-party MCP server that exposes Microsoft Foundry knowledge, docs, samples, and model catalog content to a Prompt Agent. The host agent uses `{connection}/{deployment}` for its orchestrator model while the MCP tool supplies grounded Foundry context.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Same code shape as tool-mcp-entra-project; differs only in the upstream URL."
+  "notes": "Not yet probed against Foundry because `FOUNDRY_IQ_MCP_URL` is not configured in the canary environment. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect. See `test.py` for the `make_mcp_tool(url=FOUNDRY_IQ_MCP_URL, label='foundry_iq')` wiring.\n\nFoundry IQ is on the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations ('1P MCP servers: Foundry IQ, SharePoint Grounding, Fabric Data Agent')."
 }

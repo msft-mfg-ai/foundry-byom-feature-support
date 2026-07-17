@@ -3,10 +3,10 @@
   "category": "infrastructure",
   "name": "Private Foundry endpoint",
   "summary": "Foundry account/project exposed via Private Endpoint (no public network access).",
-  "description": "BYOM features in this matrix are validated against a Foundry project whose data-plane endpoint resolves to a private IP inside the test VNet. Public network access is disabled on the Foundry account.",
+  "description": "Azure AI Foundry Private Link makes the project data-plane endpoint resolve to a private IP and disables public network access on the Foundry account. This lets users run BYOM feature probes without exposing Foundry or APIM endpoints publicly.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link",
-  "notes": "Status-only \u2014 validated implicitly by every other feature when CI runs inside the private VNet. Confirmed working end-to-end."
+  "notes": "Verified end-to-end by running the matrix from inside the private VNet against a Foundry account with public network access disabled. Docs: https://learn.microsoft.com/azure/foundry/how-to/configure-private-link.\n\nEvery passing feature test in this environment also validates private Foundry reachability."
 }

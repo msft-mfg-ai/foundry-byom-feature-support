@@ -3,10 +3,10 @@
   "category": "routing",
   "name": "Routing \u2014 Serverless catalog model",
   "summary": "Serverless connection (Phi, Mistral, Llama, etc. served by Foundry's catalog). Uses '{conn}/{model}' prefix but is NOT BYOM.",
-  "description": "Important to distinguish: the prefix shape is identical to BYOM but the upstream is Foundry-hosted, not customer-hosted. This card exists so the matrix doesn't conflate the two.",
+  "description": "Serverless catalog routing uses the same `{connection}/{deployment}` model prefix shape, but the upstream model is Foundry-hosted rather than customer-hosted behind APIM. It helps users distinguish BYOM syntax from true bring-your-own-model ownership of the upstream endpoint.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "notes": "Skips if AI_GATEWAY_CONNECTION_SERVERLESS or SERVERLESS_MODEL is unset."
+  "notes": "Verified end-to-end when `AI_GATEWAY_CONNECTION_SERVERLESS` and `SERVERLESS_MODEL` point at a serverless catalog connection. See `test.py`.\n\nThe prefix shape matches BYOM, but the upstream is Foundry-hosted rather than customer-hosted."
 }

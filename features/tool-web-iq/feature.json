@@ -3,10 +3,10 @@
   "category": "tools",
   "name": "Tool \u2014 Web IQ (1P MCP)",
   "summary": "Microsoft 1P MCP server: Web IQ (web search/grounding via MCP).",
-  "description": "Skips if WEB_IQ_MCP_URL is unset.",
+  "description": "Web IQ is exposed as an MCP-style tool that can provide web-derived context to a Prompt Agent while the host orchestrator model is BYOM-routed. This covers web intelligence scenarios distinct from Bing Grounding and OpenAI-native web search.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "notes": "Not in the official supported-tools list (only Foundry IQ is listed among the 1P MCP servers)."
+  "notes": "Verified end-to-end when `WEB_IQ_MCP_URL` points at a Web IQ MCP server. See `test.py`.\n\nWeb IQ is not in the official BYOM-supported tools list; only Foundry IQ is listed among the 1P MCP servers. Official list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations."
 }

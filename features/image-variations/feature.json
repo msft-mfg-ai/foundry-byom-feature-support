@@ -2,12 +2,12 @@
   "slug": "image-variations",
   "category": "endpoints",
   "name": "Image variations",
-  "summary": "POST /v1/images/variations with `model: dall-e-2` \u2014 generate variations of an existing image. DALL\u00b7E 2 only.",
-  "description": "Separate from image generation and image edits, `POST /v1/images/variations` takes an input image and produces variations. `model` is a top-level required param, but only `dall-e-2` is supported. Tracked separately from `image-generation-direct` because it exercises a distinct code path (image-in, image-out with no prompt) and because DALL\u00b7E 2 is the sole supported upstream, which makes BYOM routing narrower than for generations.",
+  "summary": "POST /v1/images/variations with `model: dall-e-2` — generate variations of an existing image. DALL·E 2 only.",
+  "description": "`POST /v1/images/variations` creates alternate images from an uploaded source image. The OpenAI surface only supported `dall-e-2`, so the user problem was image-to-image variation rather than prompt-only generation.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/image-generation",
-  "notes": "Status-only. Included as a distinct card because it appears in the OpenAI docs as its own endpoint with a `model` field, even though the practical BYOM surface is narrow.",
+  "notes": "Cannot be probed: Azure Foundry does not expose `POST /v1/images/variations`, and OpenAI shut down `dall-e-2` on 2026-05-12 with no Azure equivalent; `gpt-image-2` is the replacement image model but does not support variations. Sources: https://platform.openai.com/docs/deprecations and https://learn.microsoft.com/azure/ai-foundry/openai/concepts/models.",
   "test_file": "test.py"
 }

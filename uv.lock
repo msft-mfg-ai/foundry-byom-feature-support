@@ -341,6 +341,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+copilot = [
+    { name = "github-copilot-sdk" },
+]
 eval = [
     { name = "azure-ai-evaluation", extra = ["redteam"] },
 ]
@@ -356,11 +359,12 @@ requires-dist = [
     { name = "azure-ai-evaluation", extras = ["redteam"], marker = "extra == 'eval'", specifier = ">=1.18.1" },
     { name = "azure-ai-projects", specifier = "==2.3.0" },
     { name = "azure-identity", specifier = ">=1.19.0" },
+    { name = "github-copilot-sdk", marker = "extra == 'copilot'", specifier = ">=1.0.7" },
     { name = "openai", specifier = ">=2.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "requests", specifier = ">=2.32" },
 ]
-provides-extras = ["eval"]
+provides-extras = ["eval", "copilot"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -853,6 +857,19 @@ wheels = [
 [package.optional-dependencies]
 http = [
     { name = "aiohttp" },
+]
+
+[[package]]
+name = "github-copilot-sdk"
+version = "1.0.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "python-dateutil" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/67/ec/734b0d28abbf7d26eb1a60810deedbcc0719910d64f018477010baf3e3f3/github_copilot_sdk-1.0.7-py3-none-any.whl", hash = "sha256:6f3e74e1779a4508dd6636e06fd0aa55eb6244805a66d61a4f21b30c958e2985", size = 421447, upload-time = "2026-07-16T15:21:04.636Z" },
 ]
 
 [[package]]

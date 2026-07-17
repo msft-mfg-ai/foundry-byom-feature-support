@@ -3,11 +3,11 @@
   "category": "endpoints",
   "name": "LLM-supported translation",
   "summary": "POST /translator/text/translate with targets[].deploymentName='{conn}/{model}' to use an LLM for translation.",
-  "description": "New translator API (api-version=2026-06-06) that accepts a deploymentName per target language. This is the same diagnostic shape as image-generation-direct \u2014 does the endpoint parse the BYOM prefix, or treat it as a literal deployment lookup?",
+  "description": "The Translator API `POST /translate?api-version=2026-06-06` accepts `targets[].deploymentName` to choose the LLM used for each target language. That nested deployment slot would need to parse `{connection}/{deployment}` for APIM-routed LLM translation.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai-services/translator/text-translation/2026-06-06/translate-api",
-  "notes": "Calls FOUNDRY_ACCOUNT_ENDPOINT (account-level, not project). Requires Ocp-Apim-Subscription-Region header. Confirmed broken: translator targets[].deploymentName does not accept the BYOM prefix."
+  "notes": "BYOM does not work: the Translator API treats the entire `{connection}/{model}` string as a literal deployment name and fails to look it up.\n\nServer error verbatim:\n\n> `HTTP 400: Failed to get information on deployment apim-<gateway>/gpt-4o-mini. Please double check that the deployment exists.`\n\nCalls use `FOUNDRY_ACCOUNT_ENDPOINT` (account-level, not project-level) and require the `Ocp-Apim-Subscription-Region` header. The BYOM prefix reaches the Translator surface intact but Translator does not implement the prefix-parsing contract."
 }

@@ -3,10 +3,10 @@
   "category": "routing",
   "name": "Routing \u2014 APIM fronting Azure OpenAI",
   "summary": "Baseline: ApiManagement connection where the upstream is an Azure OpenAI deployment.",
-  "description": "The 'happy path' for BYOM \u2014 APIM connection with the standard /deployments discovery, fronting one or more AOAI accounts. This is the shape every other agents/tools test in this matrix implicitly depends on.",
+  "description": "An `ApiManagement` AI Gateway connection fronting OpenAI-compatible deployments is the standard BYOM route for `model='{connection}/{deployment}'`. It gives agents and Responses API calls APIM load balancing, policy, private networking, and observability while preserving the Foundry project endpoint.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "notes": "Status-only roll-up card; the prompt-agents tests are the actual functional probes for this routing shape."
+  "notes": "Verified through the concrete Prompt Agent and Responses API probes rather than a separate rollup test. See `prompt-agents-static`, `responses-direct`, and `tool-*` cards for APIM OpenAI routing evidence.\n\nThis is the dependency shape most agents and tools in the matrix use."
 }

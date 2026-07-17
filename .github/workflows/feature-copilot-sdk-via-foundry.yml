@@ -1,16 +1,16 @@
-name: Feature - responses-inline-moderation
+name: Feature - copilot-sdk-via-foundry
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '13 7 * * 1'
+    - cron: '15 7 * * 1'
   push:
     branches: [main]
     paths:
-      - 'features/responses-inline-moderation/**'
+      - 'features/copilot-sdk-via-foundry/**'
       - 'features/_shared.py'
       - 'pyproject.toml'
-      - '.github/workflows/feature-responses-inline-moderation.yml'
+      - '.github/workflows/feature-copilot-sdk-via-foundry.yml'
       - '.github/workflows/_feature-test.yml'
 
 permissions:
@@ -21,5 +21,6 @@ jobs:
   run:
     uses: ./.github/workflows/_feature-test.yml
     with:
-      feature: responses-inline-moderation
+      feature: copilot-sdk-via-foundry
+      extras: copilot
     secrets: inherit

@@ -3,12 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 Fabric IQ (1P MCP)",
   "summary": "Microsoft 1P MCP server: Fabric IQ.",
-  "description": "Skips if FABRIC_IQ_MCP_URL is unset.",
+  "description": "Fabric IQ would expose Microsoft Fabric knowledge through a first-party MCP-style tool attached to a Prompt Agent. The host agent's orchestrator model would be BYOM-routed, but the Fabric IQ tool itself is a separate first-party data source.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq",
-  "notes": "Not in the official supported-tools list (only Foundry IQ is listed among the 1P MCP servers).",
+  "notes": "Not supported by the documented BYOM tool matrix; no meaningful probe is possible until Microsoft publishes the Fabric IQ endpoint URL. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq. See `test.py` for the placeholder.\n\nFabric IQ is not on the official BYOM-supported tools list; only Foundry IQ, SharePoint Grounding, and Fabric Data Agent are listed as 1P MCP servers. Official list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_fabric_iq.py"
 }

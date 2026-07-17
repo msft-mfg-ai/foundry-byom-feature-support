@@ -79,6 +79,50 @@ Our marker convention (`not_supported` → `xfail(strict=True)`, `not_confirmed`
 5. If the feature needs a **preview / bleeding-edge SDK** that would conflict with core deps (or that is too heavy to include in every install), add it as an **optional-dependency extra** in `pyproject.toml` rather than to the top-level `dependencies` list. Then set `extras: <name>` in that feature's workflow. See `[project.optional-dependencies]` for existing extras (e.g. `eval` covers `azure-ai-evaluation[redteam]` for the four eval-family cards). Local dev: `uv sync --extra <name>` to enable it. Tests must `try: import ...` and `pytest.skip("... not installed")` on `ImportError` so the core-only lane stays green. Never add conflicting versions of the same package to two different extras — only one extra is active per test run.
 6. Folders prefixed with `_` (e.g. `_shared.py`) are skipped by `loadFeatures()` — use that prefix for any non-feature helpers.
 
+## Card quality rules (description + notes)
+
+Every `feature.json` on the site is read by humans landing cold. Cards must answer three questions in this order:
+
+1. **What is the feature?** — one or two concrete sentences naming the API surface / SDK method / endpoint / model / tool, with names in backticks. No meta-commentary ("Reference conversion for…", "Card documents…", "Status-only explanatory card"). No restating the summary verbatim. No mentioning `xfail` / `pytest` / marker names — those are test mechanics.
+2. **How did we test it?** — cite `test.py` if one exists, or say plainly "Not yet probed against Foundry" with a link to authoritative docs. Never write "Add a test.py once…" as an aspiration; either write the probe or admit it isn't tested.
+3. **What did we see?** — for `not_supported` / `partial` / verified `supported`, include the concrete evidence. Failures must include the **verbatim server response** as a `>` blockquote (or a bulleted list of quotes if multiple probes). Successes must at least say what call shape works (e.g. `aoai.responses.create(model='{conn}/{deployment}', ...)`).
+
+**Prohibited notes:**
+- `"Status-only."` or `"Status-only explanatory card."` as a whole note — no meta-commentary about the card.
+- `"Add a test.py once we can confirm…"` — either add the probe or say "Not yet probed."
+- `"Split out of the X rollup because…"` — irrelevant to a reader.
+- Hedging phrases like `"It's worth noting that…"`, `"as one might expect"`, `"mostly documents completeness"`.
+- Any `not_supported` / `partial` claim without either a verbatim server error, an authoritative docs citation, or a cross-link to another card that carries the concrete proof (e.g. `See tool-web-search` for the shape of the rejection).
+
+**Capturing verbatim errors:** when writing a new probe against something we expect to fail, always wrap the API call so the response body reaches the assertion message. Two patterns already in the repo:
+
+```python
+# openai SDK
+try:
+    aoai.images.generate(model=byom_model, ...)
+except openai.APIStatusError as e:
+    body = e.response.text if e.response is not None else str(e)
+    raise AssertionError(f"images.generate HTTP {e.status_code}: {body}") from None
+```
+
+```python
+# raw urllib
+try:
+    with urllib.request.urlopen(req) as resp:
+        payload = json.loads(resp.read())
+except urllib.error.HTTPError as e:
+    body = e.read().decode("utf-8", errors="replace")
+    raise AssertionError(f"HTTP {e.code}: {body}") from None
+```
+
+**Reference examples** (already meet the bar — copy their shape):
+- `features/tool-web-search/feature.json` — verbatim server-error blockquote.
+- `features/batch-api/feature.json` — verified 404 with concrete evidence + rollup cross-link.
+- `features/chat-completions-direct/feature.json` — verified failure with resource ID.
+- `features/agent-a2a-connected/feature.json` — verified `supported` recipe as a numbered list.
+- `features/routing-static-vs-dynamic-discovery/feature.json` — explanatory card that cross-links to the two concrete-proof cards instead of being self-referential.
+- `features/image-variations/feature.json` — "cannot be probed" with authoritative citation to OpenAI shutdown notice.
+
 ## Keeping the site in sync with new findings
 
 The `features/*/feature.json` files **are** the site. Any time you learn something new that changes a feature's real support level, you must update the JSON in the same PR that carries the finding — otherwise the badge on the static site silently lies. Concretely:

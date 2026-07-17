@@ -9,6 +9,6 @@
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/image-generation",
-  "notes": "Skips with ::warning:: if IMAGE_DEPLOYMENT_NAME is unset. Confirmed broken: image tool not in supported-tools list and does not honor the BYOM prefix on its image deployment slot.",
+  "notes": "BYOM does not work: the image generation tool is not in the BYOM-supported tools list.\n\nServer error verbatim:\n\n> The following tools are not supported with BYO model: `image_generation`. Please remove these tools or use a standard model deployment.\n\nSame rejection pattern as `bing_grounding` (see `tool-web-search`). Skips with `::warning::` if `IMAGE_DEPLOYMENT_NAME` is unset.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_image_generation.py"
 }

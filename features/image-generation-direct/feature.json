@@ -3,11 +3,11 @@
   "category": "endpoints",
   "name": "Image generation \u2014 direct endpoint",
   "summary": "Direct call to POST /openai/v1/images/generations with a BYOM-prefixed model name.",
-  "description": "Probes whether the images endpoint parses the '{conn}/{model}' prefix as a route hint. Research suggests the model param is required and treated literally, so BYOM is likely inapplicable here. Test documents the actual behavior.",
+  "description": "`aoai.images.generate(...)` calls the direct `/images/generations` endpoint with a top-level `model` for image creation. The BYOM question is whether that image model slot treats `{connection}/{deployment}` as an APIM route hint or as a literal Foundry deployment name.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/openai/how-to/dall-e",
-  "notes": "Likely fails because the images endpoint does not parse the BYOM prefix. Captured as a gap. Confirmed broken: direct images endpoint does not parse the BYOM prefix."
+  "notes": "BYOM does not work: the direct `/images/generations` endpoint does not parse the `{connection}/{model}` prefix.\n\nServer error verbatim:\n\n> `openai.NotFoundError: Error code: 404` (empty body)\n\nThe endpoint returns 404 with no error body \u2014 the request never matches a Foundry route. Use a standard Foundry image deployment name (no BYOM prefix) for direct image calls."
 }

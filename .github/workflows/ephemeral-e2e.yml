@@ -74,17 +74,17 @@ jobs:
       slugs: ${{ steps.discover.outputs.slugs }}
     steps:
       - name: Checkout this repo (for feature discovery)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout deployment options
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.DEPLOY_REPO }}
           ref: ${{ inputs.deployment_options_ref || 'main' }}
           path: deployment-options
 
       - name: Azure login (OIDC)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -144,13 +144,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'byom' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: ${{ env.DEPLOY_REPO }}
           ref: ${{ inputs.deployment_options_ref || 'main' }}
           path: deployment-options
 
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}

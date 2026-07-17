@@ -1,13 +1,13 @@
 {
   "slug": "responses-inline-moderation",
   "category": "endpoints",
-  "name": "Responses API \u2014 Inline moderation",
+  "name": "Responses API — Inline moderation",
   "summary": "Nested `moderation.model` field on POST /v1/responses (and POST /v1/chat/completions) that runs a separate moderation model alongside the main generation.",
-  "description": "The Responses and Chat Completions APIs accept an inline `moderation` block whose `moderation.model` field names a dedicated moderation model (e.g. `omni-moderation-latest`) executed against the request/response in the same call as the mainline `model`. This is a **second, nested `model` slot** on the same request. Untested whether the Foundry data plane / APIM connection preserves the nested field when the mainline `model` uses the BYOM `{connection}/{deployment}` prefix \u2014 the concern is that the gateway strips or ignores the nested field on the way through.",
+  "description": "Responses inline moderation is OpenAI's nested `moderation` request object for running a separate moderation model, such as `omni-moderation-latest`, alongside the main generation. It solves same-call policy screening; Azure Foundry instead applies its own server-side content filtering layer.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/moderation",
-  "notes": "Status-only. If confirmed working, promote to `supported`; if the nested `moderation.model` is dropped or forced back onto the Foundry account, mark `not_supported`.",
+  "notes": "Not supported: the server accepted the request but returned `moderation=None`, so the OpenAI-only moderation model was not honored. See `test.py`.\n\n> responses.create moderation OK: status='completed', moderation=None, output_text='Hi there!'",
   "test_file": "test.py"
 }

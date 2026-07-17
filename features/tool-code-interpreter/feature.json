@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 Code interpreter",
   "summary": "CodeInterpreterTool inside a Prompt Agent whose orchestrator is BYOM-routed.",
-  "description": "Sandboxed Python execution. No model param on the tool itself.",
+  "description": "`CodeInterpreterTool` gives a Prompt Agent a sandboxed Python execution environment while the agent's orchestrator model remains `{connection}/{deployment}`. This lets users run calculations or code snippets without giving the tool its own model slot.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/code-interpreter",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_code_interpreter.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_code_interpreter.py",
+  "notes": "Verified end-to-end with `CodeInterpreterTool` on a BYOM-routed Prompt Agent. See `test.py`.\n\nThe tool has no model parameter; BYOM applies only to the host agent's orchestrator model."
 }
