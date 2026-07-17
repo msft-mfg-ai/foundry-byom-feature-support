@@ -1,13 +1,15 @@
-"""Responses API with OpenAI inline moderation.model."""
+"""Responses API with OpenAI inline moderation.model.
+
+Positive-assertion probe for a `not_supported` nested model slot: the test
+PASSES when Foundry accepts the request but ignores OpenAI inline moderation,
+returning `moderation=None` as documented. If inline moderation starts being
+honored, this test fails RED and the card must be promoted.
+"""
 import openai
 import pytest
 
 
 @pytest.mark.not_supported
-@pytest.mark.xfail(
-    strict=False,
-    reason="omni-moderation-latest is an OpenAI-only model, not an Azure Foundry BYOM target.",
-)
 def test_responses_inline_moderation(aoai, static_model):
     try:
         resp = aoai.responses.create(
@@ -19,5 +21,8 @@ def test_responses_inline_moderation(aoai, static_model):
         body = getattr(e, "response", None)
         body_text = body.text if body is not None else str(e)
         raise AssertionError(f"responses.create moderation HTTP {e.status_code}: {body_text}") from None
-    print(f"responses.create moderation OK: status={resp.status!r}, moderation={getattr(resp, 'moderation', None)!r}, output_text={resp.output_text!r}")
+
     assert resp.output_text and resp.output_text.strip()
+    assert getattr(resp, "moderation", None) is None, (
+        "expected Foundry to ignore inline moderation, but moderation was populated"
+    )

@@ -1,31 +1,41 @@
 """Chat Completions on the project-scoped OpenAI client, stream + non-stream.
 
-The project's OpenAI client (from `project.get_openai_client()`) is pointed
-at `{PROJECT_ENDPOINT}/openai/v1/`. The Responses API on that client honours
-BYOM prefixes; Chat Completions currently does not — the proxy resolves
-the model locally on the Foundry account and 404s before ever routing to
-the APIM gateway.
+Positive-assertion probes for a `not_supported` endpoint: these tests PASS
+when Foundry treats the BYOM-prefixed model as a local deployment name and
+rejects it with DeploymentNotFound. If Chat Completions starts honoring the
+BYOM prefix, the tests fail RED and the card must be promoted.
 """
+import openai
 import pytest
 
 
 @pytest.mark.not_supported
-@pytest.mark.xfail(strict=True, reason="chat.completions on project OpenAI client returns 404 DeploymentNotFound for BYOM-prefixed models.")
 def test_chat_completions_nonstream(aoai, static_model):
-    r = aoai.chat.completions.create(
-        model=static_model(),
-        messages=[{"role": "user", "content": "Say hi in three words."}],
-    )
-    assert r.choices and (r.choices[0].message.content or "").strip()
+    with pytest.raises(openai.NotFoundError) as exc_info:
+        aoai.chat.completions.create(
+            model=static_model(),
+            messages=[{"role": "user", "content": "Say hi in three words."}],
+        )
+
+    err = exc_info.value
+    body = getattr(err, "response", None)
+    body_text = body.text if body is not None else str(err)
+    assert err.status_code == 404, f"expected HTTP 404, got {err.status_code}: {body_text[:400]}"
+    assert "DeploymentNotFound" in body_text
 
 
 @pytest.mark.not_supported
-@pytest.mark.xfail(strict=True, reason="chat.completions on project OpenAI client returns 404 DeploymentNotFound for BYOM-prefixed models (stream mode).")
 def test_chat_completions_stream(aoai, static_model):
-    stream = aoai.chat.completions.create(
-        model=static_model(),
-        messages=[{"role": "user", "content": "Count 1 to 3."}],
-        stream=True,
-    )
-    parts = [c.choices[0].delta.content or "" for c in stream if c.choices]
-    assert "".join(parts).strip()
+    with pytest.raises(openai.NotFoundError) as exc_info:
+        stream = aoai.chat.completions.create(
+            model=static_model(),
+            messages=[{"role": "user", "content": "Count 1 to 3."}],
+            stream=True,
+        )
+        list(stream)
+
+    err = exc_info.value
+    body = getattr(err, "response", None)
+    body_text = body.text if body is not None else str(err)
+    assert err.status_code == 404, f"expected HTTP 404, got {err.status_code}: {body_text[:400]}"
+    assert "DeploymentNotFound" in body_text
