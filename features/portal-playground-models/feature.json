@@ -3,9 +3,9 @@
   "category": "ui",
   "name": "Portal \u2014 BYOM models visible in playground",
   "summary": "BYOM-routed models do not appear in the Foundry portal's Models + endpoints page or the Chat / Agents Playground model picker.",
-  "description": "Connections of type ApiManagement or ModelGateway register fine and their '{conn}/{deployment}' prefix works from code, but the deployments do not surface in the portal UI's model selection dropdowns. You cannot 'point and click' a BYOM model from the playground; you must invoke it through the SDK / Responses API.",
+  "description": "The Foundry portal playground model picker is the UI surface that lists deployments users can select for chat or agent playground runs. BYOM connections of type `ApiManagement` or `ModelGateway` work from code as `{connection}/{deployment}`, but the user problem is whether those gateway deployments are discoverable for point-and-click testing.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
-  "notes": "Status-only. Adjacent to portal-ui-parity-providers but specifically about the runtime playground/picker surface, not connection creation."
+  "notes": "Not yet probed with an automated portal check. Docs for AI Gateway setup: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway.\n\nCurrent observation: `ApiManagement` and `ModelGateway` connections register and work from SDK / Responses API calls, but their deployments do not appear in the portal playground model dropdowns. This is adjacent to `portal-ui-parity-providers` but covers runtime model selection rather than connection creation."
 }

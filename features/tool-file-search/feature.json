@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 File search",
   "summary": "FileSearchTool with a pre-uploaded vector store, attached to a BYOM-routed agent.",
-  "description": "Embeddings used by File Search are platform-managed (no BYOM at the embedding layer). Only the agent's orchestrator model is BYOM-routed. Skips if FILE_SEARCH_VECTOR_STORE_ID is unset.",
+  "description": "`FileSearchTool` attaches an existing vector store to a Prompt Agent whose orchestrator model is BYOM-routed. The tool uses platform-managed embeddings, so users route only the answer-generating agent model through APIM AI Gateway.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/file-search",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_file_search.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_file_search.py",
+  "notes": "Verified end-to-end with `FileSearchTool(vector_store_ids=[...])` on a BYOM-prefixed Prompt Agent. See `test.py`.\n\nSet `FILE_SEARCH_VECTOR_STORE_ID` to run. The embeddings used by File Search are platform-managed and are not a BYOM model slot."
 }

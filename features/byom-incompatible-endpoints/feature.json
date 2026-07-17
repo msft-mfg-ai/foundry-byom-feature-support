@@ -3,9 +3,9 @@
   "category": "infrastructure",
   "name": "BYOM-incompatible endpoints (rollup)",
   "summary": "Endpoints whose model parameter is NOT routed through gateway connections: embeddings, TTS, STT, fine-tuning, batch, realtime (WebSocket).",
-  "description": "These endpoints take a model name that maps to an Azure OpenAI deployment on the Foundry account itself. There is no documented way to BYOM-route them. Rollup card so each one doesn't need its own status-only entry.",
+  "description": "Embeddings, text-to-speech, speech-to-text, fine-tuning, Batch, and Realtime WebSocket endpoints use endpoint-specific deployment selection instead of the Foundry Responses BYOM prefix. The user problem is knowing which model-bearing APIs still require a local Azure OpenAI/Foundry deployment instead of an APIM AI Gateway connection.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
-  "notes": "Status-only. If any of these gain BYOM support in the future, split into individual cards."
+  "notes": "Not every endpoint in this rollup has a dedicated Foundry probe yet. See `batch-api` for concrete `/batches` proof and `realtime-transcription` / `realtime-translation` for the Realtime model-slot analysis.\n\nNo documented BYOM route exists for the remaining endpoint-specific deployment slots; split any endpoint into its own card if it gains support."
 }

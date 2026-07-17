@@ -3,12 +3,12 @@
   "category": "agents",
   "name": "Prompt Agents \u2014 static gateway",
   "summary": "Foundry Prompt Agent (PromptAgentDefinition) created with model routed through the static APIM AI Gateway connection.",
-  "description": "Creates an agent version with PromptAgentDefinition(model='{static-gateway-connection}/{deployment}') and invokes it via the Responses API using extra_body.agent_reference. Verifies that BYOM models routed through a static (single backend) APIM connection work end-to-end as a v2 agent.",
+  "description": "`project.agents.create_version(..., PromptAgentDefinition(model='{static-connection}/{deployment}', ...))` creates a v2 Prompt Agent whose orchestrator model is routed through a static APIM AI Gateway connection. Invoking it through the Responses API proves users can run standard Prompt Agents without a local Foundry model deployment.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/prompt-agent",
-  "notes": "Requires AI_GATEWAY_CONNECTION_STATIC to point at an ApiManagement connection on the Foundry project.",
+  "notes": "Verified end-to-end via `PromptAgentDefinition(model='{static-connection}/{deployment}')` and `aoai.responses.create(..., extra_body={'agent_reference': ...})`. See `test.py`.\n\nRequires `AI_GATEWAY_CONNECTION_STATIC` to point at an `ApiManagement` connection on the Foundry project.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_agent_basic.py"
 }

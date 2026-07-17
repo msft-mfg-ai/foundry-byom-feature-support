@@ -3,11 +3,11 @@
   "category": "tools",
   "name": "Foundry Indexes",
   "summary": "project.indexes.create_or_update registers an Azure AI Search index as a project-level resource, queried from a BYOM-routed agent via AzureAISearchTool.",
-  "description": "Verified live 2026-07-15 against ai-gateway-pe-testing (APIM-only, no account-local model deployments; Basic-SKU AI Search): `project.indexes.create_or_update(AzureAISearchIndex(connection_name=..., index_name=...))` registers the index and a BYOM-prefixed Prompt Agent with `AzureAISearchTool` can query it end-to-end. This is the primitive shown under the portal's 'Indexes' tab — NOT the higher-level Foundry IQ 'Knowledge bases' surface (see `knowledge-bases` card, which needs Standard-SKU + semantic ranker + network access).",
+  "description": "`project.indexes.create_or_update(AzureAISearchIndex(...))` registers an Azure AI Search index for use by Foundry agents, and `AzureAISearchTool` lets a BYOM-routed Prompt Agent query that index. This solves retrieval over a customer's search index while the agent's orchestrator model is routed through APIM AI Gateway.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search",
-  "notes": "BYOM works with Basic-tier AI Search; semantic ranker is not required for this layer.\n\nSupported query paths:\n\n- `simple`\n- `semantic`\n- `vector`\n- `vector_simple_hybrid`\n- `vector_semantic_hybrid`\n\nThe vector and hybrid paths require an index with the matching capabilities enabled."
+  "notes": "Verified end-to-end via `AzureAISearchIndex` plus `AzureAISearchTool` on a BYOM-prefixed Prompt Agent. See `test.py`.\n\nLive proof used ai-gateway-pe-testing on 2026-07-15 with APIM-only routing, no account-local model deployments, and Basic-SKU AI Search. Supported query paths are `simple`, `semantic`, `vector`, `vector_simple_hybrid`, and `vector_semantic_hybrid`; vector and hybrid paths require an index with matching capabilities. This is the lower-level Indexes surface, not Foundry IQ Knowledge Bases (`knowledge-bases`)."
 }

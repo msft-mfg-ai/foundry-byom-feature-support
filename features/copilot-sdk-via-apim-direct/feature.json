@@ -8,7 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "ga",
   "azure_docs": "https://learn.microsoft.com/azure/api-management/genai-gateway-capabilities",
-  "notes": "Not yet verified end-to-end. The test `test.py` builds a Copilot session against `APIM_BASE_URL` (subscription key or bearer token) and sends a single message — run it locally to confirm. No BYOM prefix here: APIM is already the gateway, so `wire_model` is just the deployment name at APIM.\n\nUse this path when you want APIM's load-balancing, rate-limiting, or observability without Foundry orchestration.\n\n**Auth:** subscription key via `Ocp-Apim-Subscription-Key` header, or a bearer token if the gateway is Entra-fronted. For Entra, prefer `bearer_token_provider` (callable, refreshes per request) over the static `bearer_token` field.",
+  "notes": "Not yet probed end-to-end against APIM. Docs: https://learn.microsoft.com/azure/api-management/genai-gateway-capabilities; sample: https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md. See `test.py` for the Copilot session against `APIM_BASE_URL` using `APIM_DEPLOYMENT` / `CHAT_MODEL`.\n\nNo BYOM prefix is expected in this topology because APIM is already the gateway; `wire_model` is the APIM deployment name. Auth uses `Ocp-Apim-Subscription-Key` or a bearer token, and Entra-fronted gateways should use `bearer_token_provider` so tokens refresh per request.",
   "test_file": "test.py",
   "sample_url": "https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md"
 }

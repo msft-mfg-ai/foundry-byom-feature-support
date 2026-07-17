@@ -3,10 +3,10 @@
   "category": "infrastructure",
   "name": "Publish to Teams",
   "summary": "Publishing a BYOM-routed Prompt Agent as a Microsoft Teams app.",
-  "description": "Validates that the publish flow accepts an agent whose model is BYOM-routed. Known hard limitation: SharePoint OBO tool does NOT work when the agent is published to Teams.",
+  "description": "The Foundry publish-to-Teams flow packages an agent for Microsoft Teams after the agent has been authored in Foundry. The BYOM question is whether an agent whose model is `{connection}/{deployment}` can be published and used in Teams without replacing the orchestrator with a local deployment.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot",
-  "notes": "Status-only \u2014 manual verification; no scripted test."
+  "notes": "Not yet covered by a scripted probe; current verification is manual. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot.\n\nKnown hard limitation preserved: the SharePoint OBO tool does not work when the agent is published to Teams."
 }

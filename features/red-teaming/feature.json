@@ -3,12 +3,12 @@
   "category": "quality",
   "name": "Red teaming",
   "summary": "azure-ai-evaluation RedTeam: attacker/scorer are Microsoft-managed; only the TARGET model accepts BYOM.",
-  "description": "Smoke test that pointing the target at a BYOM-prefixed deployment routes adversarial probes through the gateway. Skips if RED_TEAM_TARGET_MODEL is unset.",
+  "description": "The Azure AI Evaluation `RedTeam` target can name the model under test as `{connection}/{deployment}`. This routes adversarial probe generation against a BYOM-backed target so users can red-team a gateway-hosted model deployment.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/run-scans-ai-red-teaming-agent",
-  "notes": "BYOM works for the RedTeam target model name.\n\nVerified against `ai-foundry-63fhh7glaqhvw`: `azure-ai-evaluation[redteam]` accepts `{apim-conn}/{model}` at `RedTeam` object init.\n\nThe test is thin: it does not run a full adversarial scan; it only proves the SDK accepts the BYOM-prefixed deployment name.",
+  "notes": "Verified that the RedTeam target model accepts a BYOM-prefixed deployment name. See `test.py`.\n\nLive proof against `ai-foundry-63fhh7glaqhvw`: `azure-ai-evaluation[redteam]` accepts `{apim-conn}/{model}` at `RedTeam` object initialization. The test is thin: it does not run a full adversarial scan; it proves SDK acceptance of the BYOM-prefixed deployment name.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/red_team/sample_red_team.py"
 }

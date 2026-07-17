@@ -3,12 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 OpenAPI",
   "summary": "OpenApiTool: pass an OpenAPI 3.x spec so the agent can call any HTTP API as a tool.",
-  "description": "On the official supported-tools list. Skips if OPENAPI_SPEC_PATH is unset; loads the spec from disk (a simple petstore.json works) and attaches it via OpenApiTool. Orchestrator model is BYOM-routed.",
+  "description": "`OpenApiTool` attaches an OpenAPI document to a Prompt Agent so the model can call operations described by the spec while the orchestrator is `{connection}/{deployment}`. This enables API actions from a BYOM-routed agent without giving the tool a separate model.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/openapi",
-  "notes": "",
+  "notes": "Verified end-to-end with `OpenApiTool` on a BYOM-routed Prompt Agent. See `test.py`.\n\nSet `OPENAPI_SPEC_PATH` to a spec file such as a simple `petstore.json`. OpenAPI tools are on the official BYOM-supported tools list.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_openapi.py"
 }

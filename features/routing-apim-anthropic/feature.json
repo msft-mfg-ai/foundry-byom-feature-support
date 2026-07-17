@@ -1,13 +1,13 @@
 {
   "slug": "routing-apim-anthropic",
   "category": "routing",
-  "name": "Routing — APIM fronting non-OpenAI (Anthropic, DeepSeek, …)",
-  "summary": "ApiManagement (AI Gateway v2) connection routing directly to non-OpenAI providers — no custom translation policy required.",
-  "description": "APIM AI Gateway v2 natively supports multiple model providers. Verified end-to-end against Anthropic Claude and DeepSeek using '{apim-conn}/{deployment}' as the model prefix in a PromptAgentDefinition. The same connection pattern works for other providers exposed through APIM. Skips if AI_GATEWAY_CONNECTION_ANTHROPIC is unset.",
+  "name": "Routing \u2014 APIM fronting non-OpenAI (Anthropic, DeepSeek, \u2026)",
+  "summary": "ApiManagement (AI Gateway v2) connection routing directly to non-OpenAI providers \u2014 no custom translation policy required.",
+  "description": "An `ApiManagement` AI Gateway connection can route `{connection}/{deployment}` from a `PromptAgentDefinition.model` to non-OpenAI providers such as Anthropic Claude and DeepSeek through APIM's provider-native gateway. This lets users keep the Foundry agent surface while the upstream model is hosted outside Azure OpenAI.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal",
-  "notes": "BYOM routing through APIM to Anthropic is a separate path from `routing-modelgateway-non-openai`.\n\nNo OpenAI-to-Anthropic translation policy is needed; APIM AI Gateway speaks the provider API natively."
+  "notes": "Verified end-to-end through APIM to Anthropic/DeepSeek-style provider backends. See `test.py`.\n\nNo OpenAI-to-Anthropic translation policy is needed because APIM AI Gateway speaks the provider API natively. This is separate from `routing-modelgateway-non-openai`; set `AI_GATEWAY_CONNECTION_ANTHROPIC` to run the provider-specific probe."
 }

@@ -3,12 +3,12 @@
   "category": "endpoints",
   "name": "Responses API \u2014 direct (no agent)",
   "summary": "POST /openai/v1/responses with model='{conn}/{deployment}' and no agent_reference.",
-  "description": "Smoke test that the Responses API surface itself accepts the BYOM prefix when called outside of any agent abstraction. Same gateway routing as Chat Completions.",
+  "description": "`aoai.responses.create(model='{connection}/{deployment}', ...)` calls the Foundry project OpenAI Responses API without an agent wrapper. This is the baseline BYOM route that proves the APIM AI Gateway prefix works before layering Prompt Agents or tools on top.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/responses-api",
-  "notes": "Useful as a control for the prompt-agents tests \u2014 isolates whether failures live in the agent layer or the underlying responses endpoint.",
+  "notes": "Verified end-to-end via a direct `aoai.responses.create(model='{connection}/{deployment}', ...)` call. See `test.py`.\n\nThis is the control for Prompt Agent tests: failures here point at the underlying Responses endpoint, while failures above it point at the agent or tool layer.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/responses/sample_responses_basic.py"
 }

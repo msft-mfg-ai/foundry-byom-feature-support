@@ -3,11 +3,11 @@
   "category": "quality",
   "name": "Fine-tuning graders \u2014 score_model judge",
   "summary": "POST /v1/fine_tuning/alpha/graders/validate and /run take a nested `grader.model` (a judge LLM, e.g. `o4-mini-2025-04-16`) used during RFT training and grader validation.",
-  "description": "The reinforcement fine-tuning (RFT) grader endpoints accept a `score_model` grader whose `grader.model` names a separate judge LLM constrained to a specific supported list. This is a second BYOM candidate `model` slot inside the fine-tuning surface (the first being the base model on `POST /v1/fine_tuning/jobs`, which is already known to be non-BYOM-routable and tracked in the `byom-incompatible-endpoints` rollup). Whether the grader's judge model honors a `{connection}/{deployment}` prefix is untested.",
+  "description": "Reinforcement fine-tuning graders can include a `score_model` grader whose `grader.model` names the judge LLM used to score training outputs. That nested judge slot would need to accept `{connection}/{deployment}` for BYOM-routed grading inside the fine-tuning surface.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/graders",
-  "notes": "Status-only. Fine-tuning itself is winding down per OpenAI, so this card mostly documents completeness of the `model` inventory rather than a live workstream.",
+  "notes": "Not yet probed against Foundry with a captured server response. Docs: https://developers.openai.com/api/docs/guides/graders. See `test.py` for the `score_model` grader wiring.\n\nFine-tuning itself is winding down per OpenAI, and the base model on `POST /v1/fine_tuning/jobs` remains tracked in `byom-incompatible-endpoints`.",
   "test_file": "test.py"
 }

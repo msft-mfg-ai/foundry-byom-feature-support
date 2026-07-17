@@ -3,10 +3,10 @@
   "category": "routing",
   "name": "Routing \u2014 ModelGateway, NonOpenAI provider",
   "summary": "ModelGateway connection (distinct from ApiManagement) fronting an OpenRouter / LiteLLM / DeepSeek backend.",
-  "description": "ModelGateway is a separate ConnectionCategory (string 'ModelGateway'). It requires an explicit modelDiscovery block and supports model.format values OpenAI | Anthropic | NonOpenAI | Deepseek. Skips if AI_GATEWAY_CONNECTION_MODELGATEWAY is unset.",
+  "description": "A `ModelGateway` connection is a BYOM connection category distinct from `ApiManagement`, with `modelDiscovery` and model `format` values such as `OpenAI`, `Anthropic`, `NonOpenAI`, and `Deepseek`. It targets users who want Foundry to route `{connection}/{deployment}` through the ModelGateway connection type instead of APIM.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
-  "notes": "BYOM routing through ModelGateway is not interchangeable with APIM routing.\n\n`ModelGateway` supports OAuth2 `client_credentials`; `ApiManagement` supports AAD/MI."
+  "notes": "Not yet confirmed against Foundry for non-OpenAI ModelGateway routing. Docs for AI Gateway connections: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway. See `test.py` for the `AI_GATEWAY_CONNECTION_MODELGATEWAY` probe.\n\nTechnical facts preserved: `ModelGateway` supports OAuth2 `client_credentials`, while `ApiManagement` supports AAD/MI; the two routing paths are not interchangeable."
 }

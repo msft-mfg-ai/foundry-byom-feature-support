@@ -3,7 +3,7 @@
   "category": "endpoints",
   "name": "LLM-supported translation",
   "summary": "POST /translator/text/translate with targets[].deploymentName='{conn}/{model}' to use an LLM for translation.",
-  "description": "New translator API (api-version=2026-06-06) that accepts a deploymentName per target language. This is the same diagnostic shape as image-generation-direct \u2014 does the endpoint parse the BYOM prefix, or treat it as a literal deployment lookup?",
+  "description": "The Translator API `POST /translate?api-version=2026-06-06` accepts `targets[].deploymentName` to choose the LLM used for each target language. That nested deployment slot would need to parse `{connection}/{deployment}` for APIM-routed LLM translation.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",

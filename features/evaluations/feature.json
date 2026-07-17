@@ -3,12 +3,12 @@
   "category": "quality",
   "name": "Evaluations",
   "summary": "azure-ai-evaluation: judge LLM specified via initialization_parameters.deployment_name.",
-  "description": "Tests whether the eval framework accepts a BYOM-prefixed deployment_name for the judge model. Research suggests it likely does NOT parse the prefix (same posture as image-generation-direct).",
+  "description": "The Foundry evaluation framework uses `initialization_parameters.deployment_name` to choose the judge LLM for cloud evaluation. That judge deployment slot would need to accept `{connection}/{deployment}` for APIM-routed BYOM evaluation.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation",
-  "notes": "Judge-model BYOM is blocked by the eval SDK URL-shape bug.\n\nVerified on `ai-foundry-63fhh7glaqhvw` with `azure-ai-evaluation`: the SDK constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, returning `400 'API version not supported'`.\n\nRequires eval-SDK changes or a Foundry URL rewrite. Skips if `EVAL_JUDGE_MODEL` is unset.",
+  "notes": "Judge-model BYOM is blocked by the eval SDK URL-shape bug. See `test.py`.\n\n> Verified on `ai-foundry-63fhh7glaqhvw` with `azure-ai-evaluation`: the SDK constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, returning `400 'API version not supported'`.\n\nRequires eval-SDK changes or a Foundry URL rewrite. Set `EVAL_JUDGE_MODEL` to run.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/evaluations"
 }

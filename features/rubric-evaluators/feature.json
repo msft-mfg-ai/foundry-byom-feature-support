@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators",
-  "notes": "BYOM is not confirmed because the probe needs the heavier REST create-rubric-evaluator + create-evaluation-run flow.\n\nThe surface is preview and mostly portal-driven. Docs recommend judges `gpt-5.5`, `gpt-5.4`, or `gpt-5.4-mini`; avoid `gpt-4o-mini` as judge.\n\nTracked as follow-up.",
+  "notes": "Not yet probed against Foundry because the flow requires REST `create-rubric-evaluator` plus `create-evaluation-run`. Docs: https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators.\n\nThe preview surface is mostly portal-driven. Docs recommend judges `gpt-5.5`, `gpt-5.4`, or `gpt-5.4-mini`; avoid `gpt-4o-mini` as judge.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators"
 }

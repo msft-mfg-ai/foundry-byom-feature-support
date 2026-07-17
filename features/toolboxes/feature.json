@@ -3,13 +3,12 @@
   "category": "tools",
   "name": "Toolboxes",
   "summary": "Foundry Toolbox versioned MCP endpoint consumed by a BYOM-routed Prompt Agent via MCPTool.",
-  "description": "Verified live 2026-07-15 with azure-ai-projects 2.3.0: create a Toolbox version with `project.toolboxes.create_version(tools=[ToolboxSearchPreviewToolboxTool()])` and hand the agent an `MCPTool` pointed at `{project_endpoint}/toolboxes/{name}/versions/{v}/mcp?api-version=v1` (with an AAD bearer). The BYOM-prefixed Prompt Agent successfully invokes the toolbox's `tool_search` MCP tool \u2014 no `toolbox_search_preview` rejection.",
+  "description": "`project.toolboxes.create_version(...)` creates a Toolbox version, and a Prompt Agent can invoke it through an `MCPTool` pointed at the toolbox MCP endpoint. This lets users package tools behind MCP while the agent's orchestrator model remains `{connection}/{deployment}`.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/toolbox",
-  "notes": "BYOM works with the current Toolbox-through-MCP pattern.\n\nHistorical note: SDK 2.2.0 exposed `ToolboxSearchPreviewTool` for direct agent attachment; that path is rejected under BYOM with `The following tools are not supported with BYO model: toolbox_search_preview`.\n\nIn SDK 2.3.0, the toolbox is wrapped behind MCP, and MCP is BYOM-supported.\n\nReference sample: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py",
+  "notes": "Verified end-to-end with the current Toolbox-through-MCP pattern. See `test.py`.\n\nLive proof used `project.toolboxes.create_version(tools=[ToolboxSearchPreviewToolboxTool()])` and an `MCPTool` pointed at `{project_endpoint}/toolboxes/{name}/versions/{version}/mcp?api-version=v1` with an AAD bearer; the BYOM-prefixed Prompt Agent invoked `tool_search`. Historical note: SDK 2.2.0 exposed `ToolboxSearchPreviewTool` for direct agent attachment, and that path is rejected under BYOM with `The following tools are not supported with BYO model: toolbox_search_preview`; in SDK 2.3.0 the toolbox is wrapped behind MCP, and MCP is BYOM-supported. Reference sample: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py"
 }
-

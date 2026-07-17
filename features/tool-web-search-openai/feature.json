@@ -1,13 +1,13 @@
 {
   "slug": "tool-web-search-openai",
   "category": "tools",
-  "name": "Tool — Web search (OpenAI built-in)",
-  "summary": "OpenAI's built-in web_search_preview tool called directly through the Responses API with a BYOM-prefixed model — no Bing connection required.",
-  "description": "Tests whether the built-in Responses `web_search_preview` tool works when the model is BYOM-routed via APIM. Distinct from tool-web-search which uses Foundry's BingGroundingTool wrapper.",
+  "name": "Tool \u2014 Web search (OpenAI built-in)",
+  "summary": "OpenAI's built-in web_search_preview tool called directly through the Responses API with a BYOM-prefixed model \u2014 no Bing connection required.",
+  "description": "OpenAI-native `web_search_preview` is a built-in Responses API tool supplied in the `tools` array while the request model is `{connection}/{deployment}`. It tests whether Foundry forwards OpenAI's hosted web-search tool through an APIM-routed model call, distinct from Foundry `BingGroundingTool`.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://platform.openai.com/docs/guides/tools-web-search",
-  "notes": "BYOM is not confirmed for OpenAI-native `web_search` forwarding.\n\nRequires no `BING_CONNECTION_ID`. Result depends on whether the Foundry APIM connection forwards the OpenAI-native `web_search` tool call through to OpenAI's backend."
+  "notes": "Not yet confirmed against Foundry for OpenAI-native `web_search_preview` forwarding. Docs: https://platform.openai.com/docs/guides/tools-web-search. See `test.py`.\n\nNo `BING_CONNECTION_ID` is required. The result depends on whether the Foundry APIM connection forwards the OpenAI-native `web_search` tool call through to OpenAI's backend."
 }

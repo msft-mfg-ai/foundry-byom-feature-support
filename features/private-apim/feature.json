@@ -3,10 +3,10 @@
   "category": "infrastructure",
   "name": "Private APIM AI Gateway",
   "summary": "APIM (AI Gateway) instance exposed via Private Endpoint.",
-  "description": "BYOM call paths terminate on a private APIM endpoint. Validates that DNS resolution and TLS still work when both Foundry and APIM are private.",
+  "description": "APIM private endpoint routing puts the AI Gateway behind private DNS and TLS while Foundry forwards BYOM model calls to it. This confirms users can keep the gateway private and still route `{connection}/{deployment}` traffic from a private Foundry project.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "azure_docs": "https://learn.microsoft.com/azure/api-management/private-endpoint",
-  "notes": "Status-only. Confirmed working end-to-end."
+  "notes": "Verified end-to-end through the private APIM endpoint. Docs: https://learn.microsoft.com/azure/api-management/private-endpoint.\n\nThe validation is implicit in the live feature tests that route through APIM from the private VNet."
 }

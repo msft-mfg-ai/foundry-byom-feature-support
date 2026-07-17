@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/observability/how-to/continuous-evaluation-agents",
-  "notes": "BYOM is not confirmed because the probe needs Foundry Observability setup, trace traffic, and sampler delay.\n\nTo verify:\n\n1. Wire the project to Application Insights.\n2. Enable continuous eval.\n3. Pick evaluators and judge models per rule.\n4. Generate trace traffic and wait for sampling.\n\nPass condition: judge invocations appear in APIM logs with `{conn}/{model}` routing intact.",
+  "notes": "Not yet probed against Foundry because the test environment needs Observability setup, trace traffic, and sampler delay. Docs: https://learn.microsoft.com/azure/foundry/observability/how-to/continuous-evaluation-agents.\n\nA useful probe would wire the project to Application Insights, enable continuous evaluation, choose judge models per rule, generate trace traffic, then confirm judge invocations appear in APIM logs with `{connection}/{deployment}` routing intact.",
   "sample_url": "https://learn.microsoft.com/azure/foundry/observability/how-to/continuous-evaluation-agents"
 }

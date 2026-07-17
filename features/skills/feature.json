@@ -3,11 +3,11 @@
   "category": "tools",
   "name": "Skills",
   "summary": "Inline Foundry Skills packaged into a Toolbox and delivered to a BYOM-routed agent via MCP.",
-  "description": "Verified live 2026-07-15 against westus3 with azure-ai-projects 2.3.0 (following the official sample_agent_toolbox_skill.py pattern): `project.beta.skills.create(...)` returns HTTP 202, the SDK's LRO poller then hits a service-side conflict ('Skill is in state \\'Creating\\' and cannot accept new versions'), and the skill is left permanently stuck — `list_versions` stays empty and the portal cannot open the skill either (repro: byomprobec1f434a1). Because no version resource ever materializes, no toolbox can reference it, so BYOM support cannot be validated end-to-end.",
+  "description": "`project.beta.skills.create(...)` creates a Foundry Skill that should later be versioned and exposed to agents through Toolbox/MCP. This would let users package reusable tool logic while a BYOM-routed Prompt Agent invokes the skill-backed toolbox.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/skills",
-  "notes": "BYOM should work through the Toolbox+MCP delivery path, but the current Skill service is blocked by a service-side bug.\n\nBug: the parent Skill resource claims `default_version='1'`, but `get_version(name, '1')` returns 404 and `list_versions()` returns `[]`. The Microsoft Foundry portal reproduces the same failure when loading the skill.\n\nOnce fixed, this should flip to supported/preview without code changes beyond removing `xfail`.\n\nReference sample: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py"
+  "notes": "Not yet validated end-to-end because the Skill service is blocked by a service-side versioning bug. Docs: https://learn.microsoft.com/azure/ai/foundry/agents/how-to/tools/skills. See `test.py`.\n\nObserved live on 2026-07-15 in westus3 with `azure-ai-projects 2.3.0` following the official sample: `project.beta.skills.create(...)` returns HTTP 202, then the SDK poller hits `Skill is in state 'Creating' and cannot accept new versions`. The parent Skill reports `default_version='1'`, but `get_version(name, '1')` returns 404, `list_versions()` returns `[]`, and the Foundry portal cannot open repro skill `byomprobec1f434a1`. Reference sample: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_toolbox_skill.py."
 }

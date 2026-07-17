@@ -3,11 +3,11 @@
   "category": "quality",
   "name": "Evals \u2014 Generative model (data_source.model)",
   "summary": "The model that *generates* completions to be evaluated in an eval run, specified via `data_source.model` on POST /v1/evals/{id}/runs.",
-  "description": "OpenAI eval runs have two distinct `model` slots: the **judge** (grader) and the **generator** (data source). The existing `evaluations` card in this matrix tracks the judge model via `initialization_parameters.deployment_name`. This card covers the *other* slot \u2014 `data_source.model` \u2014 used when the eval run is configured with `type:\"responses\"` or `type:\"completions\"` to have the platform generate the completions to grade. BYOM behavior for this slot is not yet validated: it's a nested `model` field that must survive the same gateway forwarding as the judge, but on a different code path.",
+  "description": "OpenAI eval runs can use `data_source.model` when `data_source.type` is `responses` or `completions` to generate candidate outputs before grading. That generator model slot is separate from the judge deployment and would need to preserve `{connection}/{deployment}` for BYOM-routed eval generation.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/evals",
-  "notes": "Status-only. Note the OpenAI evals platform is scheduled to deprecate: read-only Oct 31 2026, shutdown Nov 30 2026. Foundry evaluations are a separate product but expose the same conceptual dual-model shape.",
+  "notes": "Not yet probed against Foundry for the generator-side `data_source.model` slot. Docs: https://developers.openai.com/api/docs/guides/evals. See `test.py` for the nested model wiring.\n\nOpenAI evals are scheduled to become read-only on 2026-10-31 and shut down on 2026-11-30; Foundry evaluations are a separate product but expose the same conceptual dual-model shape.",
   "test_file": "test.py"
 }

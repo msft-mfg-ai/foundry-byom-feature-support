@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 Fabric Data Agent (OBO)",
   "summary": "MicrosoftFabricPreviewTool with OBO, attached to a BYOM-routed agent.",
-  "description": "Microsoft Fabric data exploration via OBO. Skips if FABRIC_CONNECTION_ID is unset.",
+  "description": "`MicrosoftFabricPreviewTool` connects a Prompt Agent to a Microsoft Fabric Data Agent while the orchestrator model is `{connection}/{deployment}`. It lets users ask data questions through Fabric without changing the BYOM-routed host model.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_fabric.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_fabric.py",
+  "notes": "Verified end-to-end when `FABRIC_CONNECTION_ID` points at a Fabric Data Agent connection. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric. See `test.py`.\n\nFabric Data Agent is on the official BYOM-supported tools list."
 }

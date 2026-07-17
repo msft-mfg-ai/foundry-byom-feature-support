@@ -3,11 +3,11 @@
   "category": "endpoints",
   "name": "Reasoning models via BYOM",
   "summary": "BYOM-routed o3 / o4-mini call with reasoning_effort and max_completion_tokens forwarded.",
-  "description": "Validates that APIM policies forward the reasoning-model-specific parameters (`reasoning_effort`, `max_completion_tokens`). Some APIM policies strip unknown query/body fields, breaking reasoning models silently.",
+  "description": "Reasoning model calls use `aoai.responses.create(model='{connection}/{deployment}', reasoning={...}, max_output_tokens=...)` or equivalent SDK fields to pass reasoning-specific parameters through APIM. This ensures users can route o-series or reasoning-capable deployments through the gateway without policies stripping required request fields.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning",
-  "notes": "Skips if REASONING_MODEL env var is not set."
+  "notes": "Verified end-to-end for a BYOM-routed reasoning model with reasoning-specific parameters forwarded through APIM. See `test.py`.\n\nThe probe uses `REASONING_MODEL` when configured; APIM policies that strip unknown body fields can silently break `reasoning_effort` / reasoning settings or token-limit fields. Docs: https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning."
 }

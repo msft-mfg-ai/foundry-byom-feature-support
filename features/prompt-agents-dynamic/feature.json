@@ -3,12 +3,12 @@
   "category": "agents",
   "name": "Prompt Agents \u2014 dynamic gateway",
   "summary": "Foundry Prompt Agent routed through an APIM connection that resolves models via runtime discovery.",
-  "description": "Same call path as the static variant but the APIM connection is configured with a modelDiscovery block, so Foundry calls GET {target}{listModelsEndpoint} at agent-creation time to validate the model. The on-wire call still uses the '{conn}/{model}' prefix.",
+  "description": "`project.agents.create_version(..., PromptAgentDefinition(model='{dynamic-connection}/{deployment}', ...))` creates a v2 Prompt Agent whose model is validated through an AI Gateway `modelDiscovery` endpoint. Invoking it through the Responses API proves users can run Prompt Agents with dynamically discovered APIM deployments.",
   "pm": "TBD",
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/prompt-agent",
-  "notes": "Requires AI_GATEWAY_CONNECTION_DYNAMIC to point at an ApiManagement connection with dynamic model discovery enabled.",
+  "notes": "Verified end-to-end via `PromptAgentDefinition(model='{dynamic-connection}/{deployment}')` and `aoai.responses.create(..., extra_body={'agent_reference': ...})`. See `test.py`.\n\nRequires `AI_GATEWAY_CONNECTION_DYNAMIC` to point at an `ApiManagement` connection with dynamic model discovery enabled.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/sample_agent_basic.py"
 }

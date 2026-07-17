@@ -3,11 +3,12 @@
   "category": "tools",
   "name": "Tool \u2014 MCP with agent Entra identity",
   "summary": "MCPTool with authType='AgenticIdentity' bound to the agent's own identity rather than the project's.",
-  "description": "Per-agent managed identity for tighter scoping. Skips if MCP_SERVER_URL_AGENT_IDENTITY is unset.",
+  "description": "An MCP tool with per-agent managed identity authenticates the Prompt Agent to an MCP server using an agent-scoped identity while the orchestrator model is `{connection}/{deployment}`. This narrows tool-server permissions compared with sharing the project identity.",
   "pm": "TBD",
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/mcp-authentication",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_mcp.py"
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_mcp.py",
+  "notes": "Not yet confirmed against Foundry for per-agent managed-identity MCP auth. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/mcp-authentication. See `test.py` for the `MCP_SERVER_URL_AGENT_IDENTITY` probe.\n\nMCP is on the official BYOM-supported tools list, but this identity mode still needs a live server configured in the canary environment."
 }

@@ -3,12 +3,12 @@
   "category": "quality",
   "name": "Agent evaluators (IntentResolution / TaskAdherence / ToolCallAccuracy)",
   "summary": "azure-ai-evaluation agent-quality evaluators with a BYOM-prefixed judge model.",
-  "description": "The agent-quality evaluators (`IntentResolutionEvaluator`, `TaskAdherenceEvaluator`, `ToolCallAccuracyEvaluator`, `ResponseCompletenessEvaluator`) all take a `model_config` with `azure_deployment`. This card probes whether passing `{conn}/{model}` as the deployment routes through the AI Gateway when the evaluator runs.",
+  "description": "The agent-quality evaluators (`IntentResolutionEvaluator`, `TaskAdherenceEvaluator`, `ToolCallAccuracyEvaluator`, `ResponseCompletenessEvaluator`) take `model_config.azure_deployment` for the judge LLM. That deployment slot would need to accept `{connection}/{deployment}` to score agent traces with a BYOM-routed judge model.",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators",
-  "notes": "BYOM is blocked by the eval SDK URL-shape bug.\n\n`azure-ai-evaluation` constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, so the server returns `400 'API version not supported'`.\n\nExpected `XFAIL(strict)`. If Microsoft fixes the SDK URL construction, this should XPASS and flip green in CI.",
+  "notes": "BYOM is blocked by the eval SDK URL-shape bug. See `test.py`.\n\n> `azure-ai-evaluation` constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, so the server returns `400 'API version not supported'`.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/agents_evaluations"
 }

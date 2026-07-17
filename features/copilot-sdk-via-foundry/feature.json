@@ -8,7 +8,7 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-auth",
-  "notes": "Not yet verified end-to-end. The test `test.py` builds a Copilot session against `{project_endpoint}/openai/v1/` with `wire_model=\"{connection}/{deployment}\"` and sends a single message — run it locally to confirm the BYOM prefix survives Copilot SDK validation → JSON-RPC → CLI → Responses API.\n\n**Endpoint gotcha:** the `byok.md` sample uses `https://<resource>.openai.azure.com/openai/v1/`, which is the account-level AOAI endpoint and cannot see Foundry connections. BYOM prefixes 404 there. Use the project URL: `https://<account>.services.ai.azure.com/api/projects/<project>/openai/v1/`.\n\n**Auth:** use `bearer_token_provider` (a callable) so Entra tokens refresh on every request — the static `bearer_token` field would not refresh. Requires `wire_api: \"responses\"`.",
+  "notes": "Not yet probed end-to-end against Foundry. Docs: https://learn.microsoft.com/azure/foundry/how-to/develop/sdk-auth; sample: https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md. See `test.py` for the Copilot session against `{project_endpoint}/openai/v1/` with `wire_model='{connection}/{deployment}'`.\n\nEndpoint gotcha: the `byok.md` sample uses `https://<resource>.openai.azure.com/openai/v1/`, which is the account-level AOAI endpoint and cannot see Foundry connections; BYOM prefixes 404 there. Use `https://<account>.services.ai.azure.com/api/projects/<project>/openai/v1/`, `wire_api: 'responses'`, and `bearer_token_provider` so Entra tokens refresh on every request.",
   "test_file": "test.py",
   "sample_url": "https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md"
 }
