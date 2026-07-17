@@ -134,4 +134,31 @@ jobs:
           AZURE_CONTAINER_REGISTRY_ENDPOINT: ${{ vars.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
           # ---- Secrets (masked) ----
           WEB_IQ_API_KEY: ${{ secrets.WEB_IQ_API_KEY }}
-        run: uv run pytest features/${{ inputs.feature }} ${{ inputs.pytest_args }}
+        run: |
+          set -o pipefail
+          # Override the pyproject default `-m 'not slow'` filter so every test
+          # in the feature runs in CI. A missing marker opt-in used to silently
+          # deselect the only test in a feature and exit 0 (see red-teaming,
+          # hosted-agents-canary). `-m "slow or not slow"` selects everything.
+          uv run pytest features/${{ inputs.feature }} -m "slow or not slow" ${{ inputs.pytest_args }} -ra | tee /tmp/pytest.out
+          status=${PIPESTATUS[0]}
+          # Guard against silent-green outcomes where the pipeline "passes"
+          # without actually testing anything. Two failure modes:
+          #   (a) 0 tests collected/selected -> exit code 5.
+          #   (b) All tests SKIPPED (usually because a required env var was
+          #       unset via require_env), which pytest exits 0 on.
+          python3 - <<'PY'
+          import re, sys
+          txt = open("/tmp/pytest.out").read()
+          summary = ""
+          for line in txt.splitlines():
+              if line.startswith("=") and " in " in line and "===" in line:
+                  summary = line
+          if not summary:
+              print(f"::error::pytest produced no summary line — treating as failure.")
+              sys.exit(1)
+          if not re.search(r"\b(passed|failed|xpassed|xfailed|error)", summary):
+              print(f"::error::No real tests ran (all skipped/deselected). Wire the required env vars in the 'byom' GitHub Environment. Summary: {summary.strip()}")
+              sys.exit(1)
+          PY
+          exit $status
