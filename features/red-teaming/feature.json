@@ -5,10 +5,10 @@
   "summary": "azure-ai-evaluation RedTeam: attacker/scorer are Microsoft-managed; only the TARGET model accepts BYOM.",
   "description": "The Azure AI Evaluation `RedTeam` target can name the model under test as `{connection}/{deployment}`. This routes adversarial probe generation against a BYOM-backed target so users can red-team a gateway-hosted model deployment.",
   "pm": "TBD",
-  "support_status": "supported",
-  "implementation_status": "preview",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/run-scans-ai-red-teaming-agent",
-  "notes": "Verified that the RedTeam target model accepts a BYOM-prefixed deployment name. See `test.py`.\n\nLive proof against `ai-foundry-63fhh7glaqhvw`: `azure-ai-evaluation[redteam]` accepts `{apim-conn}/{model}` at `RedTeam` object initialization. The test is thin: it does not run a full adversarial scan; it proves SDK acceptance of the BYOM-prefixed deployment name.",
+  "notes": "The `RedTeam` orchestrator accepts a BYOM-prefixed `azure_deployment` at construction, but the underlying PyRit `OpenAIChatTarget` cannot authenticate against the BYOM target so no adversarial prompt actually reaches the model. See `test.py`.\n\n> Live scan on 2026-07-16 against `ai-foundry-3swd46vd3j22a` / connection `apim-3swd46vd3j22a-openai-s-for-ai-project-3swd46vd3j22a-1`: every attack turn returned `401 - {'statusCode': 401, 'message': 'Unauthorized. Access token is missing, invalid, audience is incorrect (https://ai.azure.com), or have expired.'}`. `final_results.json` reports `Attack Success: 0/0 attacks were successful` because PyRit never got a single prompt through.\n\nBlocker is in PyRit's Foundry target: it hits `{project}/openai/v1` with an `https://ai.azure.com` audience, but the Foundry data plane wants `https://cognitiveservices.azure.com/.default` for that path when BYOM-prefixed deployments are used. Until the eval SDK / PyRit target fix the audience or Foundry routes both, red-teaming against BYOM targets is unusable.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/red_team/sample_red_team.py"
 }

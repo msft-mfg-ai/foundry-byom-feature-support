@@ -8,6 +8,6 @@
   "support_status": "not_confirmed",
   "implementation_status": "tbd",
   "azure_docs": "https://developers.openai.com/api/docs/guides/evals",
-  "notes": "Not yet probed against Foundry for the generator-side `data_source.model` slot. Docs: https://developers.openai.com/api/docs/guides/evals. See `test.py` for the nested model wiring.\n\nOpenAI evals are scheduled to become read-only on 2026-10-31 and shut down on 2026-11-30; Foundry evaluations are a separate product but expose the same conceptual dual-model shape.",
+  "notes": "The eval-run create call accepts `data_source.model = '{conn}/{deployment}'` without SDK-side URL-shape errors, but the eval service returns 404 for the just-created run so we cannot verify end-to-end generation. See `test.py`.\n\n> Live probe on 2026-07-16 against `ai-foundry-3swd46vd3j22a`: `aoai.evals.runs.create(eval_id, data_source={'type':'responses','model':'{apim-conn}/gpt-4o-mini', ...})` returns HTTP 404 `Run evalrun_… was not found` from `http://run-history.vienna-westus3.svc/history/v1.0/…/runs/evalrun_…/events`.\n\nThe eval service accepted the BYOM prefix but a downstream Foundry service (run-history) 404s on the same run id it just created. This looks like a service race, not a BYOM rejection — but end-to-end verification is blocked until that race is fixed.\n\nOpenAI evals are scheduled to become read-only on 2026-10-31 and shut down on 2026-11-30; Foundry evaluations are a separate product but expose the same conceptual dual-model shape.",
   "test_file": "test.py"
 }
