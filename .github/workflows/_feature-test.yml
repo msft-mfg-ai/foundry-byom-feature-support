@@ -161,4 +161,25 @@ jobs:
               print(f"::error::No real tests ran (all skipped/deselected). Wire the required env vars in the 'byom' GitHub Environment. Summary: {summary.strip()}")
               sys.exit(1)
           PY
-          exit $status
+          # Align CI status with the feature's card status: a `not_supported`
+          # feature MUST show a red badge on the site (green would misread as
+          # "feature works"). The individual pytest cases still document HOW
+          # the feature fails — check the log to see whether the documented
+          # rejection is still what Foundry returns or whether the behavior
+          # has changed (in which case the card needs to be flipped).
+          python3 - "features/${{ inputs.feature }}/feature.json" "$status" <<'PY'
+          import json, sys, pathlib
+          feature_json_path, pytest_status = sys.argv[1], int(sys.argv[2])
+          try:
+              support = json.loads(pathlib.Path(feature_json_path).read_text())["support_status"]
+          except Exception as e:
+              print(f"::error::could not read {feature_json_path}: {e}")
+              sys.exit(pytest_status or 1)
+          if support == "not_supported":
+              if pytest_status == 0:
+                  print(f"::error::Feature is documented as NOT SUPPORTED. Marking CI red to match card status. Pytest asserted the documented failure mode still holds.")
+              else:
+                  print(f"::error::Feature is documented as NOT SUPPORTED and pytest failed. Either the documented rejection error changed, or the feature started working — either way the card needs an update.")
+              sys.exit(1)
+          sys.exit(pytest_status)
+          PY
