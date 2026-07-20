@@ -55,6 +55,11 @@ for (const f of features) byCategory[f.category].push(f);
           APIM gateway through the Foundry project endpoint. Each card includes a runnable test and a GitHub Actions workflow that
           validates it against a real environment.
         </p>
+        <p class="mt-3 max-w-3xl text-sm text-brand-100/90">
+          <strong class="font-semibold text-white">Reading the CI badges.</strong>
+          A green badge on a <span class="rounded bg-emerald-500/20 px-1.5 py-0.5 font-medium text-emerald-100">supported</span> or <span class="rounded bg-amber-500/20 px-1.5 py-0.5 font-medium text-amber-100">partial</span> card means the feature works today.
+          A green <em>regression detector</em> badge on a <span class="rounded bg-rose-500/20 px-1.5 py-0.5 font-medium text-rose-100">not supported</span> card means Foundry still rejects the call with exactly the error we documented — <strong class="font-semibold text-white">red</strong> would mean Microsoft has changed the behavior and the card needs to be updated. A green <em>probe</em> badge on a <span class="rounded bg-slate-500/20 px-1.5 py-0.5 font-medium text-slate-100">not confirmed</span> card means the API shape is unchanged since the last verification.
+        </p>
         <div class="mt-8 flex flex-wrap gap-4 text-sm">
           <a href="https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway?tabs=api-management&pivots=foundry-portal" class="rounded-lg bg-white px-4 py-2 font-semibold text-brand-900 shadow ring-1 ring-inset ring-white/20 transition hover:bg-brand-50" target="_blank" rel="noopener">📘 BYOM AI Gateway docs →</a>
           <a href={repo} class="rounded-lg bg-white/10 px-4 py-2 font-medium text-white ring-1 ring-inset ring-white/20 backdrop-blur transition hover:bg-white/20" target="_blank" rel="noopener">View on GitHub →</a>
