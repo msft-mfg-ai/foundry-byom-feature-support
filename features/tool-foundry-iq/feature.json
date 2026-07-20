@@ -5,9 +5,9 @@
   "summary": "Microsoft 1P MCP server: Foundry IQ. Attached via MCPTool with AgenticIdentity auth.",
   "description": "Foundry IQ is a first-party MCP server that exposes Microsoft Foundry knowledge, docs, samples, and model catalog content to a Prompt Agent. The host agent uses `{connection}/{deployment}` for its orchestrator model while the MCP tool supplies grounded Foundry context.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect",
-  "notes": "Not yet probed against Foundry because `FOUNDRY_IQ_MCP_URL` is not configured in the canary environment. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect. See `test.py` for the `make_mcp_tool(url=FOUNDRY_IQ_MCP_URL, label='foundry_iq')` wiring.\n\nFoundry IQ is on the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations ('1P MCP servers: Foundry IQ, SharePoint Grounding, Fabric Data Agent')."
+  "notes": "Verified end-to-end: a BYOM-routed Prompt Agent attached to the Foundry IQ MCP server (`AgenticIdentity` auth) returns a Foundry-grounded response. See `test.py`.\n\n> Live probe on 2026-07-16 against `ai-foundry-3swd46vd3j22a` with `FOUNDRY_IQ_MCP_URL` configured: `make_mcp_tool(url=FOUNDRY_IQ_MCP_URL, label='foundry_iq', auth='AgenticIdentity')` on a `PromptAgentDefinition(model='{apim-conn}/gpt-4o-mini')`; `invoke_agent(aoai, agent, 'Ask Foundry IQ for one fact...')` returned non-empty `output_text`.\n\nFoundry IQ is on the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations ('1P MCP servers: Foundry IQ, SharePoint Grounding, Fabric Data Agent')."
 }

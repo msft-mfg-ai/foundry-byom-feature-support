@@ -1,22 +1,20 @@
 """A2A tool via BYOM-routed Prompt Agent.
 
-Same self-provisioning pattern as agent-a2a-connected: creates a callee
-Foundry Prompt Agent, attaches an AgentCard (PATCH `/agents/{name}` \u2014
-not exposed on the SDK; see `_shared.attach_agent_card`), then attaches
-the callee's `/endpoint/protocols/a2a` URL as a tool on a caller agent.
+Positive-assertion probe for a `not_supported` tool: the test PASSES when the
+caller reaches the A2A tool path and Foundry rejects fetching the callee agent
+card with the documented 424 Failed Dependency. If A2A tools start working with
+BYOM, or the error shape changes, this test fails RED and the card must be
+promoted or updated.
 """
 import os
 
+import openai
 import pytest
 
 from _shared import attach_agent_card, invoke_agent, make_prompt_agent_with_tools
 
 
 @pytest.mark.not_supported
-@pytest.mark.xfail(
-    strict=True,
-    reason="A2A tools are not in the documented BYOM-supported tools list; cross-agent auth returns 401 without a registered A2A connection.",
-)
 def test_tool_a2a(project, aoai, cfg, static_model, unique_agent_name):
     from azure.ai.projects.models import A2APreviewTool, PromptAgentDefinition
 
@@ -49,8 +47,14 @@ def test_tool_a2a(project, aoai, cfg, static_model, unique_agent_name):
         )
         assert agent.id
 
-        resp = invoke_agent(aoai, agent, "Delegate a one-sentence summary task to the remote agent.")
-        assert resp.output_text and resp.output_text.strip()
+        with pytest.raises(openai.BadRequestError, match="Failed to fetch agent card") as exc_info:
+            invoke_agent(aoai, agent, "Delegate a one-sentence summary task to the remote agent.")
+
+        err = exc_info.value
+        body = getattr(err, "response", None)
+        body_text = body.text if body is not None else str(err)
+        assert err.status_code == 400, f"expected HTTP 400, got {err.status_code}: {body_text[:400]}"
+        assert "424 (Failed Dependency)" in body_text
     finally:
         for n in (caller_name, callee_name):
             try:

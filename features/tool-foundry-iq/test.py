@@ -4,9 +4,8 @@ import pytest
 from _shared import invoke_agent, make_mcp_tool, make_prompt_agent_with_tools, require_env as optional_env
 
 
-@pytest.mark.not_confirmed
+@pytest.mark.supported
 @pytest.mark.needs_env
-@pytest.mark.xfail(strict=False, reason="Foundry IQ tool BYOM routing is not confirmed.")
 def test_tool_foundry_iq(project, aoai, cfg, unique_agent_name):
     server_url = optional_env("FOUNDRY_IQ_MCP_URL", "tool-foundry-iq")
     if not server_url:

@@ -1,4 +1,10 @@
-"""LLM-supported translation via Foundry account endpoint."""
+"""LLM-supported translation via Foundry account endpoint.
+
+Positive-assertion probe for a `not_supported` endpoint: the test PASSES when
+Translator treats the BYOM `{connection}/{model}` string as a literal deployment
+name and rejects it. If Translator starts parsing the prefix, or the error shape
+changes, this test fails RED and the card must be promoted or updated.
+"""
 import json
 import os
 import urllib.error
@@ -13,10 +19,6 @@ API_VERSION = "2026-06-06"
 
 
 @pytest.mark.not_supported
-@pytest.mark.xfail(
-    strict=True,
-    reason="Translator deploymentName is expected not to route the BYOM prefix.",
-)
 def test_llm_translation(cfg):
     endpoint = account_endpoint()
     if not endpoint:
@@ -45,13 +47,12 @@ def test_llm_translation(cfg):
         method="POST",
     )
 
-    try:
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
         with urllib.request.urlopen(req) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        body_text = e.read().decode("utf-8", errors="replace")
-        raise AssertionError(
-            f"Translator returned HTTP {e.code}: {body_text}"
-        ) from None
+            json.loads(resp.read().decode("utf-8"))
 
-    assert payload
+    err = exc_info.value
+    body_text = err.read().decode("utf-8", errors="replace")
+    assert err.code == 400, f"expected HTTP 400, got {err.code}: {body_text[:400]}"
+    assert "Failed to get information on deployment" in body_text
+    assert gw_model in body_text

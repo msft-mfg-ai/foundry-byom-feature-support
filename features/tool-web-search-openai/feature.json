@@ -5,9 +5,9 @@
   "summary": "OpenAI's built-in web_search_preview tool called directly through the Responses API with a BYOM-prefixed model \u2014 no Bing connection required.",
   "description": "OpenAI-native `web_search_preview` is a built-in Responses API tool supplied in the `tools` array while the request model is `{connection}/{deployment}`. It tests whether Foundry forwards OpenAI's hosted web-search tool through an APIM-routed model call, distinct from Foundry `BingGroundingTool`.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "partial",
+  "implementation_status": "ga",
   "test_file": "test.py",
-  "azure_docs": "https://platform.openai.com/docs/guides/tools-web-search",
-  "notes": "Not yet confirmed against Foundry for OpenAI-native `web_search_preview` forwarding. Docs: https://platform.openai.com/docs/guides/tools-web-search. See `test.py`.\n\nNo `BING_CONNECTION_ID` is required. The result depends on whether the Foundry APIM connection forwards the OpenAI-native `web_search` tool call through to OpenAI's backend."
+  "azure_docs": "https://developers.openai.com/api/docs/guides/tools-web-search",
+  "notes": "OpenAI's built-in web search works with BYOM through Foundry — but only the GA `web_search` tool name; the versioned preview names are still rejected.\n\n**GA `web_search` — verified 2026-07-20** against `apim-…-openai-s/gpt-4o-mini` on the Responses API. All three scenarios that historically failed now pass:\n\n- Single-turn call — returns a valid message with a `web_search_call` output item.\n- Two searches in one turn — model performs both searches and combines them (\"AI headline… cloud-computing headline\").\n- Two successive requests to the same `conversation` — turn 2 correctly triggers a fresh `web_search_call` (this is the historical regression the previous version of this card described).\n- `previous_response_id` chain across two turns — also works.\n\n**Preview / date-versioned names — still blocked.** `web_search_preview`, `web_search_preview_2025_03_11`, and `web_search_2025_08_26` all return the same error:\n\n> `The following tools are not supported with BYO model: <name>. Please remove these tools or use a standard model deployment.`\n\nGuidance for BYOM callers: use `{\"type\": \"web_search\"}` unless you specifically need a pinned preview snapshot. This is distinct from Foundry's `BingGroundingTool` (see `tool-web-search`), which requires a Bing connection and is currently rejected across the board by BYOM."
 }
