@@ -1,14 +1,15 @@
 {
   "slug": "tool-memory",
   "category": "tools",
-  "name": "Tool \u2014 Memory (status-only)",
-  "summary": "Foundry Memory Stores (MemoryStores=V1Preview opt-in key).",
-  "description": "`MemorySearchPreviewTool` would let a Prompt Agent search a memory store while the host orchestrator model is BYOM-routed. This covers persisted user or conversation memory as a tool, separate from the agent's model routing.",
+  "name": "Tool \u2014 Memory",
+  "summary": "Foundry Memory Stores + `MemorySearchPreviewTool`.",
+  "description": "`MemorySearchPreviewTool` would let a Prompt Agent search a persisted memory store while the host agent's orchestrator model is BYOM-routed. Memory store creation itself takes a `chat_model` and `embedding_model` — those are separate model slots from the agent orchestrator, and both must resolve to a real deployment on the Foundry account.\n\nProbed via `AIProjectClient(allow_preview=True).beta.memory_stores.create(...)` with a BYOM-prefixed `chat_model`. Foundry rejects the create with `bad_request`:\n\n> Chat model deployment 'apim-3swd46vd3j22a-openai-s-for-ai-project-3swd46vd3j22a-1/gpt-4o-mini' was not found.\n\nSee `test.py`, which asserts the rejection. The agent orchestrator model can still be BYOM-routed, but the memory store itself must be backed by a native Foundry deployment, so the feature as a whole is not BYOM-compatible.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
+  "support_status": "not_supported",
   "implementation_status": "tbd",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/memory-usage",
-  "notes": "Not yet probed against Foundry because public SDK/docs support is not stable in the current environment. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/memory-usage. See `test.py` for the `MEMORY_STORE_ID` wiring.\n\nMemory is not in the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations.",
+  "notes": "Memory is not in the official BYOM-supported tools list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations. Empirically confirmed 2026-07-20: `MemoryStoreDefaultDefinition.chat_model` does not accept a `{conn}/{deployment}` prefix.",
   "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/ai/azure-ai-projects/samples/agents/tools/sample_agent_memory_search.py",
   "test_file": "test.py"
 }
+

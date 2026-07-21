@@ -1,36 +1,44 @@
-"""Memory Search tool via BYOM-routed Prompt Agent."""
+"""BYOM test: tool-memory
+
+Foundry Memory Stores take a `chat_model` and an `embedding_model` at create
+time. Both must resolve to a real deployment on the Foundry account — neither
+accepts a `{conn}/{deployment}` BYOM prefix. Assert the rejection so the card
+stays honest when Foundry either fixes it or breaks the current shape.
+"""
+import os
 import pytest
-from azure.ai.projects.models import PromptAgentDefinition
+from azure.ai.projects import AIProjectClient
+from azure.core.exceptions import HttpResponseError
+from azure.identity import DefaultAzureCredential
 
 
-@pytest.mark.not_confirmed
-@pytest.mark.needs_env
-@pytest.mark.xfail(strict=False, reason="Memory Search tool BYOM routing is not confirmed.")
-def test_tool_memory(project, aoai, static_model, unique_agent_name, require_env):
-    memory_store_id = require_env("MEMORY_STORE_ID")
-
+@pytest.mark.not_supported
+def test_memory_store_rejects_byom_prefix(cfg):
     try:
-        from azure.ai.projects.models import MemorySearchPreviewTool
-    except ImportError as exc:
-        pytest.xfail(f"MemorySearchPreviewTool is not available in the installed azure-ai-projects package: {exc}")
+        from azure.ai.projects.models import MemoryStoreDefaultDefinition
+    except ImportError as e:
+        pytest.skip(f"MemoryStoreDefaultDefinition not available: {e}")
 
-    tool = MemorySearchPreviewTool(memory_store_name=memory_store_id, scope="byom-pytest", update_delay=1)
-    agent = project.agents.create_version(
-        agent_name=unique_agent_name("byom-tool-memory"),
-        definition=PromptAgentDefinition(
-            model=static_model(),
-            instructions="Use memory search if relevant. Reply in one short sentence.",
-            tools=[tool],
-        ),
+    preview_project = AIProjectClient(
+        endpoint=os.environ["PROJECT_ENDPOINT"],
+        credential=DefaultAzureCredential(),
+        allow_preview=True,
     )
-    assert agent.id
 
-    conv = aoai.conversations.create(
-        items=[{"type": "message", "role": "user", "content": "Remember that BYOM memory probes should use the AI gateway."}]
+    gateway = cfg.resolve_gateway("static")
+    chat_deployment = os.environ.get("CHAT_MODEL", "gpt-4o-mini")
+
+    with pytest.raises(HttpResponseError) as excinfo:
+        preview_project.beta.memory_stores.create(
+            name="byom-memstore-probe",
+            definition=MemoryStoreDefaultDefinition(
+                chat_model=f"{gateway}/{chat_deployment}",
+                embedding_model="text-embedding-3-small",
+            ),
+        )
+
+    msg = str(excinfo.value)
+    assert "not found" in msg.lower() or "bad_request" in msg.lower(), (
+        f"Expected 'deployment not found' rejection; got: {msg}"
     )
-    resp = aoai.responses.create(
-        conversation=conv.id,
-        extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
-        input="",
-    )
-    assert resp.output_text and resp.output_text.strip()
+
