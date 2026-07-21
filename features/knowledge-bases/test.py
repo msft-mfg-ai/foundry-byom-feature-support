@@ -86,3 +86,49 @@ def test_kb_retrieve_bypasses_byom(cfg):
     finally:
         requests.delete(f"{search_endpoint}/knowledgebases/{kb_name}?{api}", headers=h)
         requests.delete(f"{search_endpoint}/knowledgesources/{ks_name}?{api}", headers=h)
+
+
+@pytest.mark.not_supported
+def test_kb_retrieve_via_apim_direct():
+    """Alternate topology: point KB `resourceUri` straight at APIM (bypassing
+    the Foundry account / AI Gateway connection). Expected to progress from
+    404 (BYOM prefix path) to 403 (APIM refuses the search-service MSI) — a
+    concrete signal that the search service DID reach APIM, so wiring a
+    subscription key + granting the MSI access to APIM would be viable.
+    Not itself BYOM, but the natural fallback when BYOM doesn't apply.
+    """
+    search_endpoint = os.environ.get("AZURE_AI_SEARCH_ENDPOINT")
+    index_name = os.environ.get("AZURE_AI_SEARCH_INDEX_NAME")
+    apim_base = os.environ.get("APIM_BASE_URL")
+    if not (search_endpoint and index_name and apim_base):
+        pytest.skip("AZURE_AI_SEARCH_ENDPOINT + AZURE_AI_SEARCH_INDEX_NAME + APIM_BASE_URL not set")
+
+    chat_deployment = os.environ.get("CHAT_MODEL", "gpt-4o-mini")
+    cred = DefaultAzureCredential()
+    h = {"Authorization": f"Bearer {cred.get_token('https://search.azure.com/.default').token}",
+         "Content-Type": "application/json"}
+    ks_name, kb_name, api = "byom-probe-ks-apim", "byom-probe-kb-apim", "api-version=2026-05-01-preview"
+
+    requests.put(f"{search_endpoint}/knowledgesources/{ks_name}?{api}", headers=h,
+                 data=json.dumps({"name": ks_name, "kind": "searchIndex",
+                                  "searchIndexParameters": {"searchIndexName": index_name}}))
+    time.sleep(2)
+
+    try:
+        kb_body = {"name": kb_name, "retrievalInstructions": "Answer briefly.",
+                   "knowledgeSources": [{"name": ks_name}],
+                   "models": [{"kind": "azureOpenAI",
+                               "azureOpenAIParameters": {"resourceUri": apim_base.rstrip("/") + "/inference",
+                                                         "deploymentId": chat_deployment,
+                                                         "modelName": chat_deployment}}]}
+        cr = requests.put(f"{search_endpoint}/knowledgebases/{kb_name}?{api}", headers=h, data=json.dumps(kb_body))
+        assert cr.status_code == 201, f"KB CREATE (APIM URL) failed: {cr.status_code} {cr.text}"
+
+        rr = requests.post(f"{search_endpoint}/knowledgebases/{kb_name}/retrieve?{api}", headers=h,
+                           data=json.dumps({"messages": [{"role": "user", "content": [{"type": "text", "text": "hello"}]}]}))
+        assert rr.status_code == 403, (
+            f"Expected 403 Forbidden from APIM (search-service MSI not granted); got {rr.status_code}: {rr.text}"
+        )
+    finally:
+        requests.delete(f"{search_endpoint}/knowledgebases/{kb_name}?{api}", headers=h)
+        requests.delete(f"{search_endpoint}/knowledgesources/{ks_name}?{api}", headers=h)
