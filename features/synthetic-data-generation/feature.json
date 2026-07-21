@@ -1,0 +1,11 @@
+{
+  "slug": "synthetic-data-generation",
+  "category": "quality",
+  "name": "Synthetic data generation",
+  "summary": "Foundry portal \u2192 Data \u2192 Generate synthetic data (Simple Q&A / Supervised fine-tuning / etc.). Generator-model dropdown lists only Foundry account deployments, not BYOM connections.",
+  "description": "The Foundry portal's `Generate synthetic data` wizard (surfaced under `Data + indexes` and inside the Evaluations / Fine-tuning flows) requires selecting a **Generator model**. The dropdown enumerates deployments on the Foundry account directly and offers no route to type a `{connection}/{deployment}` BYOM string or to pick an APIM / ModelGateway connection, so a Foundry account that only has BYOM connections (no local deployments) cannot use the wizard at all. The `Agent` slot next to it lets you pick an already-created agent, so if that agent happens to be a BYOM-routed Prompt Agent the underlying calls would be BYOM \u2014 but the Generator-model field is still mandatory, so the wizard cannot be driven end-to-end without a real deployment.",
+  "pm": "TBD",
+  "support_status": "not_supported",
+  "implementation_status": "tbd",
+  "notes": "Same UI-parity gap as `portal-ui-parity-providers`: the wizard's model picker enumerates Foundry account deployments only, with no free-form input for a `{conn}/{deployment}` string and no filter that surfaces AI-Gateway-backed connections. Workaround for now is to (a) create at least one real deployment on the Foundry account purely to satisfy the picker, or (b) drive the synthetic-data flow programmatically via `azure-ai-evaluation`'s `Simulator` / `AdversarialSimulator` where the model client is caller-supplied and can be pointed at a BYOM-prefixed Responses client. Not yet probed via SDK against Foundry \u2014 the UI-only gap is the observable failure today (screenshot of the wizard shows the empty `Select generator model` dropdown with no BYOM connection listed).\n\nAdd a `test.py` once we confirm whether `azure-ai-evaluation`'s `Simulator.__call__` accepts a `{conn}/{depl}`-prefixed model on the target Responses client. Docs: https://learn.microsoft.com/azure/ai-foundry/how-to/develop/simulator-interaction-data."
+}
