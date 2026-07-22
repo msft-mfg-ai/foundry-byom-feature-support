@@ -298,10 +298,18 @@ def make_mcp_tool(
     """
     from azure.ai.projects.models import MCPTool
 
-    kwargs = {"server_url": server_url, "server_label": server_label, "auth_type": auth}
+    kwargs = {"server_url": server_url, "server_label": server_label}
     if headers:
         kwargs["headers"] = headers
-    return MCPTool(**kwargs)
+    try:
+        return MCPTool(**kwargs, auth_type=auth)
+    except TypeError:
+        # azure-ai-projects >= 2.2.0 dropped the `auth_type` kwarg. Auth is now
+        # driven by `authorization` (OAuth bearer) or `project_connection_id`.
+        # For MCP servers that don't need auth (auth="None") we can just omit;
+        # for AgenticIdentity/UserEntraToken the test will fail at invocation
+        # time with a clear server-side error, which is what we want.
+        return MCPTool(**kwargs)
 
 
 # ---------------------------------------------------------------------------

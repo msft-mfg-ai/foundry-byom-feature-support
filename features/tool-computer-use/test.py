@@ -10,9 +10,12 @@ def test_tool_computer_use(project, aoai, cfg, unique_agent_name, require_env):
     environment = require_env("COMPUTER_USE_ENVIRONMENT")
 
     try:
-        from azure.ai.projects.models import ComputerEnvironment, ComputerUseTool
+        from azure.ai.projects.models import ComputerEnvironment, ComputerUsePreviewTool as ComputerUseTool
     except ImportError:
-        pytest.skip("ComputerUseTool not available in installed azure-ai-projects version")
+        try:
+            from azure.ai.projects.models import ComputerEnvironment, ComputerUseTool
+        except ImportError:
+            pytest.skip("ComputerUseTool/ComputerUsePreviewTool not available in installed azure-ai-projects version")
 
     agent = make_prompt_agent_with_tools(
         project,
