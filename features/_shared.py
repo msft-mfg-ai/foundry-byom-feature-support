@@ -286,6 +286,7 @@ def make_mcp_tool(
     server_label: str,
     auth: str = "AgenticIdentity",
     headers: Optional[dict] = None,
+    project_connection_id: Optional[str] = None,
 ):
     """Build an MCPTool for a 1P MCP server (Foundry IQ / Work IQ / Web IQ /
     Fabric IQ) or any third-party MCP endpoint.
@@ -293,22 +294,28 @@ def make_mcp_tool(
     auth is the MCPTool authType: 'AgenticIdentity' (project or agent identity),
     'UserEntraToken' (OAuth on-behalf-of passthrough), or 'None'.
 
-    headers is an optional dict of custom HTTP headers to forward on every
-    MCP call (e.g. {'x-apikey': '...'} for WebIQ).
+    Custom headers for MCP servers are no longer accepted server-side — the
+    Foundry Responses API rejects them with `invalid_payload: Headers that can
+    include sensitive information are not allowed in the headers property for
+    MCP tools. Use project_connection_id instead.` If the caller has a
+    pre-provisioned Foundry Custom-Keys connection that carries the required
+    header (e.g. `x-apikey`), pass its resource id as project_connection_id.
+    The `headers` kwarg is retained for backward compatibility but only
+    forwarded when project_connection_id is not set (so tests exercise the
+    server-side rejection deliberately).
     """
     from azure.ai.projects.models import MCPTool
 
     kwargs = {"server_url": server_url, "server_label": server_label}
-    if headers:
+    if project_connection_id:
+        kwargs["project_connection_id"] = project_connection_id
+    elif headers:
         kwargs["headers"] = headers
     try:
         return MCPTool(**kwargs, auth_type=auth)
     except TypeError:
         # azure-ai-projects >= 2.2.0 dropped the `auth_type` kwarg. Auth is now
         # driven by `authorization` (OAuth bearer) or `project_connection_id`.
-        # For MCP servers that don't need auth (auth="None") we can just omit;
-        # for AgenticIdentity/UserEntraToken the test will fail at invocation
-        # time with a clear server-side error, which is what we want.
         return MCPTool(**kwargs)
 
 

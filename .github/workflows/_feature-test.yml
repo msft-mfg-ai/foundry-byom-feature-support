@@ -119,6 +119,7 @@ jobs:
           FOUNDRY_IQ_MCP_URL: ${{ vars.FOUNDRY_IQ_MCP_URL }}
           WORK_IQ_MCP_URL: ${{ vars.WORK_IQ_MCP_URL }}
           WEB_IQ_MCP_URL: ${{ vars.WEB_IQ_MCP_URL }}
+          WEB_IQ_CONNECTION_ID: ${{ vars.WEB_IQ_CONNECTION_ID }}
           FABRIC_IQ_MCP_URL: ${{ vars.FABRIC_IQ_MCP_URL }}
           # ---- Quality / safety ----
           EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL }}
