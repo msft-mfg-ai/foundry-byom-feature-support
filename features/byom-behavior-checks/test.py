@@ -99,7 +99,11 @@ def test_byom_static_dynamic_parity(aoai, static_model, dynamic_model, require_g
 @pytest.mark.supported
 def test_byom_concurrent_calls(aoai, static_model):
     """N concurrent Responses.create must all succeed with distinct-but-valid answers."""
-    prompts = [f"Reply with exactly the word: token{i}" for i in range(5)]
+    # NOTE: word choice matters — earlier `token{i}` phrasing tripped the APIM
+    # ModelGateway jailbreak classifier (`ResponsibleAIPolicyViolation`). NATO
+    # phonetic words are innocuous and give us the same distinctness property.
+    words = ["alpha", "bravo", "charlie", "delta", "echo"]
+    prompts = [f"Reply with exactly the single word: {w}" for w in words]
 
     def _call(p):
         return aoai.responses.create(model=static_model(), input=p).output_text or ""
@@ -108,8 +112,8 @@ def test_byom_concurrent_calls(aoai, static_model):
         outputs = list(ex.map(_call, prompts))
 
     assert len(outputs) == 5
-    for i, out in enumerate(outputs):
-        assert f"token{i}" in out.lower(), f"call {i} returned: {out!r}"
+    for w, out in zip(words, outputs):
+        assert w in out.lower(), f"expected {w!r} in response, got: {out!r}"
 
 
 # --- 6. Retry after 429 ---

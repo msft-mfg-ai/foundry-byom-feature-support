@@ -8,5 +8,5 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "test_file": "test.py",
-  "notes": "Verified end-to-end when `WEB_IQ_MCP_URL` points at a Web IQ MCP server. See `test.py`.\n\nWeb IQ is not in the official BYOM-supported tools list; only Foundry IQ is listed among the 1P MCP servers. Official list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations."
+  "notes": "Runs end-to-end when both `WEB_IQ_MCP_URL` and `WEB_IQ_CONNECTION_ID` are wired. As of `azure-ai-projects` 2.x, `MCPTool` no longer accepts a `headers` kwarg; the Foundry Responses API rejects it with:\n\n> invalid_payload: Headers that can include sensitive information are not allowed in the headers property for MCP tools. Use project_connection_id instead.\n\nThe test now passes `project_connection_id` — provision a Foundry Custom-Keys connection that carries the required `x-apikey` header and set `WEB_IQ_CONNECTION_ID` to its resource id.\n\nWeb IQ is not in the official BYOM-supported tools list; only Foundry IQ is listed among the 1P MCP servers. Official list: https://learn.microsoft.com/azure/foundry/agents/how-to/ai-gateway#supported-configurations."
 }

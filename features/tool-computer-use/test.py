@@ -20,7 +20,7 @@ def test_tool_computer_use(project, aoai, cfg, unique_agent_name, require_env):
     agent = make_prompt_agent_with_tools(
         project,
         unique_agent_name("byom-tool-computer-use"),
-        [ComputerUseTool(environment=ComputerEnvironment(environment))],
+        [ComputerUseTool(environment=ComputerEnvironment(environment), display_width=1024, display_height=768)],
         instructions="You are a concise assistant. Reply in one short sentence.",
         cfg=cfg,
     )
