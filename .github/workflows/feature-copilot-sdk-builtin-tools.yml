@@ -1,0 +1,25 @@
+name: Feature - copilot-sdk-builtin-tools
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 7 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'features/copilot-sdk-builtin-tools/**'
+      - 'features/_shared.py'
+      - 'pyproject.toml'
+      - '.github/workflows/feature-copilot-sdk-builtin-tools.yml'
+      - '.github/workflows/_feature-test.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run:
+    uses: ./.github/workflows/_feature-test.yml
+    with:
+      feature: copilot-sdk-builtin-tools
+    secrets: inherit
