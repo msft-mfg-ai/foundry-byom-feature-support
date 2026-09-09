@@ -2,13 +2,13 @@
   "slug": "evaluations",
   "category": "quality",
   "name": "Evaluations",
-  "summary": "azure-ai-evaluation: judge LLM specified via initialization_parameters.deployment_name.",
-  "description": "The Foundry evaluation framework uses `initialization_parameters.deployment_name` to choose the judge LLM for cloud evaluation. That judge deployment slot would need to accept `{connection}/{deployment}` for APIM-routed BYOM evaluation.",
+  "summary": "azure-ai-evaluation >=1.18.2: judge LLM via a `{byo_model, project_endpoint}` model_config.",
+  "description": "Prompty-based judge evaluators (`RelevanceEvaluator`, `CoherenceEvaluator`, `FluencyEvaluator`, etc.) accept a `model_config` dict shaped as `{\"byo_model\": \"{connection}/{deployment}\", \"project_endpoint\": \"...\"}`. When both keys are present, `azure-ai-evaluation` routes the judge call through the Foundry project Responses API (`_byo_judge.AsyncByoProjectResponsesClient`) instead of building a native `/openai/deployments/{deployment}/...` URL, so the AI Gateway connection is resolved server-side.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/develop/cloud-evaluation",
-  "notes": "Judge-model BYOM is blocked by the eval SDK URL-shape bug. See `test.py`.\n\n> Verified on `ai-foundry-63fhh7glaqhvw` with `azure-ai-evaluation`: the SDK constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, returning `400 'API version not supported'`.\n\nRequires eval-SDK changes or a Foundry URL rewrite. Set `EVAL_JUDGE_MODEL` to run.",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/evaluations"
+  "notes": "Fixed in `azure-ai-evaluation` 1.18.2 (2026-07-21 changelog: \"Added support for admin-connected (BYO) judge models in prompty-based evaluators\"). Verified live against a public (non-PE) Foundry + APIM AI Gateway pair with `azure-ai-evaluation==1.18.5`:\n\n```python\nmodel_config = {\"byo_model\": f\"{apim_conn}/gpt-5-mini\", \"project_endpoint\": project_endpoint}\nRelevanceEvaluator(model_config=model_config)(query=\"What is 2+2?\", response=\"4\")\n# -> {'relevance_result': 'pass', 'relevance_score': 4.0, ...}\n```\n\nThe *old* `AzureOpenAIModelConfiguration(azure_deployment=\"{conn}/{model}\")` shape is still broken on the same environment -- it builds `/openai/deployments/{conn}/{model}/chat/completions`, which Foundry rejects with `400 'API version not supported'`. `_BYOModelConfiguration` is not yet exported as a public type (SDK docstring: \"not caller-facing... until the feature reaches GA\"), so pass a plain dict with the two required keys, not the typed config classes.\n\nNot yet verified: cloud-submitted evaluation jobs (`project.evaluations.create(...)` with `initialization_parameters.deployment_name`) -- this probe only covers the local synchronous evaluator path. Requires `azure-ai-evaluation>=1.18.2`; set `EVAL_JUDGE_MODEL` to run.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/evaluation/azure-ai-evaluation/azure/ai/evaluation/_byo_judge.py"
 }
