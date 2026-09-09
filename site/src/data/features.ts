@@ -30,6 +30,8 @@ export interface Feature {
   notes?: string;
   /** null when the feature has no test_file (status-only card). */
   test_source: string | null;
+  /** Public-URL paths (relative to base) to screenshots/<slug>/*.png, sorted by filename. Empty if none. */
+  screenshots: string[];
 }
 
 export const CATEGORY_ORDER: Category[] = ['agents', 'endpoints', 'routing', 'tools', 'quality', 'ui', 'infrastructure'];
@@ -55,6 +57,27 @@ export const CATEGORY_DESCRIPTION: Record<Category, string> = {
 };
 
 const featuresDir = path.resolve(process.cwd(), '../features');
+// Astro only serves static files from site/public at build/dev time, but the source-of-truth
+// screenshots live next to each feature (features/<slug>/screenshots/*.png). Mirror them into
+// public/screenshots/<slug>/ so <img> tags can reference a stable, base-aware URL.
+const screenshotsPublicDir = path.resolve(process.cwd(), 'public/screenshots');
+
+function copyFeatureScreenshots(slug: string, dir: string): string[] {
+  const srcDir = path.join(dir, 'screenshots');
+  if (!fs.existsSync(srcDir)) return [];
+  const files = fs
+    .readdirSync(srcDir, { withFileTypes: true })
+    .filter((f) => f.isFile() && /\.(png|jpe?g|webp|gif)$/i.test(f.name))
+    .map((f) => f.name)
+    .sort();
+  if (files.length === 0) return [];
+  const destDir = path.join(screenshotsPublicDir, slug);
+  fs.mkdirSync(destDir, { recursive: true });
+  for (const file of files) {
+    fs.copyFileSync(path.join(srcDir, file), path.join(destDir, file));
+  }
+  return files.map((file) => `screenshots/${slug}/${file}`);
+}
 
 export function loadFeatures(): Feature[] {
   const slugs = fs
@@ -65,11 +88,12 @@ export function loadFeatures(): Feature[] {
 
   return slugs.map((slug) => {
     const dir = path.join(featuresDir, slug);
-    const meta = JSON.parse(fs.readFileSync(path.join(dir, 'feature.json'), 'utf8')) as Omit<Feature, 'test_source'>;
+    const meta = JSON.parse(fs.readFileSync(path.join(dir, 'feature.json'), 'utf8')) as Omit<Feature, 'test_source' | 'screenshots'>;
     let test_source: string | null = null;
     if (meta.test_file) {
       test_source = fs.readFileSync(path.join(dir, meta.test_file), 'utf8');
     }
-    return { ...meta, test_source };
+    const screenshots = copyFeatureScreenshots(slug, dir);
+    return { ...meta, test_source, screenshots };
   });
 }

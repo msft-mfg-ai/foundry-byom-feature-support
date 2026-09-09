@@ -9,6 +9,7 @@ site/dist/
 site/.astro/
 out.*
 *.png
+!features/**/screenshots/*.png
 *.wav
 *.mp3
 .DS_Store

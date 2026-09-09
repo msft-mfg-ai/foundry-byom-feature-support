@@ -22,6 +22,7 @@ const implBadge: Record<Feature['implementation_status'], { label: string; cls: 
 };
 const s = supportBadge[feature.support_status];
 const i = implBadge[feature.implementation_status];
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const workflowUrl = feature.test_file ? `${repo}/actions/workflows/feature-${feature.slug}.yml` : null;
 const sourceUrl = feature.test_file ? `${repo}/blob/main/features/${feature.slug}/${feature.test_file}` : null;
 const badgeUrl = feature.test_file ? `${repo}/actions/workflows/feature-${feature.slug}.yml/badge.svg` : null;
@@ -79,6 +80,19 @@ const badgeUrl = feature.test_file ? `${repo}/actions/workflows/feature-${featur
         </div>
       </div>
     </div>
+
+    {feature.screenshots.length > 0 && (
+      <div class="mt-6">
+        <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Screenshots</h4>
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {feature.screenshots.map((src) => (
+            <a href={`${base}${src}`} target="_blank" rel="noopener" class="block overflow-hidden rounded-lg ring-1 ring-slate-200 transition hover:ring-brand-400">
+              <img src={`${base}${src}`} alt={`${feature.name} screenshot`} loading="lazy" class="h-32 w-full object-cover object-top" />
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
 
     <div class="mt-6">
       {feature.test_source && sourceUrl && (
