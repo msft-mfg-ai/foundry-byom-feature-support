@@ -1,13 +1,13 @@
 {
   "slug": "assistants-v2",
   "category": "agents",
-  "name": "Assistants API v2 (beta)",
-  "summary": "OpenAI Assistants v2 exposes `model` in four places: POST /v1/assistants, PATCH /v1/assistants/{id}, POST /v1/threads/{id}/runs (override), POST /v1/threads/runs (override).",
-  "description": "The Assistants v2 beta API stores a default model on `POST /v1/assistants` / `PATCH /v1/assistants/{id}` and can override it on `POST /v1/threads/{thread_id}/runs` / `POST /v1/threads/runs`. Those model slots would need to carry `{connection}/{deployment}` for legacy assistant users to route through APIM AI Gateway instead of a local Foundry deployment.",
+  "name": "Assistants API v2 (beta, deprecated)",
+  "summary": "OpenAI has deprecated the Assistants v2 beta API (`POST /v1/assistants`, `PATCH /v1/assistants/{id}`, `POST /v1/threads/{id}/runs`, `POST /v1/threads/runs`) with a sunset date of August 26, 2026, in favor of the Responses + Conversations APIs.",
+  "description": "The Assistants v2 beta API stores a default model on `POST /v1/assistants` / `PATCH /v1/assistants/{id}` and can override it on `POST /v1/threads/{thread_id}/runs` / `POST /v1/threads/runs`. Those model slots would need to carry `{connection}/{deployment}` for legacy assistant users to route through APIM AI Gateway instead of a local Foundry deployment. OpenAI announced deprecation on August 26, 2025 and will permanently shut down the Assistants API on August 26, 2026 — see the [Assistants migration guide](https://developers.openai.com/api/docs/assistants/migration).",
   "pm": "TBD",
   "support_status": "not_supported",
   "implementation_status": "tbd",
-  "azure_docs": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/create",
-  "notes": "Not yet probed against Foundry with a captured server response. Docs: https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/create. See `test.py` for the create-assistant and run wiring; Prompt Agents (`prompt-agents-static` / `prompt-agents-dynamic`) are the recommended Foundry successor.",
+  "azure_docs": "https://developers.openai.com/api/docs/assistants/migration",
+  "notes": "Deprecated by OpenAI (announced 2025-08-26, sunset 2026-08-26); not recommended for new BYOM work regardless of routing support. Not yet probed against Foundry with a captured server response. Docs: https://developers.openai.com/api/docs/assistants/migration. See `test.py` for the create-assistant and run wiring; `responses-direct` (Responses API) and Prompt Agents (`prompt-agents-static` / `prompt-agents-dynamic`) are the recommended Foundry successors.",
   "test_file": "test.py"
 }
