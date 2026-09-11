@@ -230,7 +230,7 @@ wheels = [
 
 [[package]]
 name = "azure-ai-evaluation"
-version = "1.18.1"
+version = "1.18.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -246,9 +246,9 @@ dependencies = [
     { name = "pyjwt" },
     { name = "ruamel-yaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/31/7c566d750d4a4ae990d934a7ca4414fd2b82893f092fe785af414cfc315b/azure_ai_evaluation-1.18.1.tar.gz", hash = "sha256:5a7e321678d4286368808770f67b66f8cb97e056ef9d4d86a90bc3e417809ab7", size = 2393030, upload-time = "2026-07-09T15:00:04.457Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/71/74/06c8a27a9346934e0ec9001f45d94acd700a82a4e631eb7c8af173555990/azure_ai_evaluation-1.18.5.tar.gz", hash = "sha256:1d830f11547ee8ac11836366f4d34f28a6b87fb8056acf40827f9edf2b063f09", size = 2413917, upload-time = "2026-09-04T18:36:10.144Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/47/d7f54fd3af75d544f4f8a2d4931ff381768bd7d7afa2d8571b31c905ee87/azure_ai_evaluation-1.18.1-py3-none-any.whl", hash = "sha256:77b6fd93ab2d56f497a9fa146747d679006e4377b0aaf1d5a85364d95d6dccef", size = 1238511, upload-time = "2026-07-09T15:00:06.837Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/3c/e7f7f5c943ede4413af87b0338269b29aad2e33deb9d7c891de096708f4e/azure_ai_evaluation-1.18.5-py3-none-any.whl", hash = "sha256:88e705812133e2b4d34097661d90b78563d9ba3390d76e728e08af137b008f9e", size = 1247604, upload-time = "2026-09-04T18:36:12.315Z" },
 ]
 
 [package.optional-dependencies]
@@ -356,7 +356,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "azure-ai-evaluation", extras = ["redteam"], marker = "extra == 'eval'", specifier = ">=1.18.1" },
+    { name = "azure-ai-evaluation", extras = ["redteam"], marker = "extra == 'eval'", specifier = ">=1.18.2" },
     { name = "azure-ai-projects", specifier = "==2.3.0" },
     { name = "azure-identity", specifier = ">=1.19.0" },
     { name = "github-copilot-sdk", marker = "extra == 'copilot'", specifier = ">=1.0.7" },

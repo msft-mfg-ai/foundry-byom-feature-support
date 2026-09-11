@@ -2,13 +2,13 @@
   "slug": "agent-evaluators",
   "category": "quality",
   "name": "Agent evaluators (IntentResolution / TaskAdherence / ToolCallAccuracy)",
-  "summary": "azure-ai-evaluation agent-quality evaluators with a BYOM-prefixed judge model.",
-  "description": "The agent-quality evaluators (`IntentResolutionEvaluator`, `TaskAdherenceEvaluator`, `ToolCallAccuracyEvaluator`, `ResponseCompletenessEvaluator`) take `model_config.azure_deployment` for the judge LLM. That deployment slot would need to accept `{connection}/{deployment}` to score agent traces with a BYOM-routed judge model.",
+  "summary": "azure-ai-evaluation >=1.18.2: agent-quality judge LLM via a `{byo_model, project_endpoint}` model_config.",
+  "description": "The agent-quality evaluators (`IntentResolutionEvaluator`, `TaskAdherenceEvaluator`, `ToolCallAccuracyEvaluator`, `ResponseCompletenessEvaluator`) are prompty-based, like `RelevanceEvaluator`. They accept a `model_config` dict shaped as `{\"byo_model\": \"{connection}/{deployment}\", \"project_endpoint\": \"...\"}`, which routes the judge call through the Foundry project Responses API instead of a native `/openai/deployments/{deployment}/...` URL.",
   "pm": "TBD",
-  "support_status": "not_supported",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "test_file": "test.py",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators",
-  "notes": "BYOM is blocked by the eval SDK URL-shape bug. See `test.py`.\n\n> `azure-ai-evaluation` constructs `/openai/deployments/{apim-conn}/{model}/chat/completions`, which Foundry does not route, so the server returns `400 'API version not supported'`.",
-  "sample_url": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-projects/samples/agents_evaluations"
+  "notes": "Fixed in `azure-ai-evaluation` 1.18.2, same root cause and fix as `features/evaluations`. Verified live against a public (non-PE) Foundry + APIM AI Gateway pair with `azure-ai-evaluation==1.18.5`:\n\n```python\nmodel_config = {\"byo_model\": f\"{apim_conn}/gpt-5-mini\", \"project_endpoint\": project_endpoint}\nIntentResolutionEvaluator(model_config=model_config)(query=\"...\", response=\"...\")\n# -> {'intent_resolution_result': 'pass', 'intent_resolution_score': 3.0, ...}\n```\n\nThe old `AzureOpenAIModelConfiguration(azure_deployment=\"{conn}/{model}\")` shape is still broken (`400 'API version not supported'`) -- see `features/evaluations/feature.json` for the side-by-side evidence. Set `EVAL_JUDGE_MODEL` to run.",
+  "sample_url": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/evaluation/azure-ai-evaluation/azure/ai/evaluation/_byo_judge.py"
 }
