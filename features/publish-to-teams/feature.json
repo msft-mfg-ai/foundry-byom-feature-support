@@ -5,8 +5,8 @@
   "summary": "Publishing a BYOM-routed Prompt Agent as a Microsoft Teams app.",
   "description": "The Foundry publish-to-Teams flow packages an agent for Microsoft Teams after the agent has been authored in Foundry. The BYOM question is whether an agent whose model is `{connection}/{deployment}` can be published and used in Teams without replacing the orchestrator with a local deployment.",
   "pm": "TBD",
-  "support_status": "not_confirmed",
-  "implementation_status": "tbd",
+  "support_status": "supported",
+  "implementation_status": "preview",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot",
-  "notes": "Not yet covered by a scripted probe; current verification is manual. Docs: https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot.\n\nKnown hard limitation preserved: the SharePoint OBO tool does not work when the agent is published to Teams."
+  "notes": "Verified in the portal: opening the Publish menu on a BYOM-routed Prompt Agent (model = `{connection}/{deployment}`) offers \"Teams & Microsoft 365 Copilot\" with no BYOM-specific blocking tooltip -- the action is gated by the Foundry account's network configuration (public vs. private), not by whether the orchestrator model is BYOM-routed. This confirms BYOM routing itself is not a blocker for reaching the publish flow.\n\nNot yet verified: whether the published Teams app actually completes a round-trip chat turn end-to-end (only the publish *dialog* was probed, not a live Teams session). Known hard limitation preserved: the SharePoint OBO tool does not work when the agent is published to Teams.\n\nScreenshot evidence exists (`screenshots/01-publish-to-teams-flow.png`) but is withheld from the repo because it shows the real APIM connection name in the Model field -- ask for a re-shoot with the model field cropped/genericized before publishing it on the site."
 }

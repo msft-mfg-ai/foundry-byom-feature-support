@@ -8,5 +8,5 @@
   "support_status": "supported",
   "implementation_status": "ga",
   "azure_docs": "https://learn.microsoft.com/azure/foundry/how-to/configure-private-link",
-  "notes": "Verified end-to-end by running the matrix from inside the private VNet against a Foundry account with public network access disabled. Docs: https://learn.microsoft.com/azure/foundry/how-to/configure-private-link.\n\nEvery passing feature test in this environment also validates private Foundry reachability."
+  "notes": "Verified end-to-end by running the matrix from inside the private VNet against a Foundry account with public network access disabled. Docs: https://learn.microsoft.com/azure/foundry/how-to/configure-private-link.\n\nEvery passing feature test in this environment also validates private Foundry reachability.\n\nA screenshot captured for this card (`screenshots/01-networking-blade.png`) shows a *different*, disposable Foundry account with `Allow access from: All networks` selected -- that resource was intentionally left public for portal-UI screenshot capture convenience (browser automation can't reach a PE-only endpoint) and is not the private-networked resource this card's claim is verified against. Treat the screenshot as illustrating where the networking toggle lives in the portal, not as counter-evidence."
 }

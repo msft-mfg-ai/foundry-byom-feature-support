@@ -31,10 +31,9 @@ def test_kb_retrieve_bypasses_byom(cfg):
 
     gateway = cfg.resolve_gateway("static")
     chat_deployment = os.environ.get("CHAT_MODEL", "gpt-4o-mini")
-    account_endpoint = os.environ.get(
-        "FOUNDRY_ACCOUNT_ENDPOINT",
-        "https://ai-foundry-3swd46vd3j22a.services.ai.azure.com",
-    )
+    account_endpoint = os.environ.get("FOUNDRY_ACCOUNT_ENDPOINT")
+    if not account_endpoint:
+        pytest.skip("FOUNDRY_ACCOUNT_ENDPOINT not set")
 
     cred = DefaultAzureCredential()
     token = cred.get_token("https://search.azure.com/.default").token
