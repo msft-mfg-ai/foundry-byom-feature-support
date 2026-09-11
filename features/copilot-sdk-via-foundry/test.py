@@ -50,7 +50,7 @@ async def _run(project_endpoint: str, wire_model: str) -> str:
         await client.stop()
 
 
-@pytest.mark.not_confirmed
+@pytest.mark.supported
 def test_copilot_sdk_via_foundry():
     project_endpoint = os.environ.get("PROJECT_ENDPOINT")
     conn = os.environ.get("AI_GATEWAY_CONNECTION_STATIC")
